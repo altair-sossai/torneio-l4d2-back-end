@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TorneioLeft4Dead2.Jogadores.Entidades;
 using TorneioLeft4Dead2.Jogadores.Repositorios;
@@ -18,7 +19,9 @@ namespace TorneioLeft4Dead2.Storage.Jogadores.Repositorios
 
         public async Task<List<JogadorEntity>> ObterJogadoresAsync()
         {
-            return await GetAllAsync();
+            var entities = await GetAllAsync();
+
+            return entities.OrderBy(o => o.Nome).ToList();
         }
 
         public async Task<JogadorEntity> SalvarAsync(JogadorEntity entity)
