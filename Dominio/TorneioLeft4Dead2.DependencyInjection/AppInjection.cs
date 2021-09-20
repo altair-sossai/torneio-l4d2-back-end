@@ -2,6 +2,7 @@
 using System.Reflection;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using TorneioLeft4Dead2.Steam.Context;
 using TorneioLeft4Dead2.Storage.UnitOfWork;
 
 namespace TorneioLeft4Dead2.DependencyInjection
@@ -28,6 +29,11 @@ namespace TorneioLeft4Dead2.DependencyInjection
             });
 
             services.Scan(scan => scan.FromAssemblies(assemblies).AddClasses().AsImplementedInterfaces());
+
+            SteamContext.ApiKey = Environment.GetEnvironmentVariable("SteamApiKey");
+
+            services.AddScoped(_ => SteamContext.PlayerService);
+            services.AddScoped(_ => SteamContext.SteamUserService);
         }
     }
 }

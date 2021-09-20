@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TorneioLeft4Dead2.Steam\TorneioLeft4Dead2.Steam.csproj" />
     <ProjectReference Include="..\TorneioLeft4Dead2.Storage\TorneioLeft4Dead2.Storage.csproj" />
   </ItemGroup>
 

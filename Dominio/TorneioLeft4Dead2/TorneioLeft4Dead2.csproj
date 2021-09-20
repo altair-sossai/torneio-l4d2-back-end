@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TorneioLeft4Dead2.Steam\TorneioLeft4Dead2.Steam.csproj" />
+  </ItemGroup>
+
 </Project>
