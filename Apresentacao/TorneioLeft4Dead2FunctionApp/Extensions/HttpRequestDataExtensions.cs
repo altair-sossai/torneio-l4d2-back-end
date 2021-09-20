@@ -44,6 +44,8 @@ namespace TorneioLeft4Dead2FunctionApp.Extensions
 
             await response.WriteAsJsonAsync(data, Serializer);
 
+            response.StatusCode = HttpStatusCode.BadRequest;
+
             return response;
         }
 

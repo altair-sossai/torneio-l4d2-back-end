@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FluentValidation;
 using TorneioLeft4Dead2.Jogadores.Commands;
 using TorneioLeft4Dead2.Jogadores.Entidades;
@@ -32,6 +33,9 @@ namespace TorneioLeft4Dead2.Jogadores.Servicos
         {
             var steamId = await ResolveSteamIdAsync(command.Login) ?? command.SteamId;
             var entity = await BuildEntityAsync(steamId);
+
+            if (entity == null)
+                throw new Exception("Usuário não localizado");
 
             await _validator.ValidateAsync(entity);
 
