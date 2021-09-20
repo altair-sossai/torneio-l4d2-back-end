@@ -22,6 +22,11 @@ namespace TorneioLeft4Dead2FunctionApp.Extensions
             return httpRequest.CreateResponse(HttpStatusCode.OK);
         }
 
+        public static HttpResponseData NotFound(this HttpRequestData httpRequest)
+        {
+            return httpRequest.CreateResponse(HttpStatusCode.NotFound);
+        }
+
         public static async Task<HttpResponseData> OkAsync<T>(this HttpRequestData httpRequest, T data)
         {
             var response = httpRequest.CreateResponse(HttpStatusCode.OK);

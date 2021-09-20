@@ -9,12 +9,13 @@ namespace TorneioLeft4Dead2.Times.Entidades
             PartitionKey = "shared";
         }
 
-        public string Nome
+        public string Codigo
         {
             get => RowKey;
             set => RowKey = value;
         }
 
+        public string Nome { get; set; }
         public int PontosGerais => QuantidadeVitorias * 3 + QuantidadeEmpates;
         public int QuantidadePartidasRealizadas { get; set; }
         public int QuantidadeVitorias { get; set; }

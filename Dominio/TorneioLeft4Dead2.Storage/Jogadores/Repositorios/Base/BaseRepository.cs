@@ -10,17 +10,26 @@ namespace TorneioLeft4Dead2.Storage.Jogadores.Repositorios.Base
         where T : TableEntity, new()
     {
         private readonly string _tableName;
-        private readonly UnitOfWorkStorage _unitOfWork;
+        protected readonly UnitOfWorkStorage UnitOfWork;
 
         protected BaseRepository(UnitOfWorkStorage unitOfWork, string tableName)
         {
-            _unitOfWork = unitOfWork;
+            UnitOfWork = unitOfWork;
             _tableName = tableName;
+        }
+
+        protected async Task<T> GetByRowKeyAsync(string rowKey)
+        {
+            var cloudTable = await UnitOfWork.GetTableReferenceAsync(_tableName);
+            var filter = TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, rowKey);
+            var tableQuery = new TableQuery<T>().Where(filter);
+
+            return cloudTable.ExecuteQuery(tableQuery).FirstOrDefault();
         }
 
         protected async Task<List<T>> GetAllAsync()
         {
-            var cloudTable = await _unitOfWork.GetTableReferenceAsync(_tableName);
+            var cloudTable = await UnitOfWork.GetTableReferenceAsync(_tableName);
 
             var tableQuery = new TableQuery<T>();
             var query = cloudTable.ExecuteQuery(tableQuery);
@@ -31,7 +40,7 @@ namespace TorneioLeft4Dead2.Storage.Jogadores.Repositorios.Base
 
         protected async Task<T> InsertOrMergeAsync(T entity)
         {
-            var cloudTable = await _unitOfWork.GetTableReferenceAsync(_tableName);
+            var cloudTable = await UnitOfWork.GetTableReferenceAsync(_tableName);
 
             var tableOperation = TableOperation.InsertOrMerge(entity);
             var tableResult = await cloudTable.ExecuteAsync(tableOperation);
@@ -42,7 +51,7 @@ namespace TorneioLeft4Dead2.Storage.Jogadores.Repositorios.Base
 
         protected async Task DeleteAsync(string rowKey)
         {
-            var cloudTable = await _unitOfWork.GetTableReferenceAsync(_tableName);
+            var cloudTable = await UnitOfWork.GetTableReferenceAsync(_tableName);
             var filter = TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, rowKey);
             var tableQuery = new TableQuery<T>().Where(filter);
 
