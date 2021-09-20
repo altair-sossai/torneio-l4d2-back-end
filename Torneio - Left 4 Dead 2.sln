@@ -15,6 +15,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorneioLeft4Dead2.Storage",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorneioLeft4Dead2.DependencyInjection", "Dominio\TorneioLeft4Dead2.DependencyInjection\TorneioLeft4Dead2.DependencyInjection.csproj", "{9FA4EE82-E088-4CEA-BABA-5FB23107715C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".dev-ops", ".dev-ops", "{1DEBBD9C-266D-4B2B-8D29-22D0A918B293}"
+	ProjectSection(SolutionItems) = preProject
+		azure-pipelines.yml = azure-pipelines.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
