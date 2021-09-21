@@ -61,5 +61,17 @@ namespace TorneioLeft4Dead2.Storage.Jogadores.Repositorios.Base
                 await cloudTable.ExecuteAsync(tableOperation);
             }
         }
+
+        protected async Task DeleteAllAsync()
+        {
+            var cloudTable = await UnitOfWork.GetTableReferenceAsync(_tableName);
+            var tableQuery = new TableQuery<T>();
+
+            foreach (var entity in cloudTable.ExecuteQuery(tableQuery))
+            {
+                var tableOperation = TableOperation.Delete(entity);
+                await cloudTable.ExecuteAsync(tableOperation);
+            }
+        }
     }
 }
