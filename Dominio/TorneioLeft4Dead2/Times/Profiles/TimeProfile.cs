@@ -9,6 +9,7 @@ namespace TorneioLeft4Dead2.Times.Profiles
         public TimeProfile()
         {
             CreateMap<TimeCommand, TimeEntity>();
+            CreateMap<TimeJogadorCommand, TimeJogadorEntity>();
         }
     }
 }

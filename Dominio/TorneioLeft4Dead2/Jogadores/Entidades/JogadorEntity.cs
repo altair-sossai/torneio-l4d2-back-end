@@ -23,7 +23,6 @@ namespace TorneioLeft4Dead2.Jogadores.Entidades
         public string UrlPerfilSteam { get; set; }
         public int? TotalHoras { get; set; }
 
-
         public void Update(GetPlayerSummariesResponse response)
         {
             var player = response?.Response?.Players?.FirstOrDefault();

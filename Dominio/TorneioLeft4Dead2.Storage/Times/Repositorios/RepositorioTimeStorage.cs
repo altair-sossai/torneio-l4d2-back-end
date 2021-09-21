@@ -11,10 +11,13 @@ namespace TorneioLeft4Dead2.Storage.Times.Repositorios
     public class RepositorioTimeStorage : BaseRepository<TimeEntity>, IRepositorioTime
     {
         private const string TableName = "Times";
+        private readonly IRepositorioTimeJogador _repositorioTimeJogador;
 
-        public RepositorioTimeStorage(UnitOfWorkStorage unitOfWork)
+        public RepositorioTimeStorage(UnitOfWorkStorage unitOfWork,
+            IRepositorioTimeJogador repositorioTimeJogador)
             : base(unitOfWork, TableName)
         {
+            _repositorioTimeJogador = repositorioTimeJogador;
         }
 
         public async Task<TimeEntity> ObterPorCodigoAsync(string codigo)
@@ -37,6 +40,7 @@ namespace TorneioLeft4Dead2.Storage.Times.Repositorios
         public async Task ExcluirAsync(string codigo)
         {
             await DeleteAsync(codigo);
+            await _repositorioTimeJogador.ExcluirPorTimeAsync(codigo);
         }
     }
 }
