@@ -8,10 +8,13 @@ namespace TorneioLeft4Dead2.Times.Validators
         public TimeEntityValidator()
         {
             RuleFor(r => r.Codigo)
-                .NotEmpty();
+                .NotEmpty()
+                .MaximumLength(20)
+                .Matches(@"^[\w-]+$");
 
             RuleFor(r => r.Nome)
-                .NotEmpty();
+                .NotEmpty()
+                .MaximumLength(50);
         }
     }
 }
