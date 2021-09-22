@@ -14,7 +14,7 @@ namespace TorneioLeft4Dead2.Confrontos.Entidades
 
         public DateTime? Data { get; set; }
         public int Status { get; set; }
-        public string Campanha { get; set; }
+        public int Campanha { get; set; }
 
         public string TimeA
         {
