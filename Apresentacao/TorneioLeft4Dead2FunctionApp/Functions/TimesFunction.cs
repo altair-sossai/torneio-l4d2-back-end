@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using TorneioLeft4Dead2.Jogadores.Repositorios;
 using TorneioLeft4Dead2.Times.Commands;
 using TorneioLeft4Dead2.Times.Repositorios;
 using TorneioLeft4Dead2.Times.Servicos;
@@ -12,23 +11,17 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
 {
     public class TimesFunction
     {
-        private readonly IRepositorioJogador _repositorioJogador;
         private readonly IRepositorioTime _repositorioTime;
-        private readonly IRepositorioTimeJogador _repositorioTimeJogador;
         private readonly IServicoTime _servicoTime;
         private readonly IServicoTimeJogador _servicoTimeJogador;
 
         public TimesFunction(IServicoTime servicoTime,
             IServicoTimeJogador servicoTimeJogador,
-            IRepositorioJogador repositorioJogador,
-            IRepositorioTime repositorioTime,
-            IRepositorioTimeJogador repositorioTimeJogador)
+            IRepositorioTime repositorioTime)
         {
             _servicoTime = servicoTime;
             _servicoTimeJogador = servicoTimeJogador;
-            _repositorioJogador = repositorioJogador;
             _repositorioTime = repositorioTime;
-            _repositorioTimeJogador = repositorioTimeJogador;
         }
 
         [Function(nameof(TimesFunction) + "_" + nameof(GetAll))]
@@ -37,19 +30,6 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
             var entities = await _repositorioTime.ObterTimesAsync();
 
             return await httpRequest.OkAsync(entities);
-        }
-
-        [Function(nameof(TimesFunction) + "_" + nameof(Jogadores))]
-        public async Task<HttpResponseData> Jogadores([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "times-jogadores")] HttpRequestData httpRequest)
-        {
-            var jogadores = await _repositorioJogador.ObterJogadoresAsync();
-            var times = await _repositorioTime.ObterTimesAsync();
-            var vinculos = await _repositorioTimeJogador.ObterTodosAsync();
-
-            return await httpRequest.OkAsync(new
-            {
-                jogadores, times, vinculos
-            });
         }
 
         [Function(nameof(TimesFunction) + "_" + nameof(Get))]

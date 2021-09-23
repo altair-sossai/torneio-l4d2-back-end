@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Azure.Cosmos.Table;
-using TorneioLeft4Dead2.Storage.Jogadores.Repositorios.Base;
 using TorneioLeft4Dead2.Storage.UnitOfWork;
+using TorneioLeft4Dead2.Storage.UnitOfWork.Commands;
+using TorneioLeft4Dead2.Storage.UnitOfWork.Repositories;
 using TorneioLeft4Dead2.Times.Entidades;
 using TorneioLeft4Dead2.Times.Repositorios;
 
@@ -20,19 +19,25 @@ namespace TorneioLeft4Dead2.Storage.Times.Repositorios
 
         public async Task<List<TimeJogadorEntity>> ObterTodosAsync()
         {
-            return (await GetAllAsync()).OrderBy(o => o.Ordem).ToList();
+            const string time = nameof(TimeJogadorEntity.Time);
+            const string ordem = nameof(TimeJogadorEntity.Ordem);
+
+            var queryCommand = QueryCommand.Default
+                .OrderBy(time, ordem);
+
+            return await GetAllAsync(queryCommand);
         }
 
         public async Task<List<TimeJogadorEntity>> ObterPorTimeAsync(string codigo)
         {
-            var cloudTable = await UnitOfWork.GetTableReferenceAsync(TableName);
+            const string time = nameof(TimeJogadorEntity.Time);
+            const string ordem = nameof(TimeJogadorEntity.Ordem);
 
-            var filter = TableQuery.GenerateFilterCondition("Time", QueryComparisons.Equal, codigo);
-            var tableQuery = new TableQuery<TimeJogadorEntity>().Where(filter);
-            var query = cloudTable.ExecuteQuery(tableQuery);
-            var entities = query.ToList();
+            var queryCommand = QueryCommand.Default
+                .Where(time, codigo)
+                .OrderBy(ordem);
 
-            return entities;
+            return await GetAllAsync(queryCommand);
         }
 
         public async Task<TimeJogadorEntity> SalvarAsync(TimeJogadorEntity entity)
@@ -49,28 +54,24 @@ namespace TorneioLeft4Dead2.Storage.Times.Repositorios
 
         public async Task ExcluirPorJogadorAsync(string steamId)
         {
-            var cloudTable = await UnitOfWork.GetTableReferenceAsync(TableName);
-            var filter = TableQuery.GenerateFilterCondition("Jogador", QueryComparisons.Equal, steamId);
-            var tableQuery = new TableQuery<TimeJogadorEntity>().Where(filter);
+            const string jogador = nameof(TimeJogadorEntity.Jogador);
 
-            foreach (var entity in cloudTable.ExecuteQuery(tableQuery))
-            {
-                var tableOperation = TableOperation.Delete(entity);
-                await cloudTable.ExecuteAsync(tableOperation);
-            }
+            var queryCommand = QueryCommand.Default
+                .Where(jogador, steamId);
+
+            foreach (var entity in await GetAllAsync(queryCommand))
+                await DeleteAsync(entity);
         }
 
         public async Task ExcluirPorTimeAsync(string codigo)
         {
-            var cloudTable = await UnitOfWork.GetTableReferenceAsync(TableName);
-            var filter = TableQuery.GenerateFilterCondition("Time", QueryComparisons.Equal, codigo);
-            var tableQuery = new TableQuery<TimeJogadorEntity>().Where(filter);
+            const string time = nameof(TimeJogadorEntity.Time);
 
-            foreach (var entity in cloudTable.ExecuteQuery(tableQuery))
-            {
-                var tableOperation = TableOperation.Delete(entity);
-                await cloudTable.ExecuteAsync(tableOperation);
-            }
+            var queryCommand = QueryCommand.Default
+                .Where(time, codigo);
+
+            foreach (var entity in await GetAllAsync(queryCommand))
+                await DeleteAsync(entity);
         }
     }
 }

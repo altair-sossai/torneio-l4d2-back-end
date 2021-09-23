@@ -1,0 +1,46 @@
+﻿using System.Collections.Generic;
+using Microsoft.Azure.Cosmos.Table;
+
+namespace TorneioLeft4Dead2.Storage.UnitOfWork.Commands
+{
+    public class QueryCommand
+    {
+        private readonly List<string> _orderBy = new();
+        private string _where;
+        public static QueryCommand Default => new();
+
+        public QueryCommand Where(string property, string value)
+        {
+            var where = TableQuery.GenerateFilterCondition(property, QueryComparisons.Equal, value);
+
+            return Where(where);
+        }
+
+        public QueryCommand Where(string where)
+        {
+            _where = where;
+
+            return this;
+        }
+
+        public QueryCommand OrderBy(params string[] orderBy)
+        {
+            _orderBy.AddRange(orderBy);
+
+            return this;
+        }
+
+        public TableQuery<T> BuildTableQuery<T>()
+        {
+            var tableQuery = new TableQuery<T>();
+
+            if (string.IsNullOrEmpty(_where))
+                tableQuery = tableQuery.Where(_where);
+
+            foreach (var orderBy in _orderBy)
+                tableQuery = tableQuery.OrderBy(orderBy);
+
+            return tableQuery;
+        }
+    }
+}

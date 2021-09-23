@@ -11,15 +11,18 @@ namespace TorneioLeft4Dead2.Times.Servicos
     {
         private readonly IMapper _mapper;
         private readonly IRepositorioTime _repositorioTime;
+        private readonly IRepositorioTimeJogador _repositorioTimeJogador;
         private readonly IValidator<TimeEntity> _validator;
 
         public ServicoTime(IMapper mapper,
             IValidator<TimeEntity> validator,
-            IRepositorioTime repositorioTime)
+            IRepositorioTime repositorioTime,
+            IRepositorioTimeJogador repositorioTimeJogador)
         {
             _mapper = mapper;
             _validator = validator;
             _repositorioTime = repositorioTime;
+            _repositorioTimeJogador = repositorioTimeJogador;
         }
 
         public async Task<TimeEntity> SalvarAsync(TimeCommand command)
@@ -35,6 +38,7 @@ namespace TorneioLeft4Dead2.Times.Servicos
         public async Task ExcluirAsync(string codigo)
         {
             await _repositorioTime.ExcluirAsync(codigo);
+            await _repositorioTimeJogador.ExcluirPorTimeAsync(codigo);
         }
     }
 }

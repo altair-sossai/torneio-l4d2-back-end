@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using Microsoft.Azure.Cosmos.Table;
-using TorneioLeft4Dead2.Steam.PlayerService.Responses;
-using TorneioLeft4Dead2.Steam.SteamUser.Responses;
+﻿using Microsoft.Azure.Cosmos.Table;
 
 namespace TorneioLeft4Dead2.Jogadores.Entidades
 {
@@ -22,35 +19,5 @@ namespace TorneioLeft4Dead2.Jogadores.Entidades
         public string UrlFotoPerfil { get; set; }
         public string UrlPerfilSteam { get; set; }
         public int? TotalHoras { get; set; }
-
-        public void Update(GetPlayerSummariesResponse response)
-        {
-            var player = response?.Response?.Players?.FirstOrDefault();
-
-            Update(player);
-        }
-
-        private void Update(GetPlayerSummariesResponse.PlayerInfo player)
-        {
-            if (player == null)
-                return;
-
-            SteamId = player.SteamId;
-            Nome = player.PersonaName;
-            UrlFotoPerfil = player.AvatarFull;
-            UrlPerfilSteam = player.ProfileUrl;
-        }
-
-        public void Update(GetOwnedGamesResponse response)
-        {
-            var gameInfo = response?.Response?.Games?.FirstOrDefault(f => f.AppId == 550);
-
-            Update(gameInfo);
-        }
-
-        private void Update(GetOwnedGamesResponse.GameInfo gameInfo)
-        {
-            TotalHoras = gameInfo?.PlayTimeForever / 60;
-        }
     }
 }

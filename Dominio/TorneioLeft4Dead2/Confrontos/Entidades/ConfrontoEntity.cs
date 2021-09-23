@@ -32,7 +32,6 @@ namespace TorneioLeft4Dead2.Confrontos.Entidades
         public int PontosConquistadosTimeB { get; set; }
         public int PenalidadeTimeA { get; set; }
         public int PenalidadeTimeB { get; set; }
-        public string MotivoPenalidadeTimeA { get; set; }
-        public string MotivoPenalidadeTimeB { get; set; }
+        public string Observacoes { get; set; }
     }
 }

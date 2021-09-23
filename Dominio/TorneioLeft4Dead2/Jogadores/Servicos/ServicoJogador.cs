@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentValidation;
 using TorneioLeft4Dead2.Jogadores.Commands;
 using TorneioLeft4Dead2.Jogadores.Entidades;
+using TorneioLeft4Dead2.Jogadores.Extensions;
 using TorneioLeft4Dead2.Jogadores.Repositorios;
 using TorneioLeft4Dead2.Steam.Context;
 using TorneioLeft4Dead2.Steam.PlayerService.Services;
 using TorneioLeft4Dead2.Steam.SteamUser.Services;
+using TorneioLeft4Dead2.Times.Repositorios;
 
 namespace TorneioLeft4Dead2.Jogadores.Servicos
 {
@@ -14,19 +18,32 @@ namespace TorneioLeft4Dead2.Jogadores.Servicos
     {
         private readonly IPlayerService _playerService;
         private readonly IRepositorioJogador _repositorioJogador;
+        private readonly IRepositorioTimeJogador _repositorioTimeJogador;
         private readonly string _steamApiKey = SteamContext.ApiKey;
         private readonly ISteamUserService _steamUserService;
         private readonly IValidator<JogadorEntity> _validator;
 
         public ServicoJogador(IValidator<JogadorEntity> validator,
             IRepositorioJogador repositorioJogador,
+            IRepositorioTimeJogador repositorioTimeJogador,
             ISteamUserService steamUserService,
             IPlayerService playerService)
         {
             _validator = validator;
             _repositorioJogador = repositorioJogador;
+            _repositorioTimeJogador = repositorioTimeJogador;
             _steamUserService = steamUserService;
             _playerService = playerService;
+        }
+
+        public async Task<List<JogadorEntity>> JogadoresDisponiveisAsync()
+        {
+            var jogadores = await _repositorioJogador.ObterJogadoresAsync();
+            var vinculos = await _repositorioTimeJogador.ObterTodosAsync();
+            var indisponiveis = vinculos.Select(v => v.Jogador).ToHashSet();
+            var disponiveis = jogadores.Where(jogador => !indisponiveis.Contains(jogador.SteamId)).ToList();
+
+            return disponiveis;
         }
 
         public async Task<JogadorEntity> SalvarAsync(JogadorCommand command)
@@ -40,6 +57,12 @@ namespace TorneioLeft4Dead2.Jogadores.Servicos
             await _validator.ValidateAsync(entity);
 
             return await _repositorioJogador.SalvarAsync(entity);
+        }
+
+        public async Task ExcluirAsync(string steamId)
+        {
+            await _repositorioJogador.ExcluirAsync(steamId);
+            await _repositorioTimeJogador.ExcluirPorJogadorAsync(steamId);
         }
 
         private async Task<string> ResolveSteamIdAsync(string login)
