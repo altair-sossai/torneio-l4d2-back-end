@@ -46,6 +46,14 @@ namespace TorneioLeft4Dead2.Jogadores.Servicos
             return disponiveis;
         }
 
+        public async Task<List<JogadorEntity>> ObterPorTimeAsync(string codigo)
+        {
+            var timesJogadores = await _repositorioTimeJogador.ObterPorTimeAsync(codigo);
+            var jogadores = (await _repositorioJogador.ObterJogadoresAsync()).ToDictionary();
+
+            return timesJogadores.Select(s => jogadores[s.Jogador]).ToList();
+        }
+
         public async Task<JogadorEntity> SalvarAsync(JogadorCommand command)
         {
             var steamId = await ResolveSteamIdAsync(command.Login) ?? command.SteamId;

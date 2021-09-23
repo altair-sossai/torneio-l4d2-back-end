@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using Microsoft.Azure.Cosmos.Table;
+﻿using Microsoft.Azure.Cosmos.Table;
 
 namespace TorneioLeft4Dead2.Storage.UnitOfWork.Commands
 {
     public class QueryCommand
     {
-        private readonly List<string> _orderBy = new();
+        private string _orderBy;
         private string _where;
         public static QueryCommand Default => new();
 
@@ -23,9 +22,9 @@ namespace TorneioLeft4Dead2.Storage.UnitOfWork.Commands
             return this;
         }
 
-        public QueryCommand OrderBy(params string[] orderBy)
+        public QueryCommand OrderBy(string orderBy)
         {
-            _orderBy.AddRange(orderBy);
+            _orderBy = orderBy;
 
             return this;
         }
@@ -37,8 +36,8 @@ namespace TorneioLeft4Dead2.Storage.UnitOfWork.Commands
             if (string.IsNullOrEmpty(_where))
                 tableQuery = tableQuery.Where(_where);
 
-            foreach (var orderBy in _orderBy)
-                tableQuery = tableQuery.OrderBy(orderBy);
+            if (string.IsNullOrEmpty(_orderBy))
+                tableQuery = tableQuery.OrderBy(_orderBy);
 
             return tableQuery;
         }

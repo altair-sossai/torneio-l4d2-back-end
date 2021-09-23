@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TorneioLeft4Dead2.Storage.UnitOfWork;
 using TorneioLeft4Dead2.Storage.UnitOfWork.Commands;
@@ -19,13 +20,10 @@ namespace TorneioLeft4Dead2.Storage.Times.Repositorios
 
         public async Task<List<TimeJogadorEntity>> ObterTodosAsync()
         {
-            const string time = nameof(TimeJogadorEntity.Time);
-            const string ordem = nameof(TimeJogadorEntity.Ordem);
-
-            var queryCommand = QueryCommand.Default
-                .OrderBy(time, ordem);
-
-            return await GetAllAsync(queryCommand);
+            return (await GetAllAsync(QueryCommand.Default))
+                .OrderBy(o => o.Time)
+                .ThenBy(t => t.Ordem)
+                .ToList();
         }
 
         public async Task<List<TimeJogadorEntity>> ObterPorTimeAsync(string codigo)

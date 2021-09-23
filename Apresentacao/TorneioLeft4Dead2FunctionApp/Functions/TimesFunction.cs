@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using TorneioLeft4Dead2.Times.Commands;
-using TorneioLeft4Dead2.Times.Repositorios;
 using TorneioLeft4Dead2.Times.Servicos;
 using TorneioLeft4Dead2FunctionApp.Extensions;
 
@@ -11,23 +10,20 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
 {
     public class TimesFunction
     {
-        private readonly IRepositorioTime _repositorioTime;
         private readonly IServicoTime _servicoTime;
         private readonly IServicoTimeJogador _servicoTimeJogador;
 
         public TimesFunction(IServicoTime servicoTime,
-            IServicoTimeJogador servicoTimeJogador,
-            IRepositorioTime repositorioTime)
+            IServicoTimeJogador servicoTimeJogador)
         {
             _servicoTime = servicoTime;
             _servicoTimeJogador = servicoTimeJogador;
-            _repositorioTime = repositorioTime;
         }
 
         [Function(nameof(TimesFunction) + "_" + nameof(GetAll))]
         public async Task<HttpResponseData> GetAll([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "times")] HttpRequestData httpRequest)
         {
-            var entities = await _repositorioTime.ObterTimesAsync();
+            var entities = await _servicoTime.ObterTimesAsync();
 
             return await httpRequest.OkAsync(entities);
         }
@@ -36,7 +32,7 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
         public async Task<HttpResponseData> Get([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "times/{codigo}")] HttpRequestData httpRequest,
             string codigo)
         {
-            var entity = await _repositorioTime.ObterPorCodigoAsync(codigo);
+            var entity = await _servicoTime.ObterPorCodigoAsync(codigo);
 
             if (entity == null)
                 return httpRequest.NotFound();

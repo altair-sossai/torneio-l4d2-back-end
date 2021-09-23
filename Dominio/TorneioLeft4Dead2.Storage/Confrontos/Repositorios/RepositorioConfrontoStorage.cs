@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TorneioLeft4Dead2.Confrontos.Entidades;
 using TorneioLeft4Dead2.Confrontos.Repositorios;
@@ -19,13 +20,10 @@ namespace TorneioLeft4Dead2.Storage.Confrontos.Repositorios
 
         public async Task<List<ConfrontoEntity>> ObterConfrontosAsync()
         {
-            const string rodada = nameof(ConfrontoEntity.Rodada);
-            const string rowKey = nameof(ConfrontoEntity.RowKey);
-
-            var queryCommand = QueryCommand.Default
-                .OrderBy(rodada, rowKey);
-
-            return await GetAllAsync(queryCommand);
+            return (await GetAllAsync(QueryCommand.Default))
+                .OrderBy(o => o.Rodada)
+                .ThenBy(t => t.RowKey)
+                .ToList();
         }
 
         public async Task<ConfrontoEntity> SalvarAsync(ConfrontoEntity entity)
