@@ -23,21 +23,21 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
         [Function(nameof(TimesFunction) + "_" + nameof(GetAll))]
         public async Task<HttpResponseData> GetAll([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "times")] HttpRequestData httpRequest)
         {
-            var entities = await _servicoTime.ObterTimesAsync();
+            var models = await _servicoTime.ObterTimesAsync();
 
-            return await httpRequest.OkAsync(entities);
+            return await httpRequest.OkAsync(models);
         }
 
         [Function(nameof(TimesFunction) + "_" + nameof(Get))]
         public async Task<HttpResponseData> Get([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "times/{codigo}")] HttpRequestData httpRequest,
             string codigo)
         {
-            var entity = await _servicoTime.ObterPorCodigoAsync(codigo);
+            var model = await _servicoTime.ObterPorCodigoAsync(codigo);
 
-            if (entity == null)
+            if (model == null)
                 return httpRequest.NotFound();
 
-            return await httpRequest.OkAsync(entity);
+            return await httpRequest.OkAsync(model);
         }
 
         [Function(nameof(TimesFunction) + "_" + nameof(Post))]

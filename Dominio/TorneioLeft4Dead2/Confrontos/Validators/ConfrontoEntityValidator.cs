@@ -7,13 +7,13 @@ namespace TorneioLeft4Dead2.Confrontos.Validators
     {
         public ConfrontoEntityValidator()
         {
-            RuleFor(r => r.Campanha)
+            RuleFor(r => r.CodigoCampanha)
                 .NotEmpty();
 
-            RuleFor(r => r.TimeA)
+            RuleFor(r => r.CodigoTimeA)
                 .NotEmpty();
 
-            RuleFor(r => r.TimeB)
+            RuleFor(r => r.CodigoTimeB)
                 .NotEmpty();
         }
     }

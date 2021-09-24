@@ -9,6 +9,11 @@ namespace TorneioLeft4Dead2.Times.Extensions
 {
     public static class TimeModelExtensions
     {
+        public static Dictionary<string, TimeModel> ToDictionary(this IEnumerable<TimeModel> entities)
+        {
+            return entities.ToDictionary(k => k.Codigo, v => v);
+        }
+
         public static void Vincular(this IEnumerable<TimeModel> models, IEnumerable<TimeJogadorEntity> timesJogadores, IEnumerable<JogadorEntity> jogadores)
         {
             var times = timesJogadores.AgruparPorTimes();

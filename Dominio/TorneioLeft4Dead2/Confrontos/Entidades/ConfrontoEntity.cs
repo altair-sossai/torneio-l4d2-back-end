@@ -14,18 +14,35 @@ namespace TorneioLeft4Dead2.Confrontos.Entidades
 
         public DateTime? Data { get; set; }
         public int Status { get; set; }
-        public int Campanha { get; set; }
+        public int CodigoCampanha { get; set; }
 
-        public string TimeA
+        public string CodigoTimeA
         {
             get => RowKey?.Split('_').FirstOrDefault();
-            set => RowKey = $"{value}_{TimeB}";
+            set => RowKey = $"{value}_{CodigoTimeB}";
         }
 
-        public string TimeB
+        public string CodigoTimeB
         {
             get => RowKey?.Split('_').LastOrDefault();
-            set => RowKey = $"{TimeA}_{value}";
+            set => RowKey = $"{CodigoTimeA}_{value}";
+        }
+
+        public string CodigoTimeVencedor
+        {
+            get
+            {
+                var pontosTimeA = PontosConquistadosTimeA - PenalidadeTimeA;
+                var pontosTimeB = PontosConquistadosTimeB - PenalidadeTimeB;
+
+                if (pontosTimeA > pontosTimeB)
+                    return CodigoTimeA;
+
+                if (pontosTimeB > pontosTimeA)
+                    return CodigoTimeB;
+
+                return null;
+            }
         }
 
         public int PontosConquistadosTimeA { get; set; }
