@@ -1,11 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Azure.Core.Serialization;
 using Microsoft.Azure.Functions.Worker.Http;
 using Newtonsoft.Json;
+using TorneioLeft4Dead2.Auth.Jwt;
 using TorneioLeft4Dead2FunctionApp.Exceptions;
 
 namespace TorneioLeft4Dead2FunctionApp.Extensions
@@ -25,6 +28,11 @@ namespace TorneioLeft4Dead2FunctionApp.Extensions
         public static HttpResponseData NotFound(this HttpRequestData httpRequest)
         {
             return httpRequest.CreateResponse(HttpStatusCode.NotFound);
+        }
+
+        public static HttpResponseData Unauthorized(this HttpRequestData httpRequest)
+        {
+            return httpRequest.CreateResponse(HttpStatusCode.Unauthorized);
         }
 
         public static async Task<HttpResponseData> OkAsync<T>(this HttpRequestData httpRequest, T data)
@@ -61,6 +69,18 @@ namespace TorneioLeft4Dead2FunctionApp.Extensions
             var t = JsonConvert.DeserializeObject<T>(json);
 
             return t;
+        }
+
+        public static ClaimsPrincipal CurrentUser(this HttpRequestData httpRequest)
+        {
+            var values = httpRequest.Headers.GetValues("Authorization").ToList();
+            if (values.Count == 0)
+                return null;
+
+            var authorization = values.First();
+            var accessToken = authorization.Split(" ").Last();
+
+            return UsuarioJwtService.IsValidToken(accessToken) ? UsuarioJwtService.ClaimsPrincipal(accessToken) : null;
         }
     }
 }

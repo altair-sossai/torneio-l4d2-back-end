@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Text.Json;
 using Refit;
 using TorneioLeft4Dead2.Steam.PlayerService.Services;
 using TorneioLeft4Dead2.Steam.SteamUser.Services;
@@ -8,6 +9,7 @@ namespace TorneioLeft4Dead2.Steam.Context
     public static class SteamContext
     {
         private const string BaseUrl = "https://api.steampowered.com";
+        public static readonly string ApiKey = Environment.GetEnvironmentVariable("SteamApiKey");
 
         private static readonly JsonSerializerOptions Options = new()
         {
@@ -20,7 +22,6 @@ namespace TorneioLeft4Dead2.Steam.Context
             ContentSerializer = new SystemTextJsonContentSerializer(Options)
         };
 
-        public static string ApiKey;
 
         public static IPlayerService PlayerService => CreateService<IPlayerService>();
         public static ISteamUserService SteamUserService => CreateService<ISteamUserService>();

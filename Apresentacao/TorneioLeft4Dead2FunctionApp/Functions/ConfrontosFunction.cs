@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using TorneioLeft4Dead2.Auth.Context;
 using TorneioLeft4Dead2.Confrontos.Servicos;
 using TorneioLeft4Dead2FunctionApp.Extensions;
 
@@ -9,11 +10,14 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
 {
     public class ConfrontosFunction
     {
+        private readonly AuthContext _authContext;
         private readonly IServicoConfronto _servicoConfronto;
 
-        public ConfrontosFunction(IServicoConfronto servicoConfronto)
+        public ConfrontosFunction(IServicoConfronto servicoConfronto,
+            AuthContext authContext)
         {
             _servicoConfronto = servicoConfronto;
+            _authContext = authContext;
         }
 
         [Function(nameof(ConfrontosFunction) + "_" + nameof(Get))]
@@ -37,9 +41,20 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
         {
             try
             {
+                var claimsPrincipal = httpRequest.CurrentUser();
+                if (claimsPrincipal == null)
+                    return httpRequest.Unauthorized();
+
+                await _authContext.FillUserAsync(claimsPrincipal);
+                _authContext.GrantPermission();
+
                 await _servicoConfronto.GerarConfrontosAsync();
 
                 return httpRequest.Ok();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return httpRequest.Unauthorized();
             }
             catch (Exception exception)
             {

@@ -19,7 +19,6 @@ namespace TorneioLeft4Dead2.Jogadores.Servicos
         private readonly IPlayerService _playerService;
         private readonly IRepositorioJogador _repositorioJogador;
         private readonly IRepositorioTimeJogador _repositorioTimeJogador;
-        private readonly string _steamApiKey = SteamContext.ApiKey;
         private readonly ISteamUserService _steamUserService;
         private readonly IValidator<JogadorEntity> _validator;
 
@@ -54,6 +53,25 @@ namespace TorneioLeft4Dead2.Jogadores.Servicos
             return timesJogadores.Select(s => jogadores[s.Jogador]).ToList();
         }
 
+        public async Task AtualizarJogadoresAsync()
+        {
+            var jogadores = await _repositorioJogador.ObterJogadoresAsync();
+
+            foreach (var jogador in jogadores)
+            {
+                try
+                {
+                    var command = new JogadorCommand {User = jogador.SteamId};
+
+                    await SalvarAsync(command);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                }
+            }
+        }
+
         public async Task<JogadorEntity> SalvarAsync(JogadorCommand command)
         {
             var steamId = await ResolveSteamIdAsync(command.Login) ?? command.SteamId;
@@ -78,7 +96,7 @@ namespace TorneioLeft4Dead2.Jogadores.Servicos
             if (string.IsNullOrEmpty(login))
                 return await Task.FromResult((string) null);
 
-            var response = await _steamUserService.ResolveVanityUrlAsync(_steamApiKey, login);
+            var response = await _steamUserService.ResolveVanityUrlAsync(SteamContext.ApiKey, login);
 
             return response is {Response: {Success: 1}} ? response.Response.SteamId : null;
         }
@@ -88,8 +106,8 @@ namespace TorneioLeft4Dead2.Jogadores.Servicos
             if (string.IsNullOrEmpty(steamId))
                 return await Task.FromResult((JogadorEntity) null);
 
-            var playerSummariesResponse = await _steamUserService.GetPlayerSummariesAsync(_steamApiKey, steamId);
-            var ownedGamesResponse = await _playerService.GetOwnedGamesAsync(_steamApiKey, steamId);
+            var playerSummariesResponse = await _steamUserService.GetPlayerSummariesAsync(SteamContext.ApiKey, steamId);
+            var ownedGamesResponse = await _playerService.GetOwnedGamesAsync(SteamContext.ApiKey, steamId);
 
             var entity = new JogadorEntity();
 

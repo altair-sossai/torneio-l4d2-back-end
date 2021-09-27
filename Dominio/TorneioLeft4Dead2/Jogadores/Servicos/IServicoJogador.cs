@@ -9,6 +9,7 @@ namespace TorneioLeft4Dead2.Jogadores.Servicos
     {
         Task<List<JogadorEntity>> JogadoresDisponiveisAsync();
         Task<List<JogadorEntity>> ObterPorTimeAsync(string codigo);
+        Task AtualizarJogadoresAsync();
         Task<JogadorEntity> SalvarAsync(JogadorCommand command);
         Task ExcluirAsync(string steamId);
     }

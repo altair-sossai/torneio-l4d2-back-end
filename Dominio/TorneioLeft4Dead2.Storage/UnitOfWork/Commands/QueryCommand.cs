@@ -33,10 +33,10 @@ namespace TorneioLeft4Dead2.Storage.UnitOfWork.Commands
         {
             var tableQuery = new TableQuery<T>();
 
-            if (string.IsNullOrEmpty(_where))
+            if (!string.IsNullOrEmpty(_where))
                 tableQuery = tableQuery.Where(_where);
 
-            if (string.IsNullOrEmpty(_orderBy))
+            if (!string.IsNullOrEmpty(_orderBy))
                 tableQuery = tableQuery.OrderBy(_orderBy);
 
             return tableQuery;

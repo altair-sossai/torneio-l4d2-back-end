@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using TorneioLeft4Dead2.Auth.Context;
 using TorneioLeft4Dead2.Times.Commands;
 using TorneioLeft4Dead2.Times.Servicos;
 using TorneioLeft4Dead2FunctionApp.Extensions;
@@ -10,14 +11,17 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
 {
     public class TimesFunction
     {
+        private readonly AuthContext _authContext;
         private readonly IServicoTime _servicoTime;
         private readonly IServicoTimeJogador _servicoTimeJogador;
 
         public TimesFunction(IServicoTime servicoTime,
-            IServicoTimeJogador servicoTimeJogador)
+            IServicoTimeJogador servicoTimeJogador,
+            AuthContext authContext)
         {
             _servicoTime = servicoTime;
             _servicoTimeJogador = servicoTimeJogador;
+            _authContext = authContext;
         }
 
         [Function(nameof(TimesFunction) + "_" + nameof(GetAll))]
@@ -45,10 +49,21 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
         {
             try
             {
+                var claimsPrincipal = httpRequest.CurrentUser();
+                if (claimsPrincipal == null)
+                    return httpRequest.Unauthorized();
+
+                await _authContext.FillUserAsync(claimsPrincipal);
+                _authContext.GrantPermission();
+
                 var command = await httpRequest.DeserializeBodyAsync<TimeCommand>();
                 var entity = await _servicoTime.SalvarAsync(command);
 
                 return await httpRequest.OkAsync(entity);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return httpRequest.Unauthorized();
             }
             catch (Exception exception)
             {
@@ -61,10 +76,21 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
         {
             try
             {
+                var claimsPrincipal = httpRequest.CurrentUser();
+                if (claimsPrincipal == null)
+                    return httpRequest.Unauthorized();
+
+                await _authContext.FillUserAsync(claimsPrincipal);
+                _authContext.GrantPermission();
+
                 var command = await httpRequest.DeserializeBodyAsync<TimeJogadorCommand>();
                 var entity = await _servicoTimeJogador.SalvarAsync(command);
 
                 return await httpRequest.OkAsync(entity);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return httpRequest.Unauthorized();
             }
             catch (Exception exception)
             {
@@ -78,9 +104,20 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
         {
             try
             {
+                var claimsPrincipal = httpRequest.CurrentUser();
+                if (claimsPrincipal == null)
+                    return httpRequest.Unauthorized();
+
+                await _authContext.FillUserAsync(claimsPrincipal);
+                _authContext.GrantPermission();
+
                 await _servicoTime.ExcluirAsync(codigo);
 
                 return httpRequest.Ok();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return httpRequest.Unauthorized();
             }
             catch (Exception exception)
             {
@@ -94,9 +131,20 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
         {
             try
             {
+                var claimsPrincipal = httpRequest.CurrentUser();
+                if (claimsPrincipal == null)
+                    return httpRequest.Unauthorized();
+
+                await _authContext.FillUserAsync(claimsPrincipal);
+                _authContext.GrantPermission();
+
                 await _servicoTimeJogador.DesvincularJogadorAsync(codigo, steamId);
 
                 return httpRequest.Ok();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return httpRequest.Unauthorized();
             }
             catch (Exception exception)
             {
