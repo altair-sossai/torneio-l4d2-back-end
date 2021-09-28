@@ -65,14 +65,21 @@ namespace TorneioLeft4Dead2.Times.Servicos
             return times;
         }
 
-        public async Task<TimeEntity> SalvarAsync(TimeCommand command)
+        public async Task<TimeEntity> SalvarAsync(TimeEntity entity)
         {
-            var entity = _mapper.Map<TimeEntity>(command);
-
             await _validator.ValidateAndThrowAsync(entity);
             await _repositorioTime.SalvarAsync(entity);
 
             return entity;
+        }
+
+        public async Task<TimeEntity> SalvarAsync(TimeCommand command)
+        {
+            var entity = await ObterPorCodigoAsync(command.Codigo) ?? new TimeEntity();
+
+            _mapper.Map(command, entity);
+
+            return await SalvarAsync(entity);
         }
 
         public async Task ExcluirAsync(string codigo)

@@ -7,9 +7,12 @@ using TorneioLeft4Dead2.Campanhas.Repositorios;
 using TorneioLeft4Dead2.Confrontos.Builders;
 using TorneioLeft4Dead2.Confrontos.Commands;
 using TorneioLeft4Dead2.Confrontos.Entidades;
+using TorneioLeft4Dead2.Confrontos.Enums;
 using TorneioLeft4Dead2.Confrontos.Extensions;
 using TorneioLeft4Dead2.Confrontos.Models;
 using TorneioLeft4Dead2.Confrontos.Repositorios;
+using TorneioLeft4Dead2.Times.Commands;
+using TorneioLeft4Dead2.Times.Extensions;
 using TorneioLeft4Dead2.Times.Repositorios;
 using TorneioLeft4Dead2.Times.Servicos;
 
@@ -69,9 +72,14 @@ namespace TorneioLeft4Dead2.Confrontos.Servicos
         {
             var entity = _mapper.Map<ConfrontoEntity>(command);
 
+            if (entity.Status == (int) StatusConfronto.Aguardando)
+                entity.ZerarPontuacao();
+
             await _validator.ValidateAndThrowAsync(entity);
             await _repositorioConfronto.ExcluirAsync(entity.Id);
             await _repositorioConfronto.SalvarAsync(entity);
+
+            await AtualizarPlacarAsync();
 
             return entity;
         }
@@ -90,6 +98,53 @@ namespace TorneioLeft4Dead2.Confrontos.Servicos
         public async Task ExcluirAsync(Guid confrontoId)
         {
             await _repositorioConfronto.ExcluirAsync(confrontoId);
+        }
+
+        private async Task AtualizarPlacarAsync()
+        {
+            var times = (await _repositorioTime.ObterTimesAsync()).ToDictionary();
+            var confrontos = await _repositorioConfronto.ObterConfrontosAsync();
+
+            foreach (var (_, time) in times)
+                time.ZerarPontuacao();
+
+            foreach (var confronto in confrontos)
+            {
+                if (confronto.Status == (int) StatusConfronto.Aguardando)
+                    continue;
+
+                var timeA = times[confronto.CodigoTimeA];
+                var timeB = times[confronto.CodigoTimeB];
+
+                timeA.QuantidadePartidasRealizadas++;
+                timeA.TotalPontosConquistados += confronto.PontosConquistadosTimeA;
+                timeA.TotalPontosSofridos += confronto.PontosConquistadosTimeB;
+                timeA.TotalPenalidades += confronto.PenalidadeTimeA;
+
+                timeB.QuantidadePartidasRealizadas++;
+                timeB.TotalPontosConquistados += confronto.PontosConquistadosTimeB;
+                timeB.TotalPontosSofridos += confronto.PontosConquistadosTimeA;
+                timeB.TotalPenalidades += confronto.PenalidadeTimeB;
+
+                if (confronto.CodigoTimeVencedor == timeA.Codigo)
+                {
+                    timeA.QuantidadeVitorias++;
+                    timeB.QuantidadeDerrotas++;
+                }
+                else if (confronto.CodigoTimeVencedor == timeB.Codigo)
+                {
+                    timeA.QuantidadeDerrotas++;
+                    timeB.QuantidadeVitorias++;
+                }
+                else
+                {
+                    timeA.QuantidadeEmpates++;
+                    timeB.QuantidadeEmpates++;
+                }
+            }
+
+            foreach (var (_, time) in times)
+                await _servicoTime.SalvarAsync(time);
         }
     }
 }

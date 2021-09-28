@@ -25,5 +25,16 @@ namespace TorneioLeft4Dead2.Times.Entidades
         public int TotalPontosSofridos { get; set; }
         public int TotalPenalidades { get; set; }
         public int SaldoTotalPontos => TotalPontosConquistados - TotalPontosSofridos - TotalPenalidades;
+
+        public void ZerarPontuacao()
+        {
+            QuantidadePartidasRealizadas = 0;
+            QuantidadeVitorias = 0;
+            QuantidadeEmpates = 0;
+            QuantidadeDerrotas = 0;
+            TotalPontosConquistados = 0;
+            TotalPontosSofridos = 0;
+            TotalPenalidades = 0;
+        }
     }
 }
