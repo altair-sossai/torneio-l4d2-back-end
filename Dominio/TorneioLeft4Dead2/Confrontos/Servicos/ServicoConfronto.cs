@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using FluentValidation;
 using TorneioLeft4Dead2.Campanhas.Repositorios;
 using TorneioLeft4Dead2.Confrontos.Builders;
+using TorneioLeft4Dead2.Confrontos.Commands;
+using TorneioLeft4Dead2.Confrontos.Entidades;
 using TorneioLeft4Dead2.Confrontos.Extensions;
 using TorneioLeft4Dead2.Confrontos.Models;
 using TorneioLeft4Dead2.Confrontos.Repositorios;
@@ -18,18 +22,26 @@ namespace TorneioLeft4Dead2.Confrontos.Servicos
         private readonly IRepositorioConfronto _repositorioConfronto;
         private readonly IRepositorioTime _repositorioTime;
         private readonly IServicoTime _servicoTime;
+        private readonly IValidator<ConfrontoEntity> _validator;
 
         public ServicoConfronto(IMapper mapper,
+            IValidator<ConfrontoEntity> validator,
             IRepositorioConfronto repositorioConfronto,
             IRepositorioCampanha repositorioCampanha,
             IServicoTime servicoTime,
             IRepositorioTime repositorioTime)
         {
             _mapper = mapper;
+            _validator = validator;
             _repositorioConfronto = repositorioConfronto;
             _repositorioCampanha = repositorioCampanha;
             _servicoTime = servicoTime;
             _repositorioTime = repositorioTime;
+        }
+
+        public async Task<ConfrontoEntity> ObterPorIdAsync(Guid confrontoId)
+        {
+            return await _repositorioConfronto.ObterPorIdAsync(confrontoId);
         }
 
         public async Task<List<RodadaModel>> ObterRodadasAsync()
@@ -53,6 +65,17 @@ namespace TorneioLeft4Dead2.Confrontos.Servicos
             return confrontos;
         }
 
+        public async Task<ConfrontoEntity> SalvarAsync(ConfrontoCommand command)
+        {
+            var entity = _mapper.Map<ConfrontoEntity>(command);
+
+            await _validator.ValidateAndThrowAsync(entity);
+            await _repositorioConfronto.ExcluirAsync(entity.Id);
+            await _repositorioConfronto.SalvarAsync(entity);
+
+            return entity;
+        }
+
         public async Task GerarConfrontosAsync()
         {
             var times = await _repositorioTime.ObterTimesAsync();
@@ -62,6 +85,11 @@ namespace TorneioLeft4Dead2.Confrontos.Servicos
 
             foreach (var entity in builder.Build())
                 await _repositorioConfronto.SalvarAsync(entity);
+        }
+
+        public async Task ExcluirAsync(Guid confrontoId)
+        {
+            await _repositorioConfronto.ExcluirAsync(confrontoId);
         }
     }
 }

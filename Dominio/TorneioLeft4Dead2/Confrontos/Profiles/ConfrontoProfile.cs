@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using TorneioLeft4Dead2.Confrontos.Commands;
 using TorneioLeft4Dead2.Confrontos.Entidades;
 using TorneioLeft4Dead2.Confrontos.Models;
 
@@ -9,6 +10,7 @@ namespace TorneioLeft4Dead2.Confrontos.Profiles
         public ConfrontoProfile()
         {
             CreateMap<ConfrontoEntity, ConfrontoModel>();
+            CreateMap<ConfrontoCommand, ConfrontoEntity>();
         }
     }
 }

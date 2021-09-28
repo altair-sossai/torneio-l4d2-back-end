@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using TorneioLeft4Dead2.Auth.Context;
+using TorneioLeft4Dead2.Confrontos.Commands;
 using TorneioLeft4Dead2.Confrontos.Servicos;
 using TorneioLeft4Dead2FunctionApp.Extensions;
 
@@ -20,12 +21,24 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
             _authContext = authContext;
         }
 
-        [Function(nameof(ConfrontosFunction) + "_" + nameof(Get))]
-        public async Task<HttpResponseData> Get([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "confrontos")] HttpRequestData httpRequest)
+        [Function(nameof(ConfrontosFunction) + "_" + nameof(GetAll))]
+        public async Task<HttpResponseData> GetAll([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "confrontos")] HttpRequestData httpRequest)
         {
             var models = await _servicoConfronto.ObterConfrontosAsync();
 
             return await httpRequest.OkAsync(models);
+        }
+
+        [Function(nameof(ConfrontosFunction) + "_" + nameof(Get))]
+        public async Task<HttpResponseData> Get([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "confrontos/{confrontoId:guid}")] HttpRequestData httpRequest,
+            Guid confrontoId)
+        {
+            var model = await _servicoConfronto.ObterPorIdAsync(confrontoId);
+
+            if (model == null)
+                return httpRequest.NotFound();
+
+            return await httpRequest.OkAsync(model);
         }
 
         [Function(nameof(ConfrontosFunction) + "_" + nameof(Rodadas))]
@@ -34,6 +47,33 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
             var models = await _servicoConfronto.ObterRodadasAsync();
 
             return await httpRequest.OkAsync(models);
+        }
+
+        [Function(nameof(ConfrontosFunction) + "_" + nameof(Post))]
+        public async Task<HttpResponseData> Post([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "confrontos")] HttpRequestData httpRequest)
+        {
+            try
+            {
+                var claimsPrincipal = httpRequest.CurrentUser();
+                if (claimsPrincipal == null)
+                    return httpRequest.Unauthorized();
+
+                await _authContext.FillUserAsync(claimsPrincipal);
+                _authContext.GrantPermission();
+
+                var command = await httpRequest.DeserializeBodyAsync<ConfrontoCommand>();
+                var entity = await _servicoConfronto.SalvarAsync(command);
+
+                return await httpRequest.OkAsync(entity);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return httpRequest.Unauthorized();
+            }
+            catch (Exception exception)
+            {
+                return await httpRequest.BadRequestAsync(exception);
+            }
         }
 
         [Function(nameof(ConfrontosFunction) + "_" + nameof(Gerar))]
@@ -49,6 +89,33 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
                 _authContext.GrantPermission();
 
                 await _servicoConfronto.GerarConfrontosAsync();
+
+                return httpRequest.Ok();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return httpRequest.Unauthorized();
+            }
+            catch (Exception exception)
+            {
+                return await httpRequest.BadRequestAsync(exception);
+            }
+        }
+
+        [Function(nameof(ConfrontosFunction) + "_" + nameof(Delete))]
+        public async Task<HttpResponseData> Delete([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "confrontos/{confrontoId:guid}")] HttpRequestData httpRequest,
+            Guid confrontoId)
+        {
+            try
+            {
+                var claimsPrincipal = httpRequest.CurrentUser();
+                if (claimsPrincipal == null)
+                    return httpRequest.Unauthorized();
+
+                await _authContext.FillUserAsync(claimsPrincipal);
+                _authContext.GrantPermission();
+
+                await _servicoConfronto.ExcluirAsync(confrontoId);
 
                 return httpRequest.Ok();
             }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TorneioLeft4Dead2.Confrontos.Entidades;
@@ -18,6 +19,11 @@ namespace TorneioLeft4Dead2.Storage.Confrontos.Repositorios
         {
         }
 
+        public async Task<ConfrontoEntity> ObterPorIdAsync(Guid confrontoId)
+        {
+            return await GetByRowKeyAsync(confrontoId.ToString().ToLower());
+        }
+
         public async Task<List<ConfrontoEntity>> ObterConfrontosAsync()
         {
             return (await GetAllAsync(QueryCommand.Default))
@@ -34,6 +40,11 @@ namespace TorneioLeft4Dead2.Storage.Confrontos.Repositorios
         public async Task ExcluirTudoAsync()
         {
             await DeleteAllAsync();
+        }
+
+        public async Task ExcluirAsync(Guid confrontoId)
+        {
+            await DeleteAsync(confrontoId.ToString().ToLower());
         }
     }
 }

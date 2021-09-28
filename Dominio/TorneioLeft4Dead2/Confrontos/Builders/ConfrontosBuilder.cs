@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TorneioLeft4Dead2.Confrontos.Entidades;
 using TorneioLeft4Dead2.Confrontos.Enums;
 using TorneioLeft4Dead2.Times.Entidades;
@@ -52,12 +51,10 @@ namespace TorneioLeft4Dead2.Confrontos.Builders
                     var entity = new ConfrontoEntity
                     {
                         Rodada = rodada,
-                        Data = i % 2 == 0 ? DateTime.Now : null,
                         Status = (int) StatusConfronto.Aguardando,
                         CodigoTimeA = _times[j].Codigo,
                         CodigoTimeB = _times[i].Codigo,
-                        CodigoCampanha = rodada,
-                        Observacoes = i % 2 == 0 ? "Lorem ipsum dolor" : null
+                        CodigoCampanha = rodada
                     };
 
                     yield return entity;

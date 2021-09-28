@@ -1,32 +1,29 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.Azure.Cosmos.Table;
 
 namespace TorneioLeft4Dead2.Confrontos.Entidades
 {
     public class ConfrontoEntity : TableEntity
     {
-        public int Rodada
+        public ConfrontoEntity()
         {
-            get => int.TryParse(PartitionKey, out var rodada) ? rodada : 0;
-            set => PartitionKey = value.ToString();
+            PartitionKey = "shared";
+            Id = Guid.NewGuid();
         }
 
+
+        public Guid Id
+        {
+            get => Guid.TryParse(RowKey, out var id) ? id : Guid.Empty;
+            set => RowKey = value.ToString().ToLower();
+        }
+
+        public int Rodada { get; set; }
         public DateTime? Data { get; set; }
         public int Status { get; set; }
         public int CodigoCampanha { get; set; }
-
-        public string CodigoTimeA
-        {
-            get => RowKey?.Split('_').FirstOrDefault();
-            set => RowKey = $"{value}_{CodigoTimeB}";
-        }
-
-        public string CodigoTimeB
-        {
-            get => RowKey?.Split('_').LastOrDefault();
-            set => RowKey = $"{CodigoTimeA}_{value}";
-        }
+        public string CodigoTimeA { get; set; }
+        public string CodigoTimeB { get; set; }
 
         public string CodigoTimeVencedor
         {
