@@ -10,6 +10,7 @@ namespace TorneioLeft4Dead2.Times.Servicos
     {
         Task<TimeModel> ObterPorCodigoAsync(string codigo);
         Task<List<TimeModel>> ObterTimesAsync();
+        Task<List<TimeEntity>> ObterClassificacaoAsync();
         Task<TimeEntity> SalvarAsync(TimeEntity command);
         Task<TimeEntity> SalvarAsync(TimeCommand command);
         Task ExcluirAsync(string codigo);

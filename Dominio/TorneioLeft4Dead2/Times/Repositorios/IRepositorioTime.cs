@@ -8,6 +8,7 @@ namespace TorneioLeft4Dead2.Times.Repositorios
     {
         Task<TimeEntity> ObterPorCodigoAsync(string codigo);
         Task<List<TimeEntity>> ObterTimesAsync();
+        Task<List<TimeEntity>> ObterClassificacaoAsync();
         Task<TimeEntity> SalvarAsync(TimeEntity entity);
         Task ExcluirAsync(string codigo);
     }

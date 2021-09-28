@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TorneioLeft4Dead2.Storage.UnitOfWork;
 using TorneioLeft4Dead2.Storage.UnitOfWork.Commands;
@@ -30,6 +31,19 @@ namespace TorneioLeft4Dead2.Storage.Times.Repositorios
                 .OrderBy(codigo);
 
             return await GetAllAsync(queryCommand);
+        }
+
+        public async Task<List<TimeEntity>> ObterClassificacaoAsync()
+        {
+            var entities = await GetAllAsync(QueryCommand.Default);
+            var classificados = entities
+                .OrderByDescending(o => o.PontosGerais)
+                .ThenByDescending(t => t.TotalPontosConquistados)
+                .ThenByDescending(t => t.TotalPontosSofridos)
+                .ThenByDescending(t => t.SaldoTotalPontos)
+                .ToList();
+
+            return classificados;
         }
 
         public async Task<TimeEntity> SalvarAsync(TimeEntity entity)

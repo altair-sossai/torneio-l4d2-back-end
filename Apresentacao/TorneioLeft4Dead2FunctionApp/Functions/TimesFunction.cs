@@ -32,6 +32,14 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
             return await httpRequest.OkAsync(models);
         }
 
+        [Function(nameof(TimesFunction) + "_" + nameof(Classificacao))]
+        public async Task<HttpResponseData> Classificacao([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "classificacao")] HttpRequestData httpRequest)
+        {
+            var models = await _servicoTime.ObterClassificacaoAsync();
+
+            return await httpRequest.OkAsync(models);
+        }
+
         [Function(nameof(TimesFunction) + "_" + nameof(Get))]
         public async Task<HttpResponseData> Get([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "times/{codigo}")] HttpRequestData httpRequest,
             string codigo)

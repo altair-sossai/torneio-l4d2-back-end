@@ -65,6 +65,11 @@ namespace TorneioLeft4Dead2.Times.Servicos
             return times;
         }
 
+        public async Task<List<TimeEntity>> ObterClassificacaoAsync()
+        {
+            return await _repositorioTime.ObterClassificacaoAsync();
+        }
+
         public async Task<TimeEntity> SalvarAsync(TimeEntity entity)
         {
             await _validator.ValidateAndThrowAsync(entity);
