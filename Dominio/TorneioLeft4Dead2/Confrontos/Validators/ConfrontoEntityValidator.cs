@@ -14,9 +14,6 @@ namespace TorneioLeft4Dead2.Confrontos.Validators
             RuleFor(r => r.Rodada)
                 .NotEmpty();
 
-            RuleFor(r => r.CodigoCampanha)
-                .NotEmpty();
-
             RuleFor(r => r.CodigoTimeA)
                 .NotEmpty()
                 .NotEqual(r => r.CodigoTimeB);
@@ -24,10 +21,14 @@ namespace TorneioLeft4Dead2.Confrontos.Validators
             RuleFor(r => r.CodigoTimeB)
                 .NotEmpty();
 
-            When(w => w.Status == (int) StatusConfronto.Realizado, () =>
+            When(w => w.Status == (int) StatusConfronto.Realizado
+                      || w.Status == (int) StatusConfronto.Cancelado, () =>
             {
                 RuleFor(r => r.Data)
                     .NotNull();
+
+                RuleFor(r => r.CodigoCampanha)
+                    .NotEmpty();
             });
         }
     }

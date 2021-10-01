@@ -39,7 +39,12 @@ namespace TorneioLeft4Dead2.Confrontos.Extensions
             var dictionary = campanhas.ToDictionary();
 
             foreach (var confronto in confrontos)
-                confronto.Campanha = dictionary[confronto.CodigoCampanha];
+            {
+                if (!confronto.CodigoCampanha.HasValue)
+                    continue;
+
+                confronto.Campanha = dictionary[confronto.CodigoCampanha.Value];
+            }
         }
 
         public static void Vincular(this List<ConfrontoModel> confrontos, IEnumerable<TimeModel> times)

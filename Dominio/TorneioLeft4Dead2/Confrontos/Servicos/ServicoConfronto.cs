@@ -11,7 +11,6 @@ using TorneioLeft4Dead2.Confrontos.Enums;
 using TorneioLeft4Dead2.Confrontos.Extensions;
 using TorneioLeft4Dead2.Confrontos.Models;
 using TorneioLeft4Dead2.Confrontos.Repositorios;
-using TorneioLeft4Dead2.Times.Commands;
 using TorneioLeft4Dead2.Times.Extensions;
 using TorneioLeft4Dead2.Times.Repositorios;
 using TorneioLeft4Dead2.Times.Servicos;

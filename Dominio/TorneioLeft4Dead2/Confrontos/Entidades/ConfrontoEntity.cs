@@ -21,7 +21,7 @@ namespace TorneioLeft4Dead2.Confrontos.Entidades
         public int Rodada { get; set; }
         public DateTime? Data { get; set; }
         public int Status { get; set; }
-        public int CodigoCampanha { get; set; }
+        public int? CodigoCampanha { get; set; }
         public string CodigoTimeA { get; set; }
         public string CodigoTimeB { get; set; }
 
