@@ -28,6 +28,7 @@ namespace TorneioLeft4Dead2.Storage.Confrontos.Repositorios
         {
             return (await GetAllAsync(QueryCommand.Default))
                 .OrderBy(o => o.Rodada)
+                .ThenBy(t => t.Data ?? DateTime.Now)
                 .ThenBy(t => t.RowKey)
                 .ToList();
         }
