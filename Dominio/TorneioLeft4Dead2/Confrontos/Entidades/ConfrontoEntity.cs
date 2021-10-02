@@ -29,13 +29,10 @@ namespace TorneioLeft4Dead2.Confrontos.Entidades
         {
             get
             {
-                var pontosTimeA = PontosConquistadosTimeA - PenalidadeTimeA;
-                var pontosTimeB = PontosConquistadosTimeB - PenalidadeTimeB;
-
-                if (pontosTimeA > pontosTimeB)
+                if (PontosConquistadosTimeA > PontosConquistadosTimeB)
                     return CodigoTimeA;
 
-                if (pontosTimeB > pontosTimeA)
+                if (PontosConquistadosTimeB > PontosConquistadosTimeA)
                     return CodigoTimeB;
 
                 return null;
