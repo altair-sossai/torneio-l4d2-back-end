@@ -38,8 +38,6 @@ namespace TorneioLeft4Dead2.Storage.Times.Repositorios
             var entities = await GetAllAsync(QueryCommand.Default);
             var classificados = entities
                 .OrderByDescending(o => o.PontosGerais)
-                .ThenByDescending(t => t.TotalPontosConquistados)
-                .ThenByDescending(t => t.TotalPontosSofridos)
                 .ThenByDescending(t => t.SaldoTotalPontos)
                 .ToList();
 
