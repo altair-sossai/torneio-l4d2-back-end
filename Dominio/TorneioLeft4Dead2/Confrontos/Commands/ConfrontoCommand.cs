@@ -21,6 +21,8 @@ namespace TorneioLeft4Dead2.Confrontos.Commands
         public int? PontosConquistadosTimeB { get; set; }
         public int? PenalidadeTimeA { get; set; }
         public int? PenalidadeTimeB { get; set; }
+        public int? PenalidadePontosGeraisTimeA { get; set; }
+        public int? PenalidadePontosGeraisTimeB { get; set; }
         public string Observacoes { get; set; }
     }
 }

@@ -119,11 +119,13 @@ namespace TorneioLeft4Dead2.Confrontos.Servicos
                 timeA.TotalPontosConquistados += confronto.PontosConquistadosTimeA;
                 timeA.TotalPontosSofridos += confronto.PontosConquistadosTimeB;
                 timeA.TotalPenalidades += confronto.PenalidadeTimeA;
+                timeA.TotalPenalidadePontosGerais += confronto.PenalidadePontosGeraisTimeA;
 
                 timeB.QuantidadePartidasRealizadas++;
                 timeB.TotalPontosConquistados += confronto.PontosConquistadosTimeB;
                 timeB.TotalPontosSofridos += confronto.PontosConquistadosTimeA;
                 timeB.TotalPenalidades += confronto.PenalidadeTimeB;
+                timeB.TotalPenalidadePontosGerais += confronto.PenalidadePontosGeraisTimeB;
 
                 if (confronto.CodigoTimeVencedor == timeA.Codigo)
                 {

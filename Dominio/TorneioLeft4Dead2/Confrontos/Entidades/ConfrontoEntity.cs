@@ -46,6 +46,8 @@ namespace TorneioLeft4Dead2.Confrontos.Entidades
         public int PontosConquistadosTimeB { get; set; }
         public int PenalidadeTimeA { get; set; }
         public int PenalidadeTimeB { get; set; }
+        public int PenalidadePontosGeraisTimeA { get; set; }
+        public int PenalidadePontosGeraisTimeB { get; set; }
         public string Observacoes { get; set; }
 
         public void ZerarPontuacao()
@@ -54,6 +56,8 @@ namespace TorneioLeft4Dead2.Confrontos.Entidades
             PontosConquistadosTimeB = 0;
             PenalidadeTimeA = 0;
             PenalidadeTimeB = 0;
+            PenalidadePontosGeraisTimeA = 0;
+            PenalidadePontosGeraisTimeB = 0;
         }
     }
 }

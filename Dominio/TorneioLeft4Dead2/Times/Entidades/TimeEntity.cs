@@ -16,7 +16,7 @@ namespace TorneioLeft4Dead2.Times.Entidades
         }
 
         public string Nome { get; set; }
-        public int PontosGerais => QuantidadeVitorias * 3 + QuantidadeEmpates;
+        public int PontosGerais => QuantidadeVitorias * 3 + QuantidadeEmpates - TotalPenalidadePontosGerais;
         public int QuantidadePartidasRealizadas { get; set; }
         public int QuantidadeVitorias { get; set; }
         public int QuantidadeEmpates { get; set; }
@@ -24,6 +24,7 @@ namespace TorneioLeft4Dead2.Times.Entidades
         public int TotalPontosConquistados { get; set; }
         public int TotalPontosSofridos { get; set; }
         public int TotalPenalidades { get; set; }
+        public int TotalPenalidadePontosGerais { get; set; }
         public int SaldoTotalPontos => TotalPontosConquistados - TotalPontosSofridos - TotalPenalidades;
 
         public void ZerarPontuacao()
