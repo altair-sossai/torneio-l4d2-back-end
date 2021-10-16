@@ -36,6 +36,7 @@ namespace TorneioLeft4Dead2.Times.Entidades
             TotalPontosConquistados = 0;
             TotalPontosSofridos = 0;
             TotalPenalidades = 0;
+            TotalPenalidadePontosGerais = 0;
         }
     }
 }
