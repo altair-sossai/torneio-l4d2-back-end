@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs;
 using Microsoft.Azure.Cosmos.Table;
 
 namespace TorneioLeft4Dead2.Storage.UnitOfWork
@@ -9,7 +10,9 @@ namespace TorneioLeft4Dead2.Storage.UnitOfWork
         private static readonly HashSet<string> CreatedTables = new();
         private readonly string _connectionString;
         private readonly TableClientConfiguration _tableClientConfiguration = new();
+        private BlobServiceClient _blobServiceClient;
         private CloudStorageAccount _cloudStorageAccount;
+        private CloudTableClient _cloudTableClient;
 
         public UnitOfWorkStorage(string connectionString)
         {
@@ -17,7 +20,8 @@ namespace TorneioLeft4Dead2.Storage.UnitOfWork
         }
 
         private CloudStorageAccount CloudStorageAccount => _cloudStorageAccount ??= CloudStorageAccount.Parse(_connectionString);
-        private CloudTableClient CloudTableClient => CloudStorageAccount.CreateCloudTableClient(_tableClientConfiguration);
+        private CloudTableClient CloudTableClient => _cloudTableClient ??= CloudStorageAccount.CreateCloudTableClient(_tableClientConfiguration);
+        public BlobServiceClient BlobServiceClient => _blobServiceClient ??= new BlobServiceClient(_connectionString);
 
         public async Task<CloudTable> GetTableReferenceAsync(string tableName)
         {
