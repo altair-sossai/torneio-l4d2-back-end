@@ -22,7 +22,7 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
         {
             var imagens = await _repositorioGaleriaImagem.ObterImagensAsync(galeriaId).ToListAsync();
 
-            return await httpRequest.OkAsync(imagens);
+            return await httpRequest.OkAsync(imagens.OrderBy(o=>o.NomeArquivo).ToList());
         }
     }
 }
