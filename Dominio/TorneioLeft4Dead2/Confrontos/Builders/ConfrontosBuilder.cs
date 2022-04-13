@@ -54,7 +54,7 @@ namespace TorneioLeft4Dead2.Confrontos.Builders
                         Status = (int) StatusConfronto.Aguardando,
                         CodigoTimeA = _times[j].Codigo,
                         CodigoTimeB = _times[i].Codigo,
-                        CodigoCampanha = rodada
+                        CodigoCampanha = null
                     };
 
                     yield return entity;
