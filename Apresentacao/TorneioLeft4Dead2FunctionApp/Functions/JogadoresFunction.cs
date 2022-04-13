@@ -97,7 +97,7 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
 
 #if !DEBUG
         [Function(nameof(JogadoresFunction) + "_" + nameof(AtualizarJogadores))]
-        public async void AtualizarJogadores([TimerTrigger("0 */5 * * * *")] TimerInfo timerInfo)
+        public async Task AtualizarJogadores([TimerTrigger("0 */5 * * * *")] TimerInfo timerInfo)
         {
             await _servicoJogador.AtualizarJogadoresAsync();
         }
