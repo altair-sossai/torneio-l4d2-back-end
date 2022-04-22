@@ -53,7 +53,7 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
         public async Task<HttpResponseData> Capitaes([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "jogadores/capitaes")] HttpRequestData httpRequest)
         {
             var times = await _servicoTime.ObterTimesAsync();
-            var capitaes = times.Select(t => t.Capitao).ToList();
+            var capitaes = times.Select(t => t.Capitao).Where(capitao => capitao != null).ToList();
 
             return await httpRequest.OkAsync(capitaes);
         }
