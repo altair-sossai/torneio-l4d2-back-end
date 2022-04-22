@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -6,6 +7,7 @@ using TorneioLeft4Dead2.Auth.Context;
 using TorneioLeft4Dead2.Jogadores.Commands;
 using TorneioLeft4Dead2.Jogadores.Repositorios;
 using TorneioLeft4Dead2.Jogadores.Servicos;
+using TorneioLeft4Dead2.Times.Servicos;
 using TorneioLeft4Dead2FunctionApp.Extensions;
 
 namespace TorneioLeft4Dead2FunctionApp.Functions
@@ -16,14 +18,17 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
         private readonly IRepositorioJogador _repositorioJogador;
         private readonly IServicoJogador _servicoJogador;
         private readonly IServicoSenhaJogador _servicoSenhaJogador;
+        private readonly IServicoTime _servicoTime;
 
         public JogadoresFunction(IServicoJogador servicoJogador,
             IServicoSenhaJogador servicoSenhaJogador,
+            IServicoTime servicoTime,
             IRepositorioJogador repositorioJogador,
             AuthContext authContext)
         {
             _servicoJogador = servicoJogador;
             _servicoSenhaJogador = servicoSenhaJogador;
+            _servicoTime = servicoTime;
             _repositorioJogador = repositorioJogador;
             _authContext = authContext;
         }
@@ -42,6 +47,15 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
             var entities = await _servicoJogador.JogadoresDisponiveisAsync();
 
             return await httpRequest.OkAsync(entities);
+        }
+
+        [Function(nameof(JogadoresFunction) + "_" + nameof(Capitaes))]
+        public async Task<HttpResponseData> Capitaes([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "jogadores/capitaes")] HttpRequestData httpRequest)
+        {
+            var times = await _servicoTime.ObterTimesAsync();
+            var capitaes = times.Select(t => t.Capitao).ToList();
+
+            return await httpRequest.OkAsync(capitaes);
         }
 
         [Function(nameof(JogadoresFunction) + "_" + nameof(Post))]

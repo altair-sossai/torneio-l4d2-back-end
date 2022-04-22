@@ -20,10 +20,8 @@ namespace TorneioLeft4Dead2.Confrontos.Builders
             var matriz = new int[_times.Count, _times.Count];
 
             for (var i = 0; i < _times.Count; i++)
-            {
-                for (var j = 0; j < _times.Count; j++)
-                    matriz[i, j] = -1;
-            }
+            for (var j = 0; j < _times.Count; j++)
+                matriz[i, j] = -1;
 
             for (int i = 0, k = 1; i < _times.Count; i++, k = i + 1)
             for (var j = 0; j < _times.Count; j++)
@@ -41,24 +39,22 @@ namespace TorneioLeft4Dead2.Confrontos.Builders
             }
 
             for (var rodada = 1; rodada < _times.Count + delta; rodada++)
+            for (var i = 1; i < _times.Count; i++)
+            for (var j = 0; j <= i - 1; j++)
             {
-                for (var i = 1; i < _times.Count; i++)
-                for (var j = 0; j <= i - 1; j++)
+                if (matriz[i, j] != rodada)
+                    continue;
+
+                var entity = new ConfrontoEntity
                 {
-                    if (matriz[i, j] != rodada)
-                        continue;
+                    Rodada = rodada,
+                    Status = (int) StatusConfronto.Aguardando,
+                    CodigoTimeA = _times[j].Codigo,
+                    CodigoTimeB = _times[i].Codigo,
+                    CodigoCampanha = null
+                };
 
-                    var entity = new ConfrontoEntity
-                    {
-                        Rodada = rodada,
-                        Status = (int) StatusConfronto.Aguardando,
-                        CodigoTimeA = _times[j].Codigo,
-                        CodigoTimeB = _times[i].Codigo,
-                        CodigoCampanha = null
-                    };
-
-                    yield return entity;
-                }
+                yield return entity;
             }
         }
     }
