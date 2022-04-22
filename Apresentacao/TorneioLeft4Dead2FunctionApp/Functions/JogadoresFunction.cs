@@ -15,12 +15,15 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
         private readonly AuthContext _authContext;
         private readonly IRepositorioJogador _repositorioJogador;
         private readonly IServicoJogador _servicoJogador;
+        private readonly IServicoSenhaJogador _servicoSenhaJogador;
 
         public JogadoresFunction(IServicoJogador servicoJogador,
+            IServicoSenhaJogador servicoSenhaJogador,
             IRepositorioJogador repositorioJogador,
             AuthContext authContext)
         {
             _servicoJogador = servicoJogador;
+            _servicoSenhaJogador = servicoSenhaJogador;
             _repositorioJogador = repositorioJogador;
             _authContext = authContext;
         }
@@ -57,6 +60,33 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
                 var entity = await _servicoJogador.SalvarAsync(command);
 
                 return await httpRequest.OkAsync(entity);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return httpRequest.Unauthorized();
+            }
+            catch (Exception exception)
+            {
+                return await httpRequest.BadRequestAsync(exception);
+            }
+        }
+
+        [Function(nameof(JogadoresFunction) + "_" + nameof(GerarSenha))]
+        public async Task<HttpResponseData> GerarSenha([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "jogadores/{steamId}/gerar-senha")] HttpRequestData httpRequest,
+            string steamId)
+        {
+            try
+            {
+                var claimsPrincipal = httpRequest.CurrentUser();
+                if (claimsPrincipal == null)
+                    return httpRequest.Unauthorized();
+
+                await _authContext.FillUserAsync(claimsPrincipal);
+                _authContext.GrantPermission();
+
+                var model = await _servicoSenhaJogador.GerarSenhaAsync(steamId);
+
+                return await httpRequest.OkAsync(model);
             }
             catch (UnauthorizedAccessException)
             {
