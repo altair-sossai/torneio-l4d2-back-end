@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using TorneioLeft4Dead2.Jogadores.Commands;
 using TorneioLeft4Dead2.Jogadores.Entidades;
 using TorneioLeft4Dead2.Jogadores.Models;
 using TorneioLeft4Dead2.Jogadores.Repositorios;
@@ -28,6 +29,15 @@ namespace TorneioLeft4Dead2.Storage.Jogadores.Repositorios
             await InsertOrMergeAsync(entity);
 
             return model;
+        }
+
+        public async Task<bool> VerificarAutenticacaoAsync(AutenticarJogadorCommand command)
+        {
+            var entity = await GetByRowKeyAsync(command.SteamId);
+            if (entity == null)
+                return false;
+
+            return entity.SenhaCriptografada == command.SenhaCriptografada;
         }
     }
 }

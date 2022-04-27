@@ -112,6 +112,29 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
             }
         }
 
+        [Function(nameof(JogadoresFunction) + "_" + nameof(VerificarAutenticacao))]
+        public async Task<HttpResponseData> VerificarAutenticacao([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "jogadores/verificar-autenticacao")] HttpRequestData httpRequest)
+        {
+            try
+            {
+                var command = httpRequest.AutenticarJogadorCommand();
+                if (command == null)
+                    return httpRequest.Unauthorized();
+
+                var autenticado = await _servicoSenhaJogador.VerificarAutenticacaoAsync(command);
+
+                return await httpRequest.OkAsync(new {autenticado});
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return httpRequest.Unauthorized();
+            }
+            catch (Exception exception)
+            {
+                return await httpRequest.BadRequestAsync(exception);
+            }
+        }
+
         [Function(nameof(JogadoresFunction) + "_" + nameof(Delete))]
         public async Task<HttpResponseData> Delete([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "jogadores/{steamId}")] HttpRequestData httpRequest,
             string steamId)

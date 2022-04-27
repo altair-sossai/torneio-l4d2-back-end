@@ -9,6 +9,7 @@ using Azure.Core.Serialization;
 using Microsoft.Azure.Functions.Worker.Http;
 using Newtonsoft.Json;
 using TorneioLeft4Dead2.Auth.Jwt;
+using TorneioLeft4Dead2.Jogadores.Commands;
 using TorneioLeft4Dead2FunctionApp.Exceptions;
 
 namespace TorneioLeft4Dead2FunctionApp.Extensions
@@ -81,6 +82,17 @@ namespace TorneioLeft4Dead2FunctionApp.Extensions
             var accessToken = authorization.Split(" ").Last();
 
             return UsuarioJwtService.IsValidToken(accessToken) ? UsuarioJwtService.ClaimsPrincipal(accessToken) : null;
+        }
+
+        public static AutenticarJogadorCommand AutenticarJogadorCommand(this HttpRequestData httpRequest)
+        {
+            var values = httpRequest.Headers.GetValues("Authorization").ToList();
+            if (values.Count == 0)
+                return null;
+
+            var authorization = values.First();
+
+            return new AutenticarJogadorCommand(authorization);
         }
     }
 }
