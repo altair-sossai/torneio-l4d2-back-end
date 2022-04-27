@@ -1,4 +1,5 @@
 [![Build Status](https://dev.azure.com/altairsossai/Torneio%20L4D2/_apis/build/status/build-azure-functions?branchName=master)](https://dev.azure.com/altairsossai/Torneio%20L4D2/_build/latest?definitionId=21&branchName=master)
+[![Release Status](https://vsrm.dev.azure.com/altairsossai/_apis/public/Release/badge/59d9b252-ba33-43e4-b3c5-b8b204c4dfae/1/1)](https://dev.azure.com/altairsossai/Torneio%20L4D2/_release?_a=releases&view=mine&definitionId=1)
 
 # Torneio de Left 4 Dead 2
 
