@@ -117,7 +117,7 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
         {
             try
             {
-                var command = httpRequest.AutenticarJogadorCommand();
+                var command = await httpRequest.DeserializeBodyAsync<AutenticarJogadorCommand>();
                 if (command == null)
                     return httpRequest.Unauthorized();
 

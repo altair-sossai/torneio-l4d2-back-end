@@ -84,7 +84,7 @@ namespace TorneioLeft4Dead2FunctionApp.Extensions
             return UsuarioJwtService.IsValidToken(accessToken) ? UsuarioJwtService.ClaimsPrincipal(accessToken) : null;
         }
 
-        public static AutenticarJogadorCommand AutenticarJogadorCommand(this HttpRequestData httpRequest)
+        public static AutenticarJogadorCommand BuildAutenticarJogadorCommand(this HttpRequestData httpRequest)
         {
             var values = httpRequest.Headers.GetValues("Authorization").ToList();
             if (values.Count == 0)
@@ -92,7 +92,7 @@ namespace TorneioLeft4Dead2FunctionApp.Extensions
 
             var authorization = values.First();
 
-            return new AutenticarJogadorCommand(authorization);
+            return AutenticarJogadorCommand.Parse(authorization);
         }
     }
 }
