@@ -7,7 +7,7 @@ using TorneioLeft4Dead2.Storage.UnitOfWork.Repositories;
 
 namespace TorneioLeft4Dead2.Storage.DataConfronto.Repositorios
 {
-    internal class RepositorioPeriodoConfrontoStorage : BaseRepository<PeriodoConfrontoEntity>, IRepositorioPeriodoConfronto
+    public class RepositorioPeriodoConfrontoStorage : BaseRepository<PeriodoConfrontoEntity>, IRepositorioPeriodoConfronto
     {
         private const string TableName = "PeriodosConfrontos";
 
@@ -24,11 +24,6 @@ namespace TorneioLeft4Dead2.Storage.DataConfronto.Repositorios
         public async Task<PeriodoConfrontoEntity> SalvarAsync(PeriodoConfrontoEntity entity)
         {
             return await InsertOrMergeAsync(entity);
-        }
-
-        public async Task ExcluirPorConfrontoAsync(Guid confrontoId)
-        {
-            await DeleteAsync(confrontoId);
         }
     }
 }

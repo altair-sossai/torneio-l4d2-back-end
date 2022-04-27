@@ -4,6 +4,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using TorneioLeft4Dead2.Auth.Context;
 using TorneioLeft4Dead2.DataConfronto.Commands;
+using TorneioLeft4Dead2.DataConfronto.Models;
 using TorneioLeft4Dead2.DataConfronto.Servicos;
 using TorneioLeft4Dead2FunctionApp.Extensions;
 
@@ -25,10 +26,8 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
         public async Task<HttpResponseData> Get([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "confrontos/{confrontoId:guid}/periodo")] HttpRequestData httpRequest,
             Guid confrontoId)
         {
-            var model = await _servicoPeriodoConfronto.ObterPorConfrontoAsync(confrontoId);
-
-            if (model == null)
-                return httpRequest.NotFound();
+            var model = await _servicoPeriodoConfronto.ObterPorConfrontoAsync(confrontoId)
+                        ?? PeriodoConfrontoModel.Empty(confrontoId);
 
             return await httpRequest.OkAsync(model);
         }
