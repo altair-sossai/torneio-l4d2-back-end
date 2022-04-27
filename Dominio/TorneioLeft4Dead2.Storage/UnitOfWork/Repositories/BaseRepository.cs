@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos.Table;
@@ -16,6 +17,11 @@ namespace TorneioLeft4Dead2.Storage.UnitOfWork.Repositories
         {
             _unitOfWork = unitOfWork;
             _tableName = tableName;
+        }
+
+        protected async Task<T> GetByRowKeyAsync(Guid rowKey)
+        {
+            return await GetByRowKeyAsync(rowKey.ToString());
         }
 
         protected async Task<T> GetByRowKeyAsync(string rowKey)
@@ -46,6 +52,11 @@ namespace TorneioLeft4Dead2.Storage.UnitOfWork.Repositories
             var result = tableResult.Result as T;
 
             return result;
+        }
+
+        protected async Task DeleteAsync(Guid rowKey)
+        {
+            await DeleteAsync(rowKey.ToString());
         }
 
         protected async Task DeleteAsync(string rowKey)
