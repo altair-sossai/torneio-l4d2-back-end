@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/altairsossai/Torneio%20L4D2/_apis/build/status/build-azure-functions?branchName=master)](https://dev.azure.com/altairsossai/Torneio%20L4D2/_build/latest?definitionId=21&branchName=master)
+
 # Torneio de Left 4 Dead 2
 
 A comunidade de **Left 4 Dead 2** onde estou inserido se organizou para realizar um campeonato com o objetivo de fortalecer as amizades dentro e fora do jogo. O torneio utiliza a regra de pontos corridos para definir os vencedores, algo muito parecido com o que acontece nos campeonatos de futebol.
