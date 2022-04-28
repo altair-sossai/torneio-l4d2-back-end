@@ -11,7 +11,7 @@ namespace TorneioLeft4Dead2.DataConfronto.Servicos
     {
         Task<List<SugestaoDataConfrontoModel>> ObterPorConfrontoAsync(Guid confrontoId);
         Task<List<SugestaoDataConfrontoEntity>> SalvarAsync(Guid confrontoId, List<SugestaoDataConfrontoCommand> commands);
-        Task<SugestaoDataConfrontoEntity> SalvarAsync(Guid confrontoId, SugestaoDataConfrontoCommand command);
+        Task SugerirNovaDataAsync(NovaSugestaoDataCommand command);
         Task ExcluirPorConfrontoAsync(Guid confrontoId);
     }
 }

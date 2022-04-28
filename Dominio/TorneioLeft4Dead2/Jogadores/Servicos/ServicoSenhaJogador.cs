@@ -19,9 +19,9 @@ namespace TorneioLeft4Dead2.Jogadores.Servicos
             return await _repositorioSenhaJogador.GerarSenhaAsync(steamId);
         }
 
-        public async Task<bool> VerificarAutenticacaoAsync(AutenticarJogadorCommand command)
+        public async Task<bool> AutenticadoAsync(AutenticarJogadorCommand command)
         {
-            return await _repositorioSenhaJogador.VerificarAutenticacaoAsync(command);
+            return await _repositorioSenhaJogador.AutenticadoAsync(command);
         }
     }
 }

@@ -4,26 +4,38 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
+using TorneioLeft4Dead2.Confrontos.Repositorios;
 using TorneioLeft4Dead2.DataConfronto.Commands;
 using TorneioLeft4Dead2.DataConfronto.Entidades;
+using TorneioLeft4Dead2.DataConfronto.Enums;
 using TorneioLeft4Dead2.DataConfronto.Models;
 using TorneioLeft4Dead2.DataConfronto.Repositorios;
+using TorneioLeft4Dead2.Times.Servicos;
 
 namespace TorneioLeft4Dead2.DataConfronto.Servicos
 {
     public class ServicoSugestaoDataConfronto : IServicoSugestaoDataConfronto
     {
         private readonly IMapper _mapper;
+        private readonly IRepositorioConfronto _repositorioConfronto;
         private readonly IRepositorioSugestaoDataConfronto _repositorioSugestaoDataConfronto;
+        private readonly IServicoTime _servicoTime;
+        private readonly IValidator<NovaSugestaoDataCommand> _sugerirNovaDataValidator;
         private readonly IValidator<SugestaoDataConfrontoEntity> _validator;
 
         public ServicoSugestaoDataConfronto(IMapper mapper,
             IRepositorioSugestaoDataConfronto repositorioSugestaoDataConfronto,
-            IValidator<SugestaoDataConfrontoEntity> validator)
+            IRepositorioConfronto repositorioConfronto,
+            IServicoTime servicoTime,
+            IValidator<SugestaoDataConfrontoEntity> validator,
+            IValidator<NovaSugestaoDataCommand> sugerirNovaDataValidator)
         {
             _mapper = mapper;
             _repositorioSugestaoDataConfronto = repositorioSugestaoDataConfronto;
+            _repositorioConfronto = repositorioConfronto;
+            _servicoTime = servicoTime;
             _validator = validator;
+            _sugerirNovaDataValidator = sugerirNovaDataValidator;
         }
 
         public async Task<List<SugestaoDataConfrontoModel>> ObterPorConfrontoAsync(Guid confrontoId)
@@ -48,7 +60,31 @@ namespace TorneioLeft4Dead2.DataConfronto.Servicos
             return entities;
         }
 
-        public async Task<SugestaoDataConfrontoEntity> SalvarAsync(Guid confrontoId, SugestaoDataConfrontoCommand command)
+        public async Task SugerirNovaDataAsync(NovaSugestaoDataCommand command)
+        {
+            await _sugerirNovaDataValidator.ValidateAndThrowAsync(command);
+
+            var confronto = await _repositorioConfronto.ObterPorIdAsync(command.ConfrontoId);
+            var timeA = await _servicoTime.ObterPorCodigoAsync(confronto.CodigoTimeA);
+            var cadastradoPor = command.SteamId == timeA.Capitao.SteamId ? CadastradoPor.TimeA : CadastradoPor.TimeB;
+
+            var sugestaoCommand = new SugestaoDataConfrontoCommand
+            {
+                Data = command.Data,
+                CadastradoPor = cadastradoPor,
+                RespostaTimeA = cadastradoPor == CadastradoPor.TimeA ? RespostaTime.Aceitou : RespostaTime.SemResposta,
+                RespostaTimeB = cadastradoPor == CadastradoPor.TimeB ? RespostaTime.Aceitou : RespostaTime.SemResposta
+            };
+
+            await SalvarAsync(command.ConfrontoId, sugestaoCommand);
+        }
+
+        public async Task ExcluirPorConfrontoAsync(Guid confrontoId)
+        {
+            await _repositorioSugestaoDataConfronto.ExcluirPorConfrontoAsync(confrontoId);
+        }
+
+        private async Task<SugestaoDataConfrontoEntity> SalvarAsync(Guid confrontoId, SugestaoDataConfrontoCommand command)
         {
             var entity = _mapper.Map<SugestaoDataConfrontoEntity>(command);
 
@@ -58,11 +94,6 @@ namespace TorneioLeft4Dead2.DataConfronto.Servicos
             await _repositorioSugestaoDataConfronto.SalvarAsync(entity);
 
             return entity;
-        }
-
-        public async Task ExcluirPorConfrontoAsync(Guid confrontoId)
-        {
-            await _repositorioSugestaoDataConfronto.ExcluirPorConfrontoAsync(confrontoId);
         }
     }
 }

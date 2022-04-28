@@ -7,6 +7,6 @@ namespace TorneioLeft4Dead2.Jogadores.Repositorios
     public interface IRepositorioSenhaJogador
     {
         Task<SenhaJogadorModel> GerarSenhaAsync(string steamId);
-        Task<bool> VerificarAutenticacaoAsync(AutenticarJogadorCommand command);
+        Task<bool> AutenticadoAsync(AutenticarJogadorCommand command);
     }
 }

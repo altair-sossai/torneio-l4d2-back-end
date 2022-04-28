@@ -121,7 +121,7 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
                 if (command == null)
                     return httpRequest.Unauthorized();
 
-                var autenticado = await _servicoSenhaJogador.VerificarAutenticacaoAsync(command);
+                var autenticado = await _servicoSenhaJogador.AutenticadoAsync(command);
 
                 return await httpRequest.OkAsync(new {autenticado});
             }

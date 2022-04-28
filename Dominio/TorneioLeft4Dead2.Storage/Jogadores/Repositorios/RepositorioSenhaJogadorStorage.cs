@@ -31,7 +31,7 @@ namespace TorneioLeft4Dead2.Storage.Jogadores.Repositorios
             return model;
         }
 
-        public async Task<bool> VerificarAutenticacaoAsync(AutenticarJogadorCommand command)
+        public async Task<bool> AutenticadoAsync(AutenticarJogadorCommand command)
         {
             var entity = await GetByRowKeyAsync(command.SteamId);
             if (entity == null)

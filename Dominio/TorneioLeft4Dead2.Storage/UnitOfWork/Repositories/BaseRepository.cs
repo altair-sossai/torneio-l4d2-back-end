@@ -68,6 +68,11 @@ namespace TorneioLeft4Dead2.Storage.UnitOfWork.Repositories
             return result;
         }
 
+        protected async Task DeleteAsync(Guid rowKey)
+        {
+            await DeleteAsync(rowKey.ToString().ToLower());
+        }
+
         protected async Task DeleteAsync(string rowKey)
         {
             var cloudTable = await _unitOfWork.GetTableReferenceAsync(_tableName);
