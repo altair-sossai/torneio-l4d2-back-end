@@ -49,5 +49,34 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
                 return await httpRequest.BadRequestAsync(exception);
             }
         }
+
+        [Function(nameof(SugestoesDatasConfrontosFunction) + "_" + nameof(ResponderSugestaoData))]
+        public async Task<HttpResponseData> ResponderSugestaoData([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "confrontos/{confrontoId:guid}/responder-sugestao-data")] HttpRequestData httpRequest,
+            Guid confrontoId)
+        {
+            try
+            {
+                var currentUser = httpRequest.BuildAutenticarJogadorCommand();
+                if (currentUser == null || !await _servicoSenhaJogador.AutenticadoAsync(currentUser))
+                    return httpRequest.Unauthorized();
+
+                var command = await httpRequest.DeserializeBodyAsync<ResponderSugestaoDataCommand>();
+
+                command.SteamId = currentUser.SteamId;
+                command.ConfrontoId = confrontoId;
+
+                await _servicoSugestaoDataConfronto.ResponderSugestaoDataAsync(command);
+
+                return httpRequest.Ok();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return httpRequest.Unauthorized();
+            }
+            catch (Exception exception)
+            {
+                return await httpRequest.BadRequestAsync(exception);
+            }
+        }
     }
 }

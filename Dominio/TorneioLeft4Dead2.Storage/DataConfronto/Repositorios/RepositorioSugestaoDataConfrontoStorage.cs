@@ -18,6 +18,11 @@ namespace TorneioLeft4Dead2.Storage.DataConfronto.Repositorios
         {
         }
 
+        public async Task<SugestaoDataConfrontoEntity> ObterPorIdAsync(Guid sugestaoId)
+        {
+            return await GetByRowKeyAsync(sugestaoId);
+        }
+
         public async Task<List<SugestaoDataConfrontoEntity>> ObterPorConfrontoAsync(Guid confrontoId)
         {
             var entities = await GetAllFromPartitionKeyAsync(confrontoId);
