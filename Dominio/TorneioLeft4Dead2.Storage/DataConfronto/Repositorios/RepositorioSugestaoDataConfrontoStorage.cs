@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TorneioLeft4Dead2.DataConfronto.Entidades;
 using TorneioLeft4Dead2.DataConfronto.Repositorios;
 using TorneioLeft4Dead2.Storage.UnitOfWork;
-using TorneioLeft4Dead2.Storage.UnitOfWork.Commands;
 using TorneioLeft4Dead2.Storage.UnitOfWork.Repositories;
 
 namespace TorneioLeft4Dead2.Storage.DataConfronto.Repositorios
@@ -20,12 +20,9 @@ namespace TorneioLeft4Dead2.Storage.DataConfronto.Repositorios
 
         public async Task<List<SugestaoDataConfrontoEntity>> ObterPorConfrontoAsync(Guid confrontoId)
         {
-            const string nome = nameof(SugestaoDataConfrontoEntity.Data);
+            var entities = await GetAllFromPartitionKeyAsync(confrontoId);
 
-            var queryCommand = QueryCommand.Default
-                .OrderBy(nome);
-
-            return await GetAllAsync(queryCommand);
+            return entities.OrderBy(o => o.Data).ToList();
         }
 
         public async Task<SugestaoDataConfrontoEntity> SalvarAsync(SugestaoDataConfrontoEntity entity)
@@ -35,7 +32,7 @@ namespace TorneioLeft4Dead2.Storage.DataConfronto.Repositorios
 
         public async Task ExcluirPorConfrontoAsync(Guid confrontoId)
         {
-            await DeleteAsync(confrontoId);
+            await DeleteAllFromPartitionKeyAsync(confrontoId);
         }
     }
 }

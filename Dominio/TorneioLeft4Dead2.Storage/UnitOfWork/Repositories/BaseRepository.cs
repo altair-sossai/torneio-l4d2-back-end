@@ -21,7 +21,7 @@ namespace TorneioLeft4Dead2.Storage.UnitOfWork.Repositories
 
         protected async Task<T> GetByRowKeyAsync(Guid rowKey)
         {
-            return await GetByRowKeyAsync(rowKey.ToString());
+            return await GetByRowKeyAsync(rowKey.ToString().ToLower());
         }
 
         protected async Task<T> GetByRowKeyAsync(string rowKey)
@@ -32,6 +32,20 @@ namespace TorneioLeft4Dead2.Storage.UnitOfWork.Repositories
             var entities = cloudTable.ExecuteQuery(tableQuery);
 
             return entities.FirstOrDefault();
+        }
+
+        protected async Task<List<T>> GetAllFromPartitionKeyAsync(Guid partitionKey)
+        {
+            return await GetAllFromPartitionKeyAsync(partitionKey.ToString().ToLower());
+        }
+
+        private async Task<List<T>> GetAllFromPartitionKeyAsync(string partitionKey)
+        {
+            var cloudTable = await _unitOfWork.GetTableReferenceAsync(_tableName);
+            var filter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey);
+            var tableQuery = new TableQuery<T>().Where(filter);
+
+            return cloudTable.ExecuteQuery(tableQuery).ToList();
         }
 
         protected async Task<List<T>> GetAllAsync(QueryCommand queryCommand)
@@ -54,15 +68,25 @@ namespace TorneioLeft4Dead2.Storage.UnitOfWork.Repositories
             return result;
         }
 
-        protected async Task DeleteAsync(Guid rowKey)
-        {
-            await DeleteAsync(rowKey.ToString());
-        }
-
         protected async Task DeleteAsync(string rowKey)
         {
             var cloudTable = await _unitOfWork.GetTableReferenceAsync(_tableName);
             var filter = TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, rowKey);
+            var tableQuery = new TableQuery<T>().Where(filter);
+
+            foreach (var entity in cloudTable.ExecuteQuery(tableQuery))
+                await DeleteAsync(entity);
+        }
+
+        protected async Task DeleteAllFromPartitionKeyAsync(Guid partitionKey)
+        {
+            await DeleteAllFromPartitionKeyAsync(partitionKey.ToString().ToLower());
+        }
+
+        private async Task DeleteAllFromPartitionKeyAsync(string partitionKey)
+        {
+            var cloudTable = await _unitOfWork.GetTableReferenceAsync(_tableName);
+            var filter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey);
             var tableQuery = new TableQuery<T>().Where(filter);
 
             foreach (var entity in cloudTable.ExecuteQuery(tableQuery))
