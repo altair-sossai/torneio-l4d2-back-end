@@ -14,5 +14,6 @@ namespace TorneioLeft4Dead2.DataConfronto.Servicos
         Task SugerirNovaDataAsync(NovaSugestaoDataCommand command);
         Task ResponderSugestaoDataAsync(ResponderSugestaoDataCommand command);
         Task ExcluirPorConfrontoAsync(Guid confrontoId);
+        Task ExcluirSugestaoDataAsync(Guid confrontoId, Guid sugestaoId, string steamId);
     }
 }

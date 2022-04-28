@@ -39,5 +39,10 @@ namespace TorneioLeft4Dead2.Storage.DataConfronto.Repositorios
         {
             await DeleteAllFromPartitionKeyAsync(confrontoId);
         }
+
+        public async Task ExcluirPorIdAsync(Guid sugestaoId)
+        {
+            await DeleteAsync(sugestaoId);
+        }
     }
 }

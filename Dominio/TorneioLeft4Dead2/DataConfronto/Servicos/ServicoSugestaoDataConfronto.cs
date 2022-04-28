@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
+using TorneioLeft4Dead2.Confrontos.Enums;
 using TorneioLeft4Dead2.Confrontos.Repositorios;
 using TorneioLeft4Dead2.DataConfronto.Commands;
 using TorneioLeft4Dead2.DataConfronto.Entidades;
@@ -101,6 +102,31 @@ namespace TorneioLeft4Dead2.DataConfronto.Servicos
         public async Task ExcluirPorConfrontoAsync(Guid confrontoId)
         {
             await _repositorioSugestaoDataConfronto.ExcluirPorConfrontoAsync(confrontoId);
+        }
+
+        public async Task ExcluirSugestaoDataAsync(Guid confrontoId, Guid sugestaoId, string steamId)
+        {
+            var confronto = await _repositorioConfronto.ObterPorIdAsync(confrontoId);
+            if (confronto is not {Status: (int) StatusConfronto.Aguardando})
+                return;
+
+            var timeA = await _servicoTime.ObterPorCodigoAsync(confronto.CodigoTimeA);
+            var timeB = await _servicoTime.ObterPorCodigoAsync(confronto.CodigoTimeB);
+            if (timeA.Capitao.SteamId != steamId && timeB.Capitao.SteamId != steamId)
+                return;
+
+            var sugestao = await _repositorioSugestaoDataConfronto.ObterPorIdAsync(sugestaoId);
+
+            if (sugestao.ConfrontoId != confrontoId)
+                return;
+
+            if (timeA.Capitao.SteamId == steamId && sugestao.CadastradoPor != (int) CadastradoPor.TimeA)
+                return;
+
+            if (timeB.Capitao.SteamId == steamId && sugestao.CadastradoPor != (int) CadastradoPor.TimeB)
+                return;
+
+            await _repositorioSugestaoDataConfronto.ExcluirPorIdAsync(sugestaoId);
         }
 
         private async Task<SugestaoDataConfrontoEntity> SalvarAsync(Guid confrontoId, SugestaoDataConfrontoCommand command)
