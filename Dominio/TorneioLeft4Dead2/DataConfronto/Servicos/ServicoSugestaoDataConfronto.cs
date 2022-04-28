@@ -117,7 +117,7 @@ namespace TorneioLeft4Dead2.DataConfronto.Servicos
 
             var sugestao = await _repositorioSugestaoDataConfronto.ObterPorIdAsync(sugestaoId);
 
-            if (sugestao.ConfrontoId != confrontoId)
+            if (sugestao.ConfrontoId != confrontoId || sugestao.CadastradoPor == (int) CadastradoPor.Administrador)
                 return;
 
             if (timeA.Capitao.SteamId == steamId && sugestao.CadastradoPor != (int) CadastradoPor.TimeA)

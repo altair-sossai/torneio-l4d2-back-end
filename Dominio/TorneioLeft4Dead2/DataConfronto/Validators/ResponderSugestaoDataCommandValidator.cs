@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using TorneioLeft4Dead2.Confrontos.Enums;
 using TorneioLeft4Dead2.Confrontos.Repositorios;
 using TorneioLeft4Dead2.DataConfronto.Commands;
-using TorneioLeft4Dead2.DataConfronto.Servicos;
+using TorneioLeft4Dead2.DataConfronto.Repositorios;
 using TorneioLeft4Dead2.Times.Servicos;
 
 namespace TorneioLeft4Dead2.DataConfronto.Validators
@@ -14,15 +13,15 @@ namespace TorneioLeft4Dead2.DataConfronto.Validators
     public class ResponderSugestaoDataCommandValidator : AbstractValidator<ResponderSugestaoDataCommand>
     {
         private readonly IRepositorioConfronto _repositorioConfronto;
-        private readonly IServicoPeriodoConfronto _servicoPeriodoConfronto;
+        private readonly IRepositorioSugestaoDataConfronto _repositorioSugestaoDataConfronto;
         private readonly IServicoTime _servicoTime;
 
         public ResponderSugestaoDataCommandValidator(IRepositorioConfronto repositorioConfronto,
-            IServicoPeriodoConfronto servicoPeriodoConfronto,
+            IRepositorioSugestaoDataConfronto repositorioSugestaoDataConfronto,
             IServicoTime servicoTime)
         {
             _repositorioConfronto = repositorioConfronto;
-            _servicoPeriodoConfronto = servicoPeriodoConfronto;
+            _repositorioSugestaoDataConfronto = repositorioSugestaoDataConfronto;
             _servicoTime = servicoTime;
 
             RuleFor(r => r.ConfrontoId)
@@ -56,9 +55,11 @@ namespace TorneioLeft4Dead2.DataConfronto.Validators
 
         private async Task<bool> ExisteNoConfrontoAsync(ResponderSugestaoDataCommand command, Guid sugestaoId, CancellationToken cancellationToken)
         {
-            var periodo = await _servicoPeriodoConfronto.ObterPorConfrontoAsync(command.ConfrontoId);
+            var sugestao = await _repositorioSugestaoDataConfronto.ObterPorIdAsync(sugestaoId);
+            if (sugestao == null)
+                return false;
 
-            return periodo?.Sugestoes.Any(s => s.Id == sugestaoId) ?? false;
+            return sugestao.ConfrontoId == command.ConfrontoId;
         }
 
         private async Task<bool> ExisteComoCapitaoEmUmaDasEquipesDoConfrontoAsync(ResponderSugestaoDataCommand command, string steamId, CancellationToken cancellationToken)
