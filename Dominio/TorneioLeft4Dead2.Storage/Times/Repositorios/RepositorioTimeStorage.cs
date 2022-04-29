@@ -25,12 +25,9 @@ namespace TorneioLeft4Dead2.Storage.Times.Repositorios
 
         public async Task<List<TimeEntity>> ObterTimesAsync()
         {
-            const string codigo = nameof(TimeEntity.Codigo);
+            var entities = await GetAllAsync(QueryCommand.Default);
 
-            var queryCommand = QueryCommand.Default
-                .OrderBy(codigo);
-
-            return await GetAllAsync(queryCommand);
+            return entities.OrderBy(o => o.Codigo).ToList();
         }
 
         public async Task<List<TimeEntity>> ObterClassificacaoAsync()

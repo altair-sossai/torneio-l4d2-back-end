@@ -86,7 +86,7 @@ namespace TorneioLeft4Dead2FunctionApp.Extensions
 
         public static AutenticarJogadorCommand BuildAutenticarJogadorCommand(this HttpRequestData httpRequest)
         {
-            var values = httpRequest.Headers.GetValues("Authorization").ToList();
+            var values = httpRequest.Headers.GetValues("Capitao").ToList();
             if (values.Count == 0)
                 return null;
 

@@ -29,13 +29,13 @@ namespace TorneioLeft4Dead2.Storage.Times.Repositorios
         public async Task<List<TimeJogadorEntity>> ObterPorTimeAsync(string codigo)
         {
             const string time = nameof(TimeJogadorEntity.Time);
-            const string ordem = nameof(TimeJogadorEntity.Ordem);
 
             var queryCommand = QueryCommand.Default
-                .Where(time, codigo)
-                .OrderBy(ordem);
+                .Where(time, codigo);
 
-            return await GetAllAsync(queryCommand);
+            var entities = await GetAllAsync(queryCommand);
+
+            return entities.OrderBy(o => o.Ordem).ToList();
         }
 
         public async Task<TimeJogadorEntity> SalvarAsync(TimeJogadorEntity entity)

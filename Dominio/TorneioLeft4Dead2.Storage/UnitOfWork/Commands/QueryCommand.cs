@@ -4,7 +4,6 @@ namespace TorneioLeft4Dead2.Storage.UnitOfWork.Commands
 {
     public class QueryCommand
     {
-        private string _orderBy;
         private string _where;
         public static QueryCommand Default => new();
 
@@ -15,16 +14,9 @@ namespace TorneioLeft4Dead2.Storage.UnitOfWork.Commands
             return Where(where);
         }
 
-        public QueryCommand Where(string where)
+        private QueryCommand Where(string where)
         {
             _where = where;
-
-            return this;
-        }
-
-        public QueryCommand OrderBy(string orderBy)
-        {
-            _orderBy = orderBy;
 
             return this;
         }
@@ -35,9 +27,6 @@ namespace TorneioLeft4Dead2.Storage.UnitOfWork.Commands
 
             if (!string.IsNullOrEmpty(_where))
                 tableQuery = tableQuery.Where(_where);
-
-            if (!string.IsNullOrEmpty(_orderBy))
-                tableQuery = tableQuery.OrderBy(_orderBy);
 
             return tableQuery;
         }
