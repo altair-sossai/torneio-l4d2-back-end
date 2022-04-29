@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
@@ -11,6 +12,8 @@ using TorneioLeft4Dead2.Confrontos.Enums;
 using TorneioLeft4Dead2.Confrontos.Extensions;
 using TorneioLeft4Dead2.Confrontos.Models;
 using TorneioLeft4Dead2.Confrontos.Repositorios;
+using TorneioLeft4Dead2.DataConfronto.Enums;
+using TorneioLeft4Dead2.DataConfronto.Repositorios;
 using TorneioLeft4Dead2.Times.Extensions;
 using TorneioLeft4Dead2.Times.Repositorios;
 using TorneioLeft4Dead2.Times.Servicos;
@@ -22,6 +25,7 @@ namespace TorneioLeft4Dead2.Confrontos.Servicos
         private readonly IMapper _mapper;
         private readonly IRepositorioCampanha _repositorioCampanha;
         private readonly IRepositorioConfronto _repositorioConfronto;
+        private readonly IRepositorioSugestaoDataConfronto _repositorioSugestaoDataConfronto;
         private readonly IRepositorioTime _repositorioTime;
         private readonly IServicoTime _servicoTime;
         private readonly IValidator<ConfrontoEntity> _validator;
@@ -31,7 +35,8 @@ namespace TorneioLeft4Dead2.Confrontos.Servicos
             IRepositorioConfronto repositorioConfronto,
             IRepositorioCampanha repositorioCampanha,
             IServicoTime servicoTime,
-            IRepositorioTime repositorioTime)
+            IRepositorioTime repositorioTime,
+            IRepositorioSugestaoDataConfronto repositorioSugestaoDataConfronto)
         {
             _mapper = mapper;
             _validator = validator;
@@ -39,6 +44,7 @@ namespace TorneioLeft4Dead2.Confrontos.Servicos
             _repositorioCampanha = repositorioCampanha;
             _servicoTime = servicoTime;
             _repositorioTime = repositorioTime;
+            _repositorioSugestaoDataConfronto = repositorioSugestaoDataConfronto;
         }
 
         public async Task<ConfrontoEntity> ObterPorIdAsync(Guid confrontoId)
@@ -81,6 +87,21 @@ namespace TorneioLeft4Dead2.Confrontos.Servicos
             await AtualizarPlacarAsync();
 
             return entity;
+        }
+
+        public async Task AgendarConfrontoAsync(Guid confrontoId)
+        {
+            var sugestoes = await _repositorioSugestaoDataConfronto.ObterPorConfrontoAsync(confrontoId);
+            var sugestao = sugestoes
+                .Where(w => w.RespostaTimeA == (int) RespostaTime.Aceitou && w.RespostaTimeB == (int) RespostaTime.Aceitou)
+                .OrderBy(o => o.Data)
+                .FirstOrDefault();
+
+            var confronto = await _repositorioConfronto.ObterPorIdAsync(confrontoId);
+            confronto.Data = sugestao?.Data;
+
+            await _repositorioConfronto.ExcluirAsync(confrontoId);
+            await _repositorioConfronto.SalvarAsync(confronto);
         }
 
         public async Task GerarConfrontosAsync()

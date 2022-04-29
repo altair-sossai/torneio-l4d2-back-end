@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using TorneioLeft4Dead2.Confrontos.Servicos;
 using TorneioLeft4Dead2.DataConfronto.Commands;
 using TorneioLeft4Dead2.DataConfronto.Servicos;
 using TorneioLeft4Dead2.Jogadores.Servicos;
@@ -13,12 +14,15 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
     {
         private readonly IServicoSenhaJogador _servicoSenhaJogador;
         private readonly IServicoSugestaoDataConfronto _servicoSugestaoDataConfronto;
+        private readonly IServicoConfronto _servicoConfronto;
 
         public SugestoesDatasConfrontosFunction(IServicoSenhaJogador servicoSenhaJogador,
-            IServicoSugestaoDataConfronto servicoSugestaoDataConfronto)
+            IServicoSugestaoDataConfronto servicoSugestaoDataConfronto,
+            IServicoConfronto servicoConfronto)
         {
             _servicoSenhaJogador = servicoSenhaJogador;
             _servicoSugestaoDataConfronto = servicoSugestaoDataConfronto;
+            _servicoConfronto = servicoConfronto;
         }
 
         [Function(nameof(SugestoesDatasConfrontosFunction) + "_" + nameof(SugerirNovaData))]
@@ -37,6 +41,7 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
                 command.ConfrontoId = confrontoId;
 
                 await _servicoSugestaoDataConfronto.SugerirNovaDataAsync(command);
+                await _servicoConfronto.AgendarConfrontoAsync(confrontoId);
 
                 return httpRequest.Ok();
             }
@@ -67,6 +72,7 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
                 command.SteamId = currentUser.SteamId;
 
                 await _servicoSugestaoDataConfronto.ResponderSugestaoDataAsync(command);
+                await _servicoConfronto.AgendarConfrontoAsync(confrontoId);
 
                 return httpRequest.Ok();
             }
@@ -91,6 +97,7 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
                     return httpRequest.Unauthorized();
 
                 await _servicoSugestaoDataConfronto.ExcluirSugestaoDataAsync(confrontoId, sugestaoId, currentUser.SteamId);
+                await _servicoConfronto.AgendarConfrontoAsync(confrontoId);
 
                 return httpRequest.Ok();
             }

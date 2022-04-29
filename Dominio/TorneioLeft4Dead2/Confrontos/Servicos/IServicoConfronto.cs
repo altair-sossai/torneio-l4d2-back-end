@@ -13,6 +13,7 @@ namespace TorneioLeft4Dead2.Confrontos.Servicos
         Task<List<RodadaModel>> ObterRodadasAsync();
         Task<List<ConfrontoModel>> ObterConfrontosAsync();
         Task<ConfrontoEntity> SalvarAsync(ConfrontoCommand command);
+        Task AgendarConfrontoAsync(Guid confrontoId);
         Task GerarConfrontosAsync();
         Task ExcluirAsync(Guid confrontoId);
     }
