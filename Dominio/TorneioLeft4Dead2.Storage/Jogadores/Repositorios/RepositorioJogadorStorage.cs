@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using TorneioLeft4Dead2.Jogadores.Entidades;
 using TorneioLeft4Dead2.Jogadores.Repositorios;
 using TorneioLeft4Dead2.Storage.UnitOfWork;
@@ -13,8 +14,8 @@ namespace TorneioLeft4Dead2.Storage.Jogadores.Repositorios
     {
         private const string TableName = "Jogadores";
 
-        public RepositorioJogadorStorage(UnitOfWorkStorage unitOfWork)
-            : base(unitOfWork, TableName)
+        public RepositorioJogadorStorage(UnitOfWorkStorage unitOfWork, IMemoryCache memoryCache)
+            : base(unitOfWork, TableName, memoryCache)
         {
         }
 

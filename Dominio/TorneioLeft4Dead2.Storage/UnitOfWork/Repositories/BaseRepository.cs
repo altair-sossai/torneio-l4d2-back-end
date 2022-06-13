@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos.Table;
+using Microsoft.Extensions.Caching.Memory;
+using TorneioLeft4Dead2.Shared.Extensions;
 using TorneioLeft4Dead2.Storage.UnitOfWork.Commands;
 
 namespace TorneioLeft4Dead2.Storage.UnitOfWork.Repositories
@@ -10,13 +12,15 @@ namespace TorneioLeft4Dead2.Storage.UnitOfWork.Repositories
     public abstract class BaseRepository<T>
         where T : TableEntity, new()
     {
+        private readonly IMemoryCache _memoryCache;
         private readonly string _tableName;
         private readonly UnitOfWorkStorage _unitOfWork;
 
-        protected BaseRepository(UnitOfWorkStorage unitOfWork, string tableName)
+        protected BaseRepository(UnitOfWorkStorage unitOfWork, string tableName, IMemoryCache memoryCache)
         {
             _unitOfWork = unitOfWork;
             _tableName = tableName;
+            _memoryCache = memoryCache;
         }
 
         protected async Task<T> GetByRowKeyAsync(Guid rowKey)
@@ -65,6 +69,8 @@ namespace TorneioLeft4Dead2.Storage.UnitOfWork.Repositories
             var tableResult = await cloudTable.ExecuteAsync(tableOperation);
             var result = tableResult.Result as T;
 
+            _memoryCache.RemoveAllKeys();
+
             return result;
         }
 
@@ -103,6 +109,8 @@ namespace TorneioLeft4Dead2.Storage.UnitOfWork.Repositories
             var cloudTable = await _unitOfWork.GetTableReferenceAsync(_tableName);
             var tableOperation = TableOperation.Delete(entity);
 
+            _memoryCache.RemoveAllKeys();
+
             await cloudTable.ExecuteAsync(tableOperation);
         }
 
@@ -116,6 +124,8 @@ namespace TorneioLeft4Dead2.Storage.UnitOfWork.Repositories
                 var tableOperation = TableOperation.Delete(entity);
                 await cloudTable.ExecuteAsync(tableOperation);
             }
+
+            _memoryCache.RemoveAllKeys();
         }
     }
 }

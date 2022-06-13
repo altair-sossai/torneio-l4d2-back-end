@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using TorneioLeft4Dead2.Auth.Entities;
 using TorneioLeft4Dead2.Auth.Repositories;
 using TorneioLeft4Dead2.Storage.UnitOfWork;
@@ -13,8 +14,8 @@ namespace TorneioLeft4Dead2.Storage.Auth.Repositories
     {
         private const string TableName = "Users";
 
-        public UserRepositoryStorage(UnitOfWorkStorage unitOfWork)
-            : base(unitOfWork, TableName)
+        public UserRepositoryStorage(UnitOfWorkStorage unitOfWork, IMemoryCache memoryCache)
+            : base(unitOfWork, TableName, memoryCache)
         {
         }
 

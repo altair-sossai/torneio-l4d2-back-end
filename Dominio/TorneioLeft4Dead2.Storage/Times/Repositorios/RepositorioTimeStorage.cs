@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using TorneioLeft4Dead2.Storage.UnitOfWork;
 using TorneioLeft4Dead2.Storage.UnitOfWork.Commands;
 using TorneioLeft4Dead2.Storage.UnitOfWork.Repositories;
@@ -13,8 +14,8 @@ namespace TorneioLeft4Dead2.Storage.Times.Repositorios
     {
         private const string TableName = "Times";
 
-        public RepositorioTimeStorage(UnitOfWorkStorage unitOfWork)
-            : base(unitOfWork, TableName)
+        public RepositorioTimeStorage(UnitOfWorkStorage unitOfWork, IMemoryCache memoryCache)
+            : base(unitOfWork, TableName, memoryCache)
         {
         }
 

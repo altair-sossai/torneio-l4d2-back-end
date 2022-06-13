@@ -6,7 +6,7 @@ using Microsoft.Extensions.Caching.Memory;
 using TorneioLeft4Dead2.Auth.Context;
 using TorneioLeft4Dead2.Confrontos.Commands;
 using TorneioLeft4Dead2.Confrontos.Servicos;
-using TorneioLeft4Dead2FunctionApp.Constants;
+using TorneioLeft4Dead2.Shared.Constants;
 using TorneioLeft4Dead2FunctionApp.Extensions;
 
 namespace TorneioLeft4Dead2FunctionApp.Functions
@@ -51,7 +51,7 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
         {
             var models = await _memoryCache.GetOrCreateAsync(MemoryCacheKeys.Rodadas, entry =>
             {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1);
 
                 return _servicoConfronto.ObterRodadasAsync();
             });
@@ -73,8 +73,6 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
 
                 var command = await httpRequest.DeserializeBodyAsync<ConfrontoCommand>();
                 var entity = await _servicoConfronto.SalvarAsync(command);
-
-                _memoryCache.Remove(MemoryCacheKeys.Rodadas);
 
                 return await httpRequest.OkAsync(entity);
             }
@@ -102,8 +100,6 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
 
                 await _servicoConfronto.GerarConfrontosAsync();
 
-                _memoryCache.Remove(MemoryCacheKeys.Rodadas);
-
                 return httpRequest.Ok();
             }
             catch (UnauthorizedAccessException)
@@ -130,8 +126,6 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
                 _authContext.GrantPermission();
 
                 await _servicoConfronto.ExcluirAsync(confrontoId);
-
-                _memoryCache.Remove(MemoryCacheKeys.Rodadas);
 
                 return httpRequest.Ok();
             }

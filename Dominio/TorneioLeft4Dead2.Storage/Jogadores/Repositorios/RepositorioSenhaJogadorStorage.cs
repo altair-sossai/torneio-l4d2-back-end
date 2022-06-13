@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using TorneioLeft4Dead2.Jogadores.Commands;
 using TorneioLeft4Dead2.Jogadores.Entidades;
 using TorneioLeft4Dead2.Jogadores.Models;
@@ -12,8 +13,8 @@ namespace TorneioLeft4Dead2.Storage.Jogadores.Repositorios
     {
         private const string TableName = "SenhasJogadores";
 
-        public RepositorioSenhaJogadorStorage(UnitOfWorkStorage unitOfWork)
-            : base(unitOfWork, TableName)
+        public RepositorioSenhaJogadorStorage(UnitOfWorkStorage unitOfWork, IMemoryCache memoryCache)
+            : base(unitOfWork, TableName, memoryCache)
         {
         }
 

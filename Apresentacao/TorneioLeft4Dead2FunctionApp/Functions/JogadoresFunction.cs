@@ -8,8 +8,8 @@ using TorneioLeft4Dead2.Auth.Context;
 using TorneioLeft4Dead2.Jogadores.Commands;
 using TorneioLeft4Dead2.Jogadores.Repositorios;
 using TorneioLeft4Dead2.Jogadores.Servicos;
+using TorneioLeft4Dead2.Shared.Constants;
 using TorneioLeft4Dead2.Times.Servicos;
-using TorneioLeft4Dead2FunctionApp.Constants;
 using TorneioLeft4Dead2FunctionApp.Extensions;
 
 namespace TorneioLeft4Dead2FunctionApp.Functions
@@ -43,7 +43,7 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
         {
             var entities = await _memoryCache.GetOrCreateAsync(MemoryCacheKeys.Jogadores, entry =>
             {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1);
 
                 return _repositorioJogador.ObterJogadoresAsync();
             });
@@ -82,8 +82,6 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
 
                 var command = await httpRequest.DeserializeBodyAsync<JogadorCommand>();
                 var entity = await _servicoJogador.SalvarAsync(command);
-
-                _memoryCache.Remove(MemoryCacheKeys.Jogadores);
 
                 return await httpRequest.OkAsync(entity);
             }
@@ -161,8 +159,6 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
                 _authContext.GrantPermission();
 
                 await _servicoJogador.ExcluirAsync(steamId);
-
-                _memoryCache.Remove(MemoryCacheKeys.Jogadores);
 
                 return httpRequest.Ok();
             }

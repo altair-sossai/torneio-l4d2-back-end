@@ -2,7 +2,9 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Extensions.Caching.Memory;
 using TorneioLeft4Dead2.Auth.Context;
+using TorneioLeft4Dead2.Shared.Constants;
 using TorneioLeft4Dead2.Times.Commands;
 using TorneioLeft4Dead2.Times.Servicos;
 using TorneioLeft4Dead2FunctionApp.Extensions;
@@ -12,22 +14,30 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
     public class TimesFunction
     {
         private readonly AuthContext _authContext;
+        private readonly IMemoryCache _memoryCache;
         private readonly IServicoTime _servicoTime;
         private readonly IServicoTimeJogador _servicoTimeJogador;
 
         public TimesFunction(IServicoTime servicoTime,
             IServicoTimeJogador servicoTimeJogador,
-            AuthContext authContext)
+            AuthContext authContext,
+            IMemoryCache memoryCache)
         {
             _servicoTime = servicoTime;
             _servicoTimeJogador = servicoTimeJogador;
             _authContext = authContext;
+            _memoryCache = memoryCache;
         }
 
         [Function(nameof(TimesFunction) + "_" + nameof(GetAll))]
         public async Task<HttpResponseData> GetAll([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "times")] HttpRequestData httpRequest)
         {
-            var models = await _servicoTime.ObterTimesAsync();
+            var models = await _memoryCache.GetOrCreateAsync(MemoryCacheKeys.Times, entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1);
+
+                return _servicoTime.ObterTimesAsync();
+            });
 
             return await httpRequest.OkAsync(models);
         }
@@ -35,7 +45,12 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
         [Function(nameof(TimesFunction) + "_" + nameof(Classificacao))]
         public async Task<HttpResponseData> Classificacao([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "classificacao")] HttpRequestData httpRequest)
         {
-            var models = await _servicoTime.ObterClassificacaoAsync();
+            var models = await _memoryCache.GetOrCreateAsync(MemoryCacheKeys.Classificacao, entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1);
+
+                return _servicoTime.ObterClassificacaoAsync();
+            });
 
             return await httpRequest.OkAsync(models);
         }

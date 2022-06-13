@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using TorneioLeft4Dead2.DataConfronto.Entidades;
 using TorneioLeft4Dead2.DataConfronto.Repositorios;
 using TorneioLeft4Dead2.Storage.UnitOfWork;
@@ -13,8 +14,8 @@ namespace TorneioLeft4Dead2.Storage.DataConfronto.Repositorios
     {
         private const string TableName = "SugestoesDatasConfrontos";
 
-        public RepositorioSugestaoDataConfrontoStorage(UnitOfWorkStorage unitOfWork)
-            : base(unitOfWork, TableName)
+        public RepositorioSugestaoDataConfrontoStorage(UnitOfWorkStorage unitOfWork, IMemoryCache memoryCache)
+            : base(unitOfWork, TableName, memoryCache)
         {
         }
 
