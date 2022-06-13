@@ -3,11 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Extensions.Caching.Memory;
 using TorneioLeft4Dead2.Auth.Context;
 using TorneioLeft4Dead2.Jogadores.Commands;
 using TorneioLeft4Dead2.Jogadores.Repositorios;
 using TorneioLeft4Dead2.Jogadores.Servicos;
 using TorneioLeft4Dead2.Times.Servicos;
+using TorneioLeft4Dead2FunctionApp.Constants;
 using TorneioLeft4Dead2FunctionApp.Extensions;
 
 namespace TorneioLeft4Dead2FunctionApp.Functions
@@ -15,6 +17,7 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
     public class JogadoresFunction
     {
         private readonly AuthContext _authContext;
+        private readonly IMemoryCache _memoryCache;
         private readonly IRepositorioJogador _repositorioJogador;
         private readonly IServicoJogador _servicoJogador;
         private readonly IServicoSenhaJogador _servicoSenhaJogador;
@@ -24,19 +27,26 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
             IServicoSenhaJogador servicoSenhaJogador,
             IServicoTime servicoTime,
             IRepositorioJogador repositorioJogador,
-            AuthContext authContext)
+            AuthContext authContext,
+            IMemoryCache memoryCache)
         {
             _servicoJogador = servicoJogador;
             _servicoSenhaJogador = servicoSenhaJogador;
             _servicoTime = servicoTime;
             _repositorioJogador = repositorioJogador;
             _authContext = authContext;
+            _memoryCache = memoryCache;
         }
 
         [Function(nameof(JogadoresFunction) + "_" + nameof(Get))]
         public async Task<HttpResponseData> Get([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "jogadores")] HttpRequestData httpRequest)
         {
-            var entities = await _repositorioJogador.ObterJogadoresAsync();
+            var entities = await _memoryCache.GetOrCreateAsync(MemoryCacheKeys.Jogadores, entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
+
+                return _repositorioJogador.ObterJogadoresAsync();
+            });
 
             return await httpRequest.OkAsync(entities);
         }
@@ -72,6 +82,8 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
 
                 var command = await httpRequest.DeserializeBodyAsync<JogadorCommand>();
                 var entity = await _servicoJogador.SalvarAsync(command);
+
+                _memoryCache.Remove(MemoryCacheKeys.Jogadores);
 
                 return await httpRequest.OkAsync(entity);
             }
@@ -149,6 +161,8 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
                 _authContext.GrantPermission();
 
                 await _servicoJogador.ExcluirAsync(steamId);
+
+                _memoryCache.Remove(MemoryCacheKeys.Jogadores);
 
                 return httpRequest.Ok();
             }

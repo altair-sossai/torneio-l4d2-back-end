@@ -18,6 +18,7 @@ namespace TorneioLeft4Dead2.DependencyInjection
                 Assembly.Load("TorneioLeft4Dead2.Storage")
             };
 
+            services.AddMemoryCache();
             services.AddAutoMapper(assemblies);
             services.AddValidatorsFromAssemblies(assemblies);
 
