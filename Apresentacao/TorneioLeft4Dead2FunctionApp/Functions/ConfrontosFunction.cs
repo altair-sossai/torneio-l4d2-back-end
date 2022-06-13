@@ -2,9 +2,11 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Extensions.Caching.Memory;
 using TorneioLeft4Dead2.Auth.Context;
 using TorneioLeft4Dead2.Confrontos.Commands;
 using TorneioLeft4Dead2.Confrontos.Servicos;
+using TorneioLeft4Dead2FunctionApp.Constants;
 using TorneioLeft4Dead2FunctionApp.Extensions;
 
 namespace TorneioLeft4Dead2FunctionApp.Functions
@@ -12,13 +14,16 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
     public class ConfrontosFunction
     {
         private readonly AuthContext _authContext;
+        private readonly IMemoryCache _memoryCache;
         private readonly IServicoConfronto _servicoConfronto;
 
         public ConfrontosFunction(IServicoConfronto servicoConfronto,
-            AuthContext authContext)
+            AuthContext authContext,
+            IMemoryCache memoryCache)
         {
             _servicoConfronto = servicoConfronto;
             _authContext = authContext;
+            _memoryCache = memoryCache;
         }
 
         [Function(nameof(ConfrontosFunction) + "_" + nameof(GetAll))]
@@ -44,7 +49,12 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
         [Function(nameof(ConfrontosFunction) + "_" + nameof(Rodadas))]
         public async Task<HttpResponseData> Rodadas([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "confrontos/rodadas")] HttpRequestData httpRequest)
         {
-            var models = await _servicoConfronto.ObterRodadasAsync();
+            var models = await _memoryCache.GetOrCreateAsync(MemoryCacheKeys.Rodadas, entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
+
+                return _servicoConfronto.ObterRodadasAsync();
+            });
 
             return await httpRequest.OkAsync(models);
         }
@@ -63,6 +73,8 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
 
                 var command = await httpRequest.DeserializeBodyAsync<ConfrontoCommand>();
                 var entity = await _servicoConfronto.SalvarAsync(command);
+
+                _memoryCache.Remove(MemoryCacheKeys.Rodadas);
 
                 return await httpRequest.OkAsync(entity);
             }
@@ -90,6 +102,8 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
 
                 await _servicoConfronto.GerarConfrontosAsync();
 
+                _memoryCache.Remove(MemoryCacheKeys.Rodadas);
+
                 return httpRequest.Ok();
             }
             catch (UnauthorizedAccessException)
@@ -116,6 +130,8 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
                 _authContext.GrantPermission();
 
                 await _servicoConfronto.ExcluirAsync(confrontoId);
+
+                _memoryCache.Remove(MemoryCacheKeys.Rodadas);
 
                 return httpRequest.Ok();
             }

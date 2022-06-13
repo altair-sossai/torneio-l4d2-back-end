@@ -3,5 +3,6 @@
     public static class MemoryCacheKeys
     {
         public const string Jogadores = nameof(Jogadores);
+        public const string Rodadas = nameof(Rodadas);
     }
 }
