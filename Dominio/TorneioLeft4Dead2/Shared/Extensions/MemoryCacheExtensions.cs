@@ -11,6 +11,7 @@ namespace TorneioLeft4Dead2.Shared.Extensions
             memoryCache.Remove(MemoryCacheKeys.Rodadas);
             memoryCache.Remove(MemoryCacheKeys.Times);
             memoryCache.Remove(MemoryCacheKeys.Classificacao);
+            memoryCache.Remove(MemoryCacheKeys.Playoffs);
         }
     }
 }

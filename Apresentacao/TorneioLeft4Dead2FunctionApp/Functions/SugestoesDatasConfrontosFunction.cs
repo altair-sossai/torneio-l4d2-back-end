@@ -12,9 +12,9 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
 {
     public class SugestoesDatasConfrontosFunction
     {
+        private readonly IServicoConfronto _servicoConfronto;
         private readonly IServicoSenhaJogador _servicoSenhaJogador;
         private readonly IServicoSugestaoDataConfronto _servicoSugestaoDataConfronto;
-        private readonly IServicoConfronto _servicoConfronto;
 
         public SugestoesDatasConfrontosFunction(IServicoSenhaJogador servicoSenhaJogador,
             IServicoSugestaoDataConfronto servicoSugestaoDataConfronto,
