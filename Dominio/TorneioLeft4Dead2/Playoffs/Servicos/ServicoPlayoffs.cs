@@ -6,7 +6,6 @@ using FluentValidation;
 using TorneioLeft4Dead2.Campanhas.Repositorios;
 using TorneioLeft4Dead2.Playoffs.Commands;
 using TorneioLeft4Dead2.Playoffs.Entidades;
-using TorneioLeft4Dead2.Playoffs.Enums;
 using TorneioLeft4Dead2.Playoffs.Extensions;
 using TorneioLeft4Dead2.Playoffs.Models;
 using TorneioLeft4Dead2.Playoffs.Repositorios;
@@ -65,8 +64,7 @@ namespace TorneioLeft4Dead2.Playoffs.Servicos
         {
             var entity = _mapper.Map<PlayoffsEntity>(command);
 
-            if (entity.Status == (int) StatusPlayoffs.Aguardando)
-                entity.AtualizarDadosConfrontos();
+            entity.AtualizarDadosConfrontos();
 
             await _validator.ValidateAndThrowAsync(entity);
             await _repositorioPlayoffs.ExcluirAsync(entity.Id);

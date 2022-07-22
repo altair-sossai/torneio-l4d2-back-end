@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using TorneioLeft4Dead2.Confrontos.Enums;
-using TorneioLeft4Dead2.Playoffs.Enums;
 
 namespace TorneioLeft4Dead2.Playoffs.Commands
 {
@@ -16,7 +15,6 @@ namespace TorneioLeft4Dead2.Playoffs.Commands
         public int Rodada { get; set; }
         public string CodigoTimeA { get; set; }
         public string CodigoTimeB { get; set; }
-        public StatusPlayoffs Status { get; set; }
         public List<Confronto> Confrontos { get; set; }
 
         public class Confronto

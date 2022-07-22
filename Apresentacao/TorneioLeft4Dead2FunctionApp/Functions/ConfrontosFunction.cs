@@ -49,7 +49,7 @@ namespace TorneioLeft4Dead2FunctionApp.Functions
         [Function(nameof(ConfrontosFunction) + "_" + nameof(Rodadas))]
         public async Task<HttpResponseData> Rodadas([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "confrontos/rodadas")] HttpRequestData httpRequest)
         {
-            var models = await _memoryCache.GetOrCreateAsync(MemoryCacheKeys.Rodadas, entry =>
+            var models = await _memoryCache.GetOrCreateAsync(MemoryCacheKeys.Confrontos, entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1);
 

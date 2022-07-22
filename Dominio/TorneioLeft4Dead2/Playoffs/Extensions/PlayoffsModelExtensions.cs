@@ -56,8 +56,11 @@ namespace TorneioLeft4Dead2.Playoffs.Extensions
 
             foreach (var item in playoffs)
             {
-                item.TimeA = dictionary[item.CodigoTimeA];
-                item.TimeB = dictionary[item.CodigoTimeB];
+                if (!string.IsNullOrEmpty(item.CodigoTimeA))
+                    item.TimeA = dictionary[item.CodigoTimeA];
+
+                if (!string.IsNullOrEmpty(item.CodigoTimeB))
+                    item.TimeB = dictionary[item.CodigoTimeB];
 
                 if (!string.IsNullOrEmpty(item.CodigoTimeVencedor))
                     item.TimeVencedor = dictionary[item.CodigoTimeVencedor];

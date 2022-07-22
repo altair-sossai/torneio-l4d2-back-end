@@ -8,7 +8,7 @@ namespace TorneioLeft4Dead2.Shared.Extensions
         public static void RemoveAllKeys(this IMemoryCache memoryCache)
         {
             memoryCache.Remove(MemoryCacheKeys.Jogadores);
-            memoryCache.Remove(MemoryCacheKeys.Rodadas);
+            memoryCache.Remove(MemoryCacheKeys.Confrontos);
             memoryCache.Remove(MemoryCacheKeys.Times);
             memoryCache.Remove(MemoryCacheKeys.Classificacao);
             memoryCache.Remove(MemoryCacheKeys.Playoffs);

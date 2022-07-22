@@ -105,7 +105,7 @@ namespace TorneioLeft4Dead2.Playoffs.Entidades
 
         public List<Confronto> Confrontos { get; set; }
 
-        private void IniciarConfrontos()
+        public void IniciarConfrontos()
         {
             var confrontos = new List<Confronto>
             {
@@ -144,7 +144,7 @@ namespace TorneioLeft4Dead2.Playoffs.Entidades
                 }
             };
 
-            Confrontos = confrontos.Where(w => w.CodigoCampanha.HasValue).ToList();
+            Confrontos = confrontos;
         }
 
         public void AtualizarDadosConfrontos()

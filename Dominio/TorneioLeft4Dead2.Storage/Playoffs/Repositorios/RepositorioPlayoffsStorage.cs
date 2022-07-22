@@ -22,15 +22,23 @@ namespace TorneioLeft4Dead2.Storage.Playoffs.Repositorios
 
         public async Task<PlayoffsEntity> ObterPorIdAsync(Guid playoffsId)
         {
-            return await GetByRowKeyAsync(playoffsId.ToString().ToLower());
+            var entity = await GetByRowKeyAsync(playoffsId.ToString().ToLower());
+
+            entity?.IniciarConfrontos();
+
+            return entity;
         }
 
         public async Task<List<PlayoffsEntity>> ObterPlayoffsAsync()
         {
-            return (await GetAllAsync(QueryCommand.Default))
+            var entities = (await GetAllAsync(QueryCommand.Default))
                 .OrderBy(o => o.Rodada)
                 .ThenBy(t => t.RowKey)
                 .ToList();
+
+            entities.ForEach(entity => entity.IniciarConfrontos());
+
+            return entities;
         }
 
         public async Task<PlayoffsEntity> SalvarAsync(PlayoffsEntity entity)
