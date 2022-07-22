@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Azure.Cosmos.Table;
+using TorneioLeft4Dead2.Confrontos.Enums;
 using TorneioLeft4Dead2.Playoffs.Enums;
 
 namespace TorneioLeft4Dead2.Playoffs.Entidades
@@ -28,6 +29,9 @@ namespace TorneioLeft4Dead2.Playoffs.Entidades
         public int QuantidadeVitoriasTimeB { get; set; }
         public int QuantidadeConfrontosRealizados => QuantidadeVitoriasTimeA + QuantidadeVitoriasTimeB;
 
+        public bool VitoriaTimeA => QuantidadeVitoriasTimeA >= 2;
+        public bool VitoriaTimeB => QuantidadeVitoriasTimeB >= 2;
+
         public int Status
         {
             get
@@ -46,10 +50,10 @@ namespace TorneioLeft4Dead2.Playoffs.Entidades
         {
             get
             {
-                if (QuantidadeVitoriasTimeA == 2)
+                if (QuantidadeVitoriasTimeA >= 2)
                     return CodigoTimeA;
 
-                if (QuantidadeVitoriasTimeB == 2)
+                if (QuantidadeVitoriasTimeB >= 2)
                     return CodigoTimeB;
 
                 return null;
@@ -60,10 +64,10 @@ namespace TorneioLeft4Dead2.Playoffs.Entidades
         {
             get
             {
-                if (QuantidadeVitoriasTimeA == 2)
+                if (QuantidadeVitoriasTimeA >= 2)
                     return CodigoTimeB;
 
-                if (QuantidadeVitoriasTimeB == 2)
+                if (QuantidadeVitoriasTimeB >= 2)
                     return CodigoTimeA;
 
                 return null;
@@ -156,10 +160,22 @@ namespace TorneioLeft4Dead2.Playoffs.Entidades
             Confronto01CodigoCampanha = confronto01?.CodigoCampanha;
             Confronto01Data = confronto01?.Data;
             Confronto01Status = confronto01?.Status;
-            Confronto01PontosConquistadosTimeA = confronto01?.PontosConquistadosTimeA;
-            Confronto01PontosConquistadosTimeB = confronto01?.PontosConquistadosTimeB;
-            Confronto01PenalidadeTimeA = confronto01?.PenalidadeTimeA;
-            Confronto01PenalidadeTimeB = confronto01?.PenalidadeTimeB;
+
+            if (Confronto01Status == (int?) StatusConfronto.Aguardando)
+            {
+                Confronto01PontosConquistadosTimeA = 0;
+                Confronto01PontosConquistadosTimeB = 0;
+                Confronto01PenalidadeTimeA = 0;
+                Confronto01PenalidadeTimeB = 0;
+            }
+            else
+            {
+                Confronto01PontosConquistadosTimeA = confronto01?.PontosConquistadosTimeA;
+                Confronto01PontosConquistadosTimeB = confronto01?.PontosConquistadosTimeB;
+                Confronto01PenalidadeTimeA = confronto01?.PenalidadeTimeA;
+                Confronto01PenalidadeTimeB = confronto01?.PenalidadeTimeB;
+            }
+
             Confronto01TimeAVenceu = confronto01?.TimeAVenceu;
             Confronto01TimeBVenceu = confronto01?.TimeBVenceu;
             Confronto01Observacoes = confronto01?.Observacoes;
@@ -168,25 +184,65 @@ namespace TorneioLeft4Dead2.Playoffs.Entidades
             Confronto02CodigoCampanha = confronto02?.CodigoCampanha;
             Confronto02Data = confronto02?.Data;
             Confronto02Status = confronto02?.Status;
-            Confronto02PontosConquistadosTimeA = confronto02?.PontosConquistadosTimeA;
-            Confronto02PontosConquistadosTimeB = confronto02?.PontosConquistadosTimeB;
-            Confronto02PenalidadeTimeA = confronto02?.PenalidadeTimeA;
-            Confronto02PenalidadeTimeB = confronto02?.PenalidadeTimeB;
+
+            if (Confronto02Status == (int?) StatusConfronto.Aguardando)
+            {
+                Confronto02PontosConquistadosTimeA = 0;
+                Confronto02PontosConquistadosTimeB = 0;
+                Confronto02PenalidadeTimeA = 0;
+                Confronto02PenalidadeTimeB = 0;
+            }
+            else
+            {
+                Confronto02PontosConquistadosTimeA = confronto02?.PontosConquistadosTimeA;
+                Confronto02PontosConquistadosTimeB = confronto02?.PontosConquistadosTimeB;
+                Confronto02PenalidadeTimeA = confronto02?.PenalidadeTimeA;
+                Confronto02PenalidadeTimeB = confronto02?.PenalidadeTimeB;
+            }
+
             Confronto02TimeAVenceu = confronto02?.TimeAVenceu;
             Confronto02TimeBVenceu = confronto02?.TimeBVenceu;
             Confronto02Observacoes = confronto02?.Observacoes;
 
             var confronto03 = Confrontos.Count >= 3 ? Confrontos[2] : null;
             Confronto03CodigoCampanha = confronto03?.CodigoCampanha;
-            Confronto03Data = confronto03?.Data;
-            Confronto03Status = confronto03?.Status;
-            Confronto03PontosConquistadosTimeA = confronto03?.PontosConquistadosTimeA;
-            Confronto03PontosConquistadosTimeB = confronto03?.PontosConquistadosTimeB;
-            Confronto03PenalidadeTimeA = confronto03?.PenalidadeTimeA;
-            Confronto03PenalidadeTimeB = confronto03?.PenalidadeTimeB;
-            Confronto03TimeAVenceu = confronto03?.TimeAVenceu;
-            Confronto03TimeBVenceu = confronto03?.TimeBVenceu;
-            Confronto03Observacoes = confronto03?.Observacoes;
+            
+            if (QuantidadeConfrontosRealizados == 2 && (VitoriaTimeA || VitoriaTimeB))
+            {
+                Confronto03Data = DateTime.Now;
+                Confronto03Status = (int?) StatusConfronto.Cancelado;
+                Confronto03PontosConquistadosTimeA = 0;
+                Confronto03PontosConquistadosTimeB = 0;
+                Confronto03PenalidadeTimeA = 0;
+                Confronto03PenalidadeTimeB = 0;
+                Confronto03TimeAVenceu = false;
+                Confronto03TimeBVenceu = false;
+                Confronto03Observacoes = "O terceiro jogo não é necessário, vitória por 2x0";
+            }
+            else
+            {
+                Confronto03Data = confronto03?.Data;
+                Confronto03Status = confronto03?.Status;
+
+                if (Confronto03Status == (int?) StatusConfronto.Aguardando)
+                {
+                    Confronto03PontosConquistadosTimeA = 0;
+                    Confronto03PontosConquistadosTimeB = 0;
+                    Confronto03PenalidadeTimeA = 0;
+                    Confronto03PenalidadeTimeB = 0;
+                }
+                else
+                {
+                    Confronto03PontosConquistadosTimeA = confronto03?.PontosConquistadosTimeA;
+                    Confronto03PontosConquistadosTimeB = confronto03?.PontosConquistadosTimeB;
+                    Confronto03PenalidadeTimeA = confronto03?.PenalidadeTimeA;
+                    Confronto03PenalidadeTimeB = confronto03?.PenalidadeTimeB;
+                }
+
+                Confronto03TimeAVenceu = confronto03?.TimeAVenceu;
+                Confronto03TimeBVenceu = confronto03?.TimeBVenceu;
+                Confronto03Observacoes = confronto03?.Observacoes;
+            }
         }
 
         public class Confronto
@@ -217,7 +273,7 @@ namespace TorneioLeft4Dead2.Playoffs.Entidades
                     var pontosTimeA = PontosConquistadosTimeA - PenalidadeTimeA;
                     var pontosTimeB = PontosConquistadosTimeB - PenalidadeTimeB;
 
-                    return pontosTimeB < pontosTimeA;
+                    return pontosTimeB > pontosTimeA;
                 }
             }
 

@@ -103,6 +103,18 @@ namespace TorneioLeft4Dead2.Playoffs.Validators
                 RuleFor(r => r.Confronto03TimeBVenceu)
                     .NotNull();
             });
+
+            RuleFor(r => r.Confronto01Status)
+                .NotEqual((int?) StatusConfronto.Aguardando)
+                .When(w => w.Confronto02Status != (int?) StatusConfronto.Aguardando);
+
+            RuleFor(r => r.Confronto01Status)
+                .NotEqual((int?) StatusConfronto.Aguardando)
+                .When(w => w.Confronto03Status != (int?) StatusConfronto.Aguardando);
+
+            RuleFor(r => r.Confronto02Status)
+                .NotEqual((int?) StatusConfronto.Aguardando)
+                .When(w => w.Confronto03Status != (int?) StatusConfronto.Aguardando);
         }
     }
 }
