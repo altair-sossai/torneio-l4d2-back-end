@@ -33,7 +33,7 @@ namespace TorneioLeft4Dead2.Storage.Playoffs.Repositorios
         {
             var entities = (await GetAllAsync(QueryCommand.Default))
                 .OrderBy(o => o.Rodada)
-                .ThenBy(t => t.RowKey)
+                .ThenBy(t => t.Ordem)
                 .ToList();
 
             entities.ForEach(entity => entity.IniciarConfrontos());

@@ -14,6 +14,9 @@ namespace TorneioLeft4Dead2.Playoffs.Validators
             RuleFor(r => r.Rodada)
                 .NotEmpty();
 
+            RuleFor(r => r.Ordem)
+                .NotEmpty();
+
             When(w => w.Confronto01Status is (int) StatusConfronto.Realizado or (int) StatusConfronto.Cancelado, () =>
             {
                 RuleFor(r => r.Confronto01CodigoCampanha)

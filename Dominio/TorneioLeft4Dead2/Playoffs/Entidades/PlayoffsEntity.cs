@@ -23,6 +23,7 @@ namespace TorneioLeft4Dead2.Playoffs.Entidades
         }
 
         public int Rodada { get; set; }
+        public int Ordem { get; set; }
         public string CodigoTimeA { get; set; }
         public string CodigoTimeB { get; set; }
         public int QuantidadeVitoriasTimeA { get; set; }

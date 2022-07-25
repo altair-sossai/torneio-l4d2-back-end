@@ -19,11 +19,11 @@ namespace TorneioLeft4Dead2.Playoffs.Extensions
                 .ToList();
         }
 
-        private static Dictionary<int, List<PlayoffsModel>> AgruparPorRodada(this List<PlayoffsModel> playoffs)
+        private static Dictionary<int, List<PlayoffsModel>> AgruparPorRodada(this IEnumerable<PlayoffsModel> playoffs)
         {
             var rodadas = new Dictionary<int, List<PlayoffsModel>>();
 
-            foreach (var item in playoffs)
+            foreach (var item in playoffs.OrderBy(o => o.Ordem))
             {
                 if (!rodadas.ContainsKey(item.Rodada))
                     rodadas.Add(item.Rodada, new List<PlayoffsModel>());
