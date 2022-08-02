@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
+using TorneioLeft4Dead2.Campanhas.Extensions;
 using TorneioLeft4Dead2.Campanhas.Repositorios;
 using TorneioLeft4Dead2.Playoffs.Commands;
 using TorneioLeft4Dead2.Playoffs.Entidades;
@@ -63,8 +64,9 @@ namespace TorneioLeft4Dead2.Playoffs.Servicos
         public async Task<PlayoffsEntity> SalvarAsync(PlayoffsCommand command)
         {
             var entity = _mapper.Map<PlayoffsEntity>(command);
-
             entity.AtualizarDadosConfrontos();
+
+            await SortearTerceiraCampanhaAsync(entity);
 
             await _validator.ValidateAndThrowAsync(entity);
             await _repositorioPlayoffs.ExcluirAsync(entity.Id);
@@ -76,6 +78,24 @@ namespace TorneioLeft4Dead2.Playoffs.Servicos
         public async Task ExcluirAsync(Guid playoffsId)
         {
             await _repositorioPlayoffs.ExcluirAsync(playoffsId);
+        }
+
+        private async Task SortearTerceiraCampanhaAsync(PlayoffsEntity entity)
+        {
+            if (string.IsNullOrEmpty(entity.CodigoTimeA)
+                || string.IsNullOrEmpty(entity.CodigoTimeB)
+                || !entity.CodigoCampanhaExcluidaTimeA.HasValue
+                || !entity.CodigoCampanhaExcluidaTimeB.HasValue
+                || !entity.Confronto01CodigoCampanha.HasValue
+                || !entity.Confronto02CodigoCampanha.HasValue
+                || entity.Confronto03CodigoCampanha.HasValue)
+                return;
+
+            var campanhas = await _repositorioCampanha.ObterCampanhasAsync();
+            campanhas.RemoverCampanhasJaEscolhidas(entity);
+
+            var campanha = campanhas.Sortear();
+            entity.Confronto03CodigoCampanha = campanha.Codigo;
         }
     }
 }

@@ -118,7 +118,7 @@ namespace TorneioLeft4Dead2.Campanhas.Repositorios
 
         public Task<List<CampanhaEntity>> ObterCampanhasAsync()
         {
-            return Task.FromResult(Campanhas);
+            return Task.FromResult(Campanhas.ToList());
         }
     }
 }

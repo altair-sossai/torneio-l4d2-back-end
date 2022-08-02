@@ -209,7 +209,7 @@ namespace TorneioLeft4Dead2.Playoffs.Entidades
 
             var confronto03 = Confrontos.Count >= 3 ? Confrontos[2] : null;
             Confronto03CodigoCampanha = confronto03?.CodigoCampanha;
-            
+
             if (QuantidadeConfrontosRealizados == 2 && (VitoriaTimeA || VitoriaTimeB))
             {
                 Confronto03Data = DateTime.Now;
