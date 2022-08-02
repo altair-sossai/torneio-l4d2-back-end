@@ -26,6 +26,8 @@ namespace TorneioLeft4Dead2.Playoffs.Entidades
         public int Ordem { get; set; }
         public string CodigoTimeA { get; set; }
         public string CodigoTimeB { get; set; }
+        public int? CodigoCampanhaExcluidaTimeA { get; set; }
+        public int? CodigoCampanhaExcluidaTimeB { get; set; }
         public int QuantidadeVitoriasTimeA { get; set; }
         public int QuantidadeVitoriasTimeB { get; set; }
         public int QuantidadeConfrontosRealizados => QuantidadeVitoriasTimeA + QuantidadeVitoriasTimeB;

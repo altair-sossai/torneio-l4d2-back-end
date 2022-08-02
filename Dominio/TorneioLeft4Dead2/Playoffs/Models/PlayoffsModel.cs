@@ -16,6 +16,10 @@ namespace TorneioLeft4Dead2.Playoffs.Models
         public string CodigoTimeB { get; set; }
         public TimeModel TimeA { get; set; }
         public TimeModel TimeB { get; set; }
+        public int? CodigoCampanhaExcluidaTimeA { get; set; }
+        public int? CodigoCampanhaExcluidaTimeB { get; set; }
+        public CampanhaEntity CampanhaExcluidaTimeA { get; set; }
+        public CampanhaEntity CampanhaExcluidaTimeB { get; set; }
         public int QuantidadeVitoriasTimeA { get; set; }
         public int QuantidadeVitoriasTimeB { get; set; }
         public int QuantidadeConfrontosRealizados { get; set; }

@@ -40,6 +40,12 @@ namespace TorneioLeft4Dead2.Playoffs.Extensions
 
             foreach (var item in playoffs)
             {
+                if (item.CodigoCampanhaExcluidaTimeA.HasValue)
+                    item.CampanhaExcluidaTimeA = dictionary[item.CodigoCampanhaExcluidaTimeA.Value];
+
+                if (item.CodigoCampanhaExcluidaTimeB.HasValue)
+                    item.CampanhaExcluidaTimeB = dictionary[item.CodigoCampanhaExcluidaTimeB.Value];
+
                 foreach (var confront in item.Confrontos)
                 {
                     if (!confront.CodigoCampanha.HasValue)

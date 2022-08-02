@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using System.Linq;
+using FluentValidation;
 using TorneioLeft4Dead2.Confrontos.Enums;
 using TorneioLeft4Dead2.Playoffs.Entidades;
 
@@ -118,6 +119,19 @@ namespace TorneioLeft4Dead2.Playoffs.Validators
             RuleFor(r => r.Confronto02Status)
                 .NotEqual((int?) StatusConfronto.Aguardando)
                 .When(w => w.Confronto03Status != (int?) StatusConfronto.Aguardando);
+
+            RuleFor(r => r.CodigoCampanhaExcluidaTimeA)
+                .Must(CampanhaNaoSelecionada)
+                .When(w => w.CodigoCampanhaExcluidaTimeA.HasValue);
+
+            RuleFor(r => r.CodigoCampanhaExcluidaTimeB)
+                .Must(CampanhaNaoSelecionada)
+                .When(w => w.CodigoCampanhaExcluidaTimeB.HasValue);
+        }
+
+        private static bool CampanhaNaoSelecionada(PlayoffsEntity entity, int? campanha)
+        {
+            return entity.Confrontos.All(c => c.CodigoCampanha != campanha);
         }
     }
 }
