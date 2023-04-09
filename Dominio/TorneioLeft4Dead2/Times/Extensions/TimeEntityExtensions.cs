@@ -2,13 +2,12 @@
 using System.Linq;
 using TorneioLeft4Dead2.Times.Entidades;
 
-namespace TorneioLeft4Dead2.Times.Extensions
+namespace TorneioLeft4Dead2.Times.Extensions;
+
+public static class TimeEntityExtensions
 {
-    public static class TimeEntityExtensions
+    public static Dictionary<string, TimeEntity> ToDictionary(this IEnumerable<TimeEntity> times)
     {
-        public static Dictionary<string, TimeEntity> ToDictionary(this IEnumerable<TimeEntity> times)
-        {
-            return times.ToDictionary(k => k.Codigo, v => v);
-        }
+        return times.ToDictionary(k => k.Codigo, v => v);
     }
 }

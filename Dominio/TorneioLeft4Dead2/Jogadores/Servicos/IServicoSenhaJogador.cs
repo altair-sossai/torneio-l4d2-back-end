@@ -2,11 +2,10 @@
 using TorneioLeft4Dead2.Jogadores.Commands;
 using TorneioLeft4Dead2.Jogadores.Models;
 
-namespace TorneioLeft4Dead2.Jogadores.Servicos
+namespace TorneioLeft4Dead2.Jogadores.Servicos;
+
+public interface IServicoSenhaJogador
 {
-    public interface IServicoSenhaJogador
-    {
-        Task<SenhaJogadorModel> GerarSenhaAsync(string steamId);
-        Task<bool> AutenticadoAsync(AutenticarJogadorCommand command);
-    }
+    Task<SenhaJogadorModel> GerarSenhaAsync(string steamId);
+    Task<bool> AutenticadoAsync(AutenticarJogadorCommand command);
 }

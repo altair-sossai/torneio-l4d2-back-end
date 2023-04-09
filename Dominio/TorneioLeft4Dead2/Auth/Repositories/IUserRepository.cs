@@ -2,12 +2,11 @@
 using System.Threading.Tasks;
 using TorneioLeft4Dead2.Auth.Entities;
 
-namespace TorneioLeft4Dead2.Auth.Repositories
+namespace TorneioLeft4Dead2.Auth.Repositories;
+
+public interface IUserRepository
 {
-    public interface IUserRepository
-    {
-        Task<UserEntity> FindUserAsync(Guid id);
-        Task<UserEntity> FindUserAsync(string email);
-        Task<bool> AuthAsync(string email, string password);
-    }
+    Task<UserEntity> FindUserAsync(Guid userId);
+    Task<UserEntity> FindUserAsync(string email);
+    Task<bool> AuthAsync(string email, string password);
 }

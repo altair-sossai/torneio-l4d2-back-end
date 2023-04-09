@@ -1,9 +1,8 @@
-﻿namespace TorneioLeft4Dead2.Playoffs.Enums
+﻿namespace TorneioLeft4Dead2.Playoffs.Enums;
+
+public enum StatusPlayoffs
 {
-    public enum StatusPlayoffs
-    {
-        Aguardando,
-        EmAndamento,
-        Finalizado
-    }
+    Aguardando,
+    EmAndamento,
+    Finalizado
 }

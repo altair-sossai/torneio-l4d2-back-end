@@ -1,9 +1,8 @@
-﻿namespace TorneioLeft4Dead2.DataConfronto.Enums
+﻿namespace TorneioLeft4Dead2.DataConfronto.Enums;
+
+public enum RespostaTime
 {
-    public enum RespostaTime
-    {
-        SemResposta,
-        Aceitou,
-        Recusou
-    }
+    SemResposta,
+    Aceitou,
+    Recusou
 }

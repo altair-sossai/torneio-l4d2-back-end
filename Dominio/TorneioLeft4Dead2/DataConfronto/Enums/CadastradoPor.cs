@@ -1,9 +1,8 @@
-﻿namespace TorneioLeft4Dead2.DataConfronto.Enums
+﻿namespace TorneioLeft4Dead2.DataConfronto.Enums;
+
+public enum CadastradoPor
 {
-    public enum CadastradoPor
-    {
-        Administrador,
-        TimeA,
-        TimeB
-    }
+    Administrador,
+    TimeA,
+    TimeB
 }

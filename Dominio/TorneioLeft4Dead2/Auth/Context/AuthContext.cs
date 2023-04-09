@@ -5,34 +5,33 @@ using TorneioLeft4Dead2.Auth.Entities;
 using TorneioLeft4Dead2.Auth.Jwt.Extensions;
 using TorneioLeft4Dead2.Auth.Repositories;
 
-namespace TorneioLeft4Dead2.Auth.Context
+namespace TorneioLeft4Dead2.Auth.Context;
+
+public class AuthContext : IAuthContext
 {
-    public class AuthContext
+    private readonly IUserRepository _userRepository;
+
+    public AuthContext(IUserRepository userRepository)
     {
-        private readonly IUserRepository _userRepository;
+        _userRepository = userRepository;
+    }
 
-        public AuthContext(IUserRepository userRepository)
-        {
-            _userRepository = userRepository;
-        }
+    private UserEntity CurrentUser { get; set; }
 
-        public UserEntity CurrentUser { get; private set; }
+    public async Task FillUserAsync(ClaimsPrincipal claimsPrincipal)
+    {
+        if (claimsPrincipal == null)
+            return;
 
-        public async Task FillUserAsync(ClaimsPrincipal claimsPrincipal)
-        {
-            if (claimsPrincipal == null)
-                return;
+        var userId = claimsPrincipal.GetGuid("userId");
+        var currentUser = await _userRepository.FindUserAsync(userId);
 
-            var userId = claimsPrincipal.GetGuid("userId");
-            var currentUser = await _userRepository.FindUserAsync(userId);
+        CurrentUser = currentUser;
+    }
 
-            CurrentUser = currentUser;
-        }
-
-        public void GrantPermission()
-        {
-            if (CurrentUser == null)
-                throw new UnauthorizedAccessException();
-        }
+    public void GrantPermission()
+    {
+        if (CurrentUser == null)
+            throw new UnauthorizedAccessException();
     }
 }

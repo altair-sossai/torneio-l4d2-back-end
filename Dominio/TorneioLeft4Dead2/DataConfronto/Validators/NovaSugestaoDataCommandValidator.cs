@@ -5,37 +5,36 @@ using TorneioLeft4Dead2.Confrontos.Repositorios;
 using TorneioLeft4Dead2.DataConfronto.Commands;
 using TorneioLeft4Dead2.Times.Servicos;
 
-namespace TorneioLeft4Dead2.DataConfronto.Validators
+namespace TorneioLeft4Dead2.DataConfronto.Validators;
+
+public class NovaSugestaoDataCommandValidator : AbstractValidator<NovaSugestaoDataCommand>
 {
-    public class NovaSugestaoDataCommandValidator : AbstractValidator<NovaSugestaoDataCommand>
+    private readonly IRepositorioConfronto _repositorioConfronto;
+    private readonly IServicoTime _servicoTime;
+
+    public NovaSugestaoDataCommandValidator(IRepositorioConfronto repositorioConfronto,
+        IServicoTime servicoTime)
     {
-        private readonly IRepositorioConfronto _repositorioConfronto;
-        private readonly IServicoTime _servicoTime;
+        _repositorioConfronto = repositorioConfronto;
+        _servicoTime = servicoTime;
 
-        public NovaSugestaoDataCommandValidator(IRepositorioConfronto repositorioConfronto,
-            IServicoTime servicoTime)
-        {
-            _repositorioConfronto = repositorioConfronto;
-            _servicoTime = servicoTime;
+        RuleFor(r => r.SteamId)
+            .NotEmpty()
+            .NotNull()
+            .MustAsync(ExisteComoCapitaoEmUmaDasEquipesDoConfrontoAsync)
+            .WithMessage("Não é um capitão de equipe válido");
+    }
 
-            RuleFor(r => r.SteamId)
-                .NotEmpty()
-                .NotNull()
-                .MustAsync(ExisteComoCapitaoEmUmaDasEquipesDoConfrontoAsync)
-                .WithMessage("Não é um capitão de equipe válido");
-        }
+    private async Task<bool> ExisteComoCapitaoEmUmaDasEquipesDoConfrontoAsync(NovaSugestaoDataCommand command, string steamId, CancellationToken cancellationToken)
+    {
+        var confronto = await _repositorioConfronto.ObterPorIdAsync(command.ConfrontoId);
+        if (confronto == null)
+            return false;
 
-        private async Task<bool> ExisteComoCapitaoEmUmaDasEquipesDoConfrontoAsync(NovaSugestaoDataCommand command, string steamId, CancellationToken cancellationToken)
-        {
-            var confronto = await _repositorioConfronto.ObterPorIdAsync(command.ConfrontoId);
-            if (confronto == null)
-                return false;
+        var timeA = await _servicoTime.ObterPorCodigoAsync(confronto.CodigoTimeA);
+        var timeB = await _servicoTime.ObterPorCodigoAsync(confronto.CodigoTimeB);
 
-            var timeA = await _servicoTime.ObterPorCodigoAsync(confronto.CodigoTimeA);
-            var timeB = await _servicoTime.ObterPorCodigoAsync(confronto.CodigoTimeB);
-
-            return timeA.Capitao.SteamId == steamId
-                   || timeB.Capitao.SteamId == steamId;
-        }
+        return timeA.Capitao.SteamId == steamId
+               || timeB.Capitao.SteamId == steamId;
     }
 }

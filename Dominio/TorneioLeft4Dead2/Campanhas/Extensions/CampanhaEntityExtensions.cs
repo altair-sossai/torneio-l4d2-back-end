@@ -4,38 +4,37 @@ using System.Linq;
 using TorneioLeft4Dead2.Campanhas.Entidades;
 using TorneioLeft4Dead2.Playoffs.Entidades;
 
-namespace TorneioLeft4Dead2.Campanhas.Extensions
+namespace TorneioLeft4Dead2.Campanhas.Extensions;
+
+public static class CampanhaEntityExtensions
 {
-    public static class CampanhaEntityExtensions
+    public static Dictionary<int, CampanhaEntity> ToDictionary(this IEnumerable<CampanhaEntity> entities)
     {
-        public static Dictionary<int, CampanhaEntity> ToDictionary(this IEnumerable<CampanhaEntity> entities)
+        return entities.ToDictionary(k => k.Codigo, v => v);
+    }
+
+    public static void RemoverCampanhasJaEscolhidas(this List<CampanhaEntity> campanhas, PlayoffsEntity playoff)
+    {
+        var campanhasJaEscolhidas = new[]
         {
-            return entities.ToDictionary(k => k.Codigo, v => v);
-        }
+            playoff.CodigoCampanhaExcluidaTimeA,
+            playoff.CodigoCampanhaExcluidaTimeB,
+            playoff.Confronto01CodigoCampanha,
+            playoff.Confronto02CodigoCampanha
+        };
 
-        public static void RemoverCampanhasJaEscolhidas(this List<CampanhaEntity> campanhas, PlayoffsEntity playoff)
+        foreach (var campanhaEscolhida in campanhasJaEscolhidas)
         {
-            var campanhasJaEscolhidas = new[]
-            {
-                playoff.CodigoCampanhaExcluidaTimeA,
-                playoff.CodigoCampanhaExcluidaTimeB,
-                playoff.Confronto01CodigoCampanha,
-                playoff.Confronto02CodigoCampanha
-            };
+            var campanha = campanhas.FirstOrDefault(f => f.Codigo == campanhaEscolhida);
+            if (campanha == null)
+                continue;
 
-            foreach (var campanhaEscolhida in campanhasJaEscolhidas)
-            {
-                var campanha = campanhas.FirstOrDefault(f => f.Codigo == campanhaEscolhida);
-                if (campanha == null)
-                    continue;
-
-                campanhas.Remove(campanha);
-            }
+            campanhas.Remove(campanha);
         }
+    }
 
-        public static CampanhaEntity Sortear(this IEnumerable<CampanhaEntity> campanhas)
-        {
-            return campanhas.OrderBy(o => Guid.NewGuid()).FirstOrDefault();
-        }
+    public static CampanhaEntity Sortear(this IEnumerable<CampanhaEntity> campanhas)
+    {
+        return campanhas.MinBy(_ => Guid.NewGuid());
     }
 }

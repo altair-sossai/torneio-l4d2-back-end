@@ -5,22 +5,21 @@ using TorneioLeft4Dead2.Jogadores.Extensions;
 using TorneioLeft4Dead2.Times.Entidades;
 using TorneioLeft4Dead2.Times.Models;
 
-namespace TorneioLeft4Dead2.Times.Extensions
+namespace TorneioLeft4Dead2.Times.Extensions;
+
+public static class TimeModelExtensions
 {
-    public static class TimeModelExtensions
+    public static Dictionary<string, TimeModel> ToDictionary(this IEnumerable<TimeModel> entities)
     {
-        public static Dictionary<string, TimeModel> ToDictionary(this IEnumerable<TimeModel> entities)
-        {
-            return entities.ToDictionary(k => k.Codigo, v => v);
-        }
+        return entities.ToDictionary(k => k.Codigo, v => v);
+    }
 
-        public static void Vincular(this IEnumerable<TimeModel> models, IEnumerable<TimeJogadorEntity> timesJogadores, IEnumerable<JogadorEntity> jogadores)
-        {
-            var times = timesJogadores.AgruparPorTimes();
-            var dictionary = jogadores.ToDictionary();
+    public static void Vincular(this IEnumerable<TimeModel> models, IEnumerable<TimeJogadorEntity> timesJogadores, IEnumerable<JogadorEntity> jogadores)
+    {
+        var times = timesJogadores.AgruparPorTimes();
+        var dictionary = jogadores.ToDictionary();
 
-            foreach (var model in models.Where(time => times.ContainsKey(time.Codigo)))
-                model.Jogadores = times[model.Codigo].Select(s => dictionary[s.Jogador]).ToList();
-        }
+        foreach (var model in models.Where(time => times.ContainsKey(time.Codigo)))
+            model.Jogadores = times[model.Codigo].Select(s => dictionary[s.Jogador]).ToList();
     }
 }

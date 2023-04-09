@@ -4,11 +4,10 @@ using TorneioLeft4Dead2.DataConfronto.Commands;
 using TorneioLeft4Dead2.DataConfronto.Entidades;
 using TorneioLeft4Dead2.DataConfronto.Models;
 
-namespace TorneioLeft4Dead2.DataConfronto.Servicos
+namespace TorneioLeft4Dead2.DataConfronto.Servicos;
+
+public interface IServicoPeriodoConfronto
 {
-    public interface IServicoPeriodoConfronto
-    {
-        Task<PeriodoConfrontoModel> ObterPorConfrontoAsync(Guid confrontoId);
-        Task<PeriodoConfrontoEntity> SalvarAsync(Guid confrontoId, PeriodoConfrontoCommand command);
-    }
+    Task<PeriodoConfrontoModel> ObterPorConfrontoAsync(Guid confrontoId);
+    Task<PeriodoConfrontoEntity> SalvarAsync(Guid confrontoId, PeriodoConfrontoCommand command);
 }

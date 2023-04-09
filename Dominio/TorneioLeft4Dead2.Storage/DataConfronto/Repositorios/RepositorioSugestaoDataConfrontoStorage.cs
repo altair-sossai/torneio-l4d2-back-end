@@ -1,49 +1,48 @@
-﻿using System;
+﻿using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
 using TorneioLeft4Dead2.DataConfronto.Entidades;
 using TorneioLeft4Dead2.DataConfronto.Repositorios;
 using TorneioLeft4Dead2.Storage.UnitOfWork;
 using TorneioLeft4Dead2.Storage.UnitOfWork.Repositories;
 
-namespace TorneioLeft4Dead2.Storage.DataConfronto.Repositorios
+namespace TorneioLeft4Dead2.Storage.DataConfronto.Repositorios;
+
+public class RepositorioSugestaoDataConfrontoStorage : BaseTableStorageRepository<SugestaoDataConfrontoEntity>, IRepositorioSugestaoDataConfronto
 {
-    public class RepositorioSugestaoDataConfrontoStorage : BaseRepository<SugestaoDataConfrontoEntity>, IRepositorioSugestaoDataConfronto
+    private const string TableName = "SugestoesDatasConfrontos";
+
+    public RepositorioSugestaoDataConfrontoStorage(IAzureTableStorageContext tableContext, IMemoryCache memoryCache)
+        : base(TableName, tableContext, memoryCache)
     {
-        private const string TableName = "SugestoesDatasConfrontos";
+    }
 
-        public RepositorioSugestaoDataConfrontoStorage(UnitOfWorkStorage unitOfWork, IMemoryCache memoryCache)
-            : base(unitOfWork, TableName, memoryCache)
-        {
-        }
+    public async Task<SugestaoDataConfrontoEntity> ObterPorIdAsync(Guid sugestaoId)
+    {
+        return await FindAsync(sugestaoId);
+    }
 
-        public async Task<SugestaoDataConfrontoEntity> ObterPorIdAsync(Guid sugestaoId)
-        {
-            return await GetByRowKeyAsync(sugestaoId);
-        }
+    public async Task<List<SugestaoDataConfrontoEntity>> ObterPorConfrontoAsync(Guid confrontoId)
+    {
+        return await GetAllAsync(confrontoId)
+            .OrderBy(o => o.Data)
+            .ToListAsync();
+    }
 
-        public async Task<List<SugestaoDataConfrontoEntity>> ObterPorConfrontoAsync(Guid confrontoId)
-        {
-            var entities = await GetAllFromPartitionKeyAsync(confrontoId);
+    public async Task SalvarAsync(SugestaoDataConfrontoEntity entity)
+    {
+        await AddOrUpdateAsync(entity);
+    }
 
-            return entities.OrderBy(o => o.Data).ToList();
-        }
+    public async Task ExcluirPorConfrontoAsync(Guid confrontoId)
+    {
+        await DeleteAllAsync(confrontoId);
+    }
 
-        public async Task<SugestaoDataConfrontoEntity> SalvarAsync(SugestaoDataConfrontoEntity entity)
-        {
-            return await InsertOrMergeAsync(entity);
-        }
-
-        public async Task ExcluirPorConfrontoAsync(Guid confrontoId)
-        {
-            await DeleteAllFromPartitionKeyAsync(confrontoId);
-        }
-
-        public async Task ExcluirPorIdAsync(Guid sugestaoId)
-        {
-            await DeleteAsync(sugestaoId);
-        }
+    public async Task ExcluirPorIdAsync(Guid sugestaoId)
+    {
+        await DeleteAsync(sugestaoId);
     }
 }

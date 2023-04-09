@@ -1,54 +1,52 @@
-﻿using System;
+﻿using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
 using TorneioLeft4Dead2.Playoffs.Entidades;
 using TorneioLeft4Dead2.Playoffs.Repositorios;
 using TorneioLeft4Dead2.Storage.UnitOfWork;
-using TorneioLeft4Dead2.Storage.UnitOfWork.Commands;
 using TorneioLeft4Dead2.Storage.UnitOfWork.Repositories;
 
-namespace TorneioLeft4Dead2.Storage.Playoffs.Repositorios
+namespace TorneioLeft4Dead2.Storage.Playoffs.Repositorios;
+
+public class RepositorioPlayoffsStorage : BaseTableStorageRepository<PlayoffsEntity>, IRepositorioPlayoffs
 {
-    public class RepositorioPlayoffsStorage : BaseRepository<PlayoffsEntity>, IRepositorioPlayoffs
+    private const string TableName = "Playoffs";
+
+    public RepositorioPlayoffsStorage(IAzureTableStorageContext tableContext, IMemoryCache memoryCache)
+        : base(TableName, tableContext, memoryCache)
     {
-        private const string TableName = "Playoffs";
+    }
 
-        public RepositorioPlayoffsStorage(UnitOfWorkStorage unitOfWork, IMemoryCache memoryCache)
-            : base(unitOfWork, TableName, memoryCache)
-        {
-        }
+    public async Task<PlayoffsEntity> ObterPorIdAsync(Guid playoffsId)
+    {
+        var entity = await FindAsync(playoffsId);
 
-        public async Task<PlayoffsEntity> ObterPorIdAsync(Guid playoffsId)
-        {
-            var entity = await GetByRowKeyAsync(playoffsId.ToString().ToLower());
+        entity?.IniciarConfrontos();
 
-            entity?.IniciarConfrontos();
+        return entity;
+    }
 
-            return entity;
-        }
+    public async Task<List<PlayoffsEntity>> ObterPlayoffsAsync()
+    {
+        var entities = await GetAllAsync()
+            .OrderBy(o => o.Rodada)
+            .ThenBy(t => t.Ordem)
+            .ToListAsync();
 
-        public async Task<List<PlayoffsEntity>> ObterPlayoffsAsync()
-        {
-            var entities = (await GetAllAsync(QueryCommand.Default))
-                .OrderBy(o => o.Rodada)
-                .ThenBy(t => t.Ordem)
-                .ToList();
+        entities.ForEach(entity => entity.IniciarConfrontos());
 
-            entities.ForEach(entity => entity.IniciarConfrontos());
+        return entities;
+    }
 
-            return entities;
-        }
+    public async Task SalvarAsync(PlayoffsEntity entity)
+    {
+        await AddOrUpdateAsync(entity);
+    }
 
-        public async Task<PlayoffsEntity> SalvarAsync(PlayoffsEntity entity)
-        {
-            return await InsertOrMergeAsync(entity);
-        }
-
-        public async Task ExcluirAsync(Guid playoffsId)
-        {
-            await DeleteAsync(playoffsId.ToString().ToLower());
-        }
+    public async Task ExcluirAsync(Guid playoffsId)
+    {
+        await DeleteAsync(playoffsId);
     }
 }

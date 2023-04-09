@@ -6,44 +6,43 @@ using TorneioLeft4Dead2.Auth.Entities;
 using TorneioLeft4Dead2.Auth.Jwt.Models;
 using TorneioLeft4Dead2.Auth.Jwt.Services;
 
-namespace TorneioLeft4Dead2.Auth.Jwt
+namespace TorneioLeft4Dead2.Auth.Jwt;
+
+public static class UsuarioJwtService
 {
-    public static class UsuarioJwtService
+    public static PrettyToken CreateNewToken(UserEntity user)
     {
-        public static PrettyToken CreateNewToken(UserEntity user)
+        var identity = new GenericIdentity(user.Name);
+        var claims = new[]
         {
-            var identity = new GenericIdentity(user.Name);
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Jti, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Sub, user.Name),
-                new Claim("userId", user.Id.ToString()),
-                new Claim("name", user.Name),
-                new Claim("email", user.Email)
-            };
-            var claimsIdentity = new ClaimsIdentity(identity, claims);
+            new Claim(JwtRegisteredClaimNames.Jti, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Name),
+            new Claim("userId", user.Id.ToString()),
+            new Claim("name", user.Name),
+            new Claim("email", user.Email)
+        };
+        var claimsIdentity = new ClaimsIdentity(identity, claims);
 
-            var configuration = new UsuarioJwtConfiguration();
-            var secretKeyService = new JwtSecretKeyService(configuration);
-            var token = secretKeyService.CreatePrettyToken(claimsIdentity, DateTime.Now.AddYears(1));
+        var configuration = new UsuarioJwtConfiguration();
+        var secretKeyService = new JwtSecretKeyService(configuration);
+        var token = secretKeyService.CreatePrettyToken(claimsIdentity, DateTime.Now.AddYears(1));
 
-            return token;
-        }
+        return token;
+    }
 
-        public static bool IsValidToken(string token)
-        {
-            var configuration = new UsuarioJwtConfiguration();
-            var secretKeyService = new JwtSecretKeyService(configuration);
+    public static bool IsValidToken(string token)
+    {
+        var configuration = new UsuarioJwtConfiguration();
+        var secretKeyService = new JwtSecretKeyService(configuration);
 
-            return secretKeyService.IsValidToken(token);
-        }
+        return secretKeyService.IsValidToken(token);
+    }
 
-        public static ClaimsPrincipal ClaimsPrincipal(string token)
-        {
-            var configuration = new UsuarioJwtConfiguration();
-            var secretKeyService = new JwtSecretKeyService(configuration);
+    public static ClaimsPrincipal ClaimsPrincipal(string token)
+    {
+        var configuration = new UsuarioJwtConfiguration();
+        var secretKeyService = new JwtSecretKeyService(configuration);
 
-            return secretKeyService.ClaimsPrincipal(token);
-        }
+        return secretKeyService.ClaimsPrincipal(token);
     }
 }

@@ -4,15 +4,14 @@ using TorneioLeft4Dead2.Times.Commands;
 using TorneioLeft4Dead2.Times.Entidades;
 using TorneioLeft4Dead2.Times.Models;
 
-namespace TorneioLeft4Dead2.Times.Servicos
+namespace TorneioLeft4Dead2.Times.Servicos;
+
+public interface IServicoTime
 {
-    public interface IServicoTime
-    {
-        Task<TimeModel> ObterPorCodigoAsync(string codigo);
-        Task<List<TimeModel>> ObterTimesAsync();
-        Task<List<TimeEntity>> ObterClassificacaoAsync();
-        Task<TimeEntity> SalvarAsync(TimeEntity command);
-        Task<TimeEntity> SalvarAsync(TimeCommand command);
-        Task ExcluirAsync(string codigo);
-    }
+    Task<TimeModel> ObterPorCodigoAsync(string codigo);
+    Task<List<TimeModel>> ObterTimesAsync();
+    Task<List<TimeEntity>> ObterClassificacaoAsync();
+    Task<TimeEntity> SalvarAsync(TimeEntity command);
+    Task<TimeEntity> SalvarAsync(TimeCommand command);
+    Task ExcluirAsync(string codigo);
 }

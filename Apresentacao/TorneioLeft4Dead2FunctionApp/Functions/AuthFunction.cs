@@ -6,31 +6,30 @@ using TorneioLeft4Dead2.Auth.Commands;
 using TorneioLeft4Dead2.Auth.Services;
 using TorneioLeft4Dead2FunctionApp.Extensions;
 
-namespace TorneioLeft4Dead2FunctionApp.Functions
+namespace TorneioLeft4Dead2FunctionApp.Functions;
+
+public class AuthFunction
 {
-    public class AuthFunction
+    private readonly IAuthService _authService;
+
+    public AuthFunction(IAuthService authService)
     {
-        private readonly IAuthService _authService;
+        _authService = authService;
+    }
 
-        public AuthFunction(IAuthService authService)
+    [Function(nameof(AuthFunction) + "_" + nameof(AuthAsync))]
+    public async Task<HttpResponseData> AuthAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "auth")] HttpRequestData httpRequest)
+    {
+        try
         {
-            _authService = authService;
+            var command = await httpRequest.DeserializeBodyAsync<LoginCommand>();
+            var entity = await _authService.AuthAsync(command);
+
+            return await httpRequest.OkAsync(entity);
         }
-
-        [Function(nameof(AuthFunction) + "_" + nameof(Auth))]
-        public async Task<HttpResponseData> Auth([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "auth")] HttpRequestData httpRequest)
+        catch (Exception exception)
         {
-            try
-            {
-                var command = await httpRequest.DeserializeBodyAsync<LoginCommand>();
-                var entity = await _authService.AuthAsync(command);
-
-                return await httpRequest.OkAsync(entity);
-            }
-            catch (Exception exception)
-            {
-                return await httpRequest.BadRequestAsync(exception);
-            }
+            return await httpRequest.BadRequestAsync(exception);
         }
     }
 }

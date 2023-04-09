@@ -12,172 +12,171 @@ using TorneioLeft4Dead2.Shared.Constants;
 using TorneioLeft4Dead2.Times.Servicos;
 using TorneioLeft4Dead2FunctionApp.Extensions;
 
-namespace TorneioLeft4Dead2FunctionApp.Functions
+namespace TorneioLeft4Dead2FunctionApp.Functions;
+
+public class JogadoresFunction
 {
-    public class JogadoresFunction
+    private readonly IAuthContext _authContext;
+    private readonly IMemoryCache _memoryCache;
+    private readonly IRepositorioJogador _repositorioJogador;
+    private readonly IServicoJogador _servicoJogador;
+    private readonly IServicoSenhaJogador _servicoSenhaJogador;
+    private readonly IServicoTime _servicoTime;
+
+    public JogadoresFunction(IServicoJogador servicoJogador,
+        IServicoSenhaJogador servicoSenhaJogador,
+        IServicoTime servicoTime,
+        IRepositorioJogador repositorioJogador,
+        IAuthContext authContext,
+        IMemoryCache memoryCache)
     {
-        private readonly AuthContext _authContext;
-        private readonly IMemoryCache _memoryCache;
-        private readonly IRepositorioJogador _repositorioJogador;
-        private readonly IServicoJogador _servicoJogador;
-        private readonly IServicoSenhaJogador _servicoSenhaJogador;
-        private readonly IServicoTime _servicoTime;
+        _servicoJogador = servicoJogador;
+        _servicoSenhaJogador = servicoSenhaJogador;
+        _servicoTime = servicoTime;
+        _repositorioJogador = repositorioJogador;
+        _authContext = authContext;
+        _memoryCache = memoryCache;
+    }
 
-        public JogadoresFunction(IServicoJogador servicoJogador,
-            IServicoSenhaJogador servicoSenhaJogador,
-            IServicoTime servicoTime,
-            IRepositorioJogador repositorioJogador,
-            AuthContext authContext,
-            IMemoryCache memoryCache)
+    [Function(nameof(JogadoresFunction) + "_" + nameof(GetAsync))]
+    public async Task<HttpResponseData> GetAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "jogadores")] HttpRequestData httpRequest)
+    {
+        var entities = await _memoryCache.GetOrCreateAsync(MemoryCacheKeys.Jogadores, entry =>
         {
-            _servicoJogador = servicoJogador;
-            _servicoSenhaJogador = servicoSenhaJogador;
-            _servicoTime = servicoTime;
-            _repositorioJogador = repositorioJogador;
-            _authContext = authContext;
-            _memoryCache = memoryCache;
-        }
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1);
 
-        [Function(nameof(JogadoresFunction) + "_" + nameof(Get))]
-        public async Task<HttpResponseData> Get([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "jogadores")] HttpRequestData httpRequest)
+            return _repositorioJogador.ObterJogadoresAsync();
+        });
+
+        return await httpRequest.OkAsync(entities);
+    }
+
+    [Function(nameof(JogadoresFunction) + "_" + nameof(DisponiveisAsync))]
+    public async Task<HttpResponseData> DisponiveisAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "jogadores/disponiveis")] HttpRequestData httpRequest)
+    {
+        var entities = await _servicoJogador.JogadoresDisponiveisAsync();
+
+        return await httpRequest.OkAsync(entities);
+    }
+
+    [Function(nameof(JogadoresFunction) + "_" + nameof(CapitaesAsync))]
+    public async Task<HttpResponseData> CapitaesAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "jogadores/capitaes")] HttpRequestData httpRequest)
+    {
+        var times = await _servicoTime.ObterTimesAsync();
+        var capitaes = times.Select(t => t.Capitao).Where(capitao => capitao != null).ToList();
+
+        return await httpRequest.OkAsync(capitaes);
+    }
+
+    [Function(nameof(JogadoresFunction) + "_" + nameof(PostAsync))]
+    public async Task<HttpResponseData> PostAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "jogadores")] HttpRequestData httpRequest)
+    {
+        try
         {
-            var entities = await _memoryCache.GetOrCreateAsync(MemoryCacheKeys.Jogadores, entry =>
-            {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1);
-
-                return _repositorioJogador.ObterJogadoresAsync();
-            });
-
-            return await httpRequest.OkAsync(entities);
-        }
-
-        [Function(nameof(JogadoresFunction) + "_" + nameof(Disponiveis))]
-        public async Task<HttpResponseData> Disponiveis([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "jogadores/disponiveis")] HttpRequestData httpRequest)
-        {
-            var entities = await _servicoJogador.JogadoresDisponiveisAsync();
-
-            return await httpRequest.OkAsync(entities);
-        }
-
-        [Function(nameof(JogadoresFunction) + "_" + nameof(Capitaes))]
-        public async Task<HttpResponseData> Capitaes([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "jogadores/capitaes")] HttpRequestData httpRequest)
-        {
-            var times = await _servicoTime.ObterTimesAsync();
-            var capitaes = times.Select(t => t.Capitao).Where(capitao => capitao != null).ToList();
-
-            return await httpRequest.OkAsync(capitaes);
-        }
-
-        [Function(nameof(JogadoresFunction) + "_" + nameof(Post))]
-        public async Task<HttpResponseData> Post([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "jogadores")] HttpRequestData httpRequest)
-        {
-            try
-            {
-                var claimsPrincipal = httpRequest.CurrentUser();
-                if (claimsPrincipal == null)
-                    return httpRequest.Unauthorized();
-
-                await _authContext.FillUserAsync(claimsPrincipal);
-                _authContext.GrantPermission();
-
-                var command = await httpRequest.DeserializeBodyAsync<JogadorCommand>();
-                var entity = await _servicoJogador.SalvarAsync(command);
-
-                return await httpRequest.OkAsync(entity);
-            }
-            catch (UnauthorizedAccessException)
-            {
+            var claimsPrincipal = httpRequest.CurrentUser();
+            if (claimsPrincipal == null)
                 return httpRequest.Unauthorized();
-            }
-            catch (Exception exception)
-            {
-                return await httpRequest.BadRequestAsync(exception);
-            }
-        }
 
-        [Function(nameof(JogadoresFunction) + "_" + nameof(GerarSenha))]
-        public async Task<HttpResponseData> GerarSenha([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "jogadores/{steamId}/gerar-senha")] HttpRequestData httpRequest,
-            string steamId)
+            await _authContext.FillUserAsync(claimsPrincipal);
+            _authContext.GrantPermission();
+
+            var command = await httpRequest.DeserializeBodyAsync<JogadorCommand>();
+            var entity = await _servicoJogador.SalvarAsync(command);
+
+            return await httpRequest.OkAsync(entity);
+        }
+        catch (UnauthorizedAccessException)
         {
-            try
-            {
-                var claimsPrincipal = httpRequest.CurrentUser();
-                if (claimsPrincipal == null)
-                    return httpRequest.Unauthorized();
-
-                await _authContext.FillUserAsync(claimsPrincipal);
-                _authContext.GrantPermission();
-
-                var model = await _servicoSenhaJogador.GerarSenhaAsync(steamId);
-
-                return await httpRequest.OkAsync(model);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return httpRequest.Unauthorized();
-            }
-            catch (Exception exception)
-            {
-                return await httpRequest.BadRequestAsync(exception);
-            }
+            return httpRequest.Unauthorized();
         }
-
-        [Function(nameof(JogadoresFunction) + "_" + nameof(VerificarAutenticacao))]
-        public async Task<HttpResponseData> VerificarAutenticacao([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "jogadores/verificar-autenticacao")] HttpRequestData httpRequest)
+        catch (Exception exception)
         {
-            try
-            {
-                var command = await httpRequest.DeserializeBodyAsync<AutenticarJogadorCommand>();
-                if (command == null)
-                    return httpRequest.Unauthorized();
-
-                var autenticado = await _servicoSenhaJogador.AutenticadoAsync(command);
-
-                return await httpRequest.OkAsync(new {autenticado});
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return httpRequest.Unauthorized();
-            }
-            catch (Exception exception)
-            {
-                return await httpRequest.BadRequestAsync(exception);
-            }
+            return await httpRequest.BadRequestAsync(exception);
         }
+    }
 
-        [Function(nameof(JogadoresFunction) + "_" + nameof(Delete))]
-        public async Task<HttpResponseData> Delete([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "jogadores/{steamId}")] HttpRequestData httpRequest,
-            string steamId)
+    [Function(nameof(JogadoresFunction) + "_" + nameof(GerarSenhaAsync))]
+    public async Task<HttpResponseData> GerarSenhaAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "jogadores/{steamId}/gerar-senha")] HttpRequestData httpRequest,
+        string steamId)
+    {
+        try
         {
-            try
-            {
-                var claimsPrincipal = httpRequest.CurrentUser();
-                if (claimsPrincipal == null)
-                    return httpRequest.Unauthorized();
-
-                await _authContext.FillUserAsync(claimsPrincipal);
-                _authContext.GrantPermission();
-
-                await _servicoJogador.ExcluirAsync(steamId);
-
-                return httpRequest.Ok();
-            }
-            catch (UnauthorizedAccessException)
-            {
+            var claimsPrincipal = httpRequest.CurrentUser();
+            if (claimsPrincipal == null)
                 return httpRequest.Unauthorized();
-            }
-            catch (Exception exception)
-            {
-                return await httpRequest.BadRequestAsync(exception);
-            }
+
+            await _authContext.FillUserAsync(claimsPrincipal);
+            _authContext.GrantPermission();
+
+            var model = await _servicoSenhaJogador.GerarSenhaAsync(steamId);
+
+            return await httpRequest.OkAsync(model);
         }
+        catch (UnauthorizedAccessException)
+        {
+            return httpRequest.Unauthorized();
+        }
+        catch (Exception exception)
+        {
+            return await httpRequest.BadRequestAsync(exception);
+        }
+    }
+
+    [Function(nameof(JogadoresFunction) + "_" + nameof(VerificarAutenticacaoAsync))]
+    public async Task<HttpResponseData> VerificarAutenticacaoAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "jogadores/verificar-autenticacao")] HttpRequestData httpRequest)
+    {
+        try
+        {
+            var command = await httpRequest.DeserializeBodyAsync<AutenticarJogadorCommand>();
+            if (command == null)
+                return httpRequest.Unauthorized();
+
+            var autenticado = await _servicoSenhaJogador.AutenticadoAsync(command);
+
+            return await httpRequest.OkAsync(new { autenticado });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return httpRequest.Unauthorized();
+        }
+        catch (Exception exception)
+        {
+            return await httpRequest.BadRequestAsync(exception);
+        }
+    }
+
+    [Function(nameof(JogadoresFunction) + "_" + nameof(DeleteAsync))]
+    public async Task<HttpResponseData> DeleteAsync([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "jogadores/{steamId}")] HttpRequestData httpRequest,
+        string steamId)
+    {
+        try
+        {
+            var claimsPrincipal = httpRequest.CurrentUser();
+            if (claimsPrincipal == null)
+                return httpRequest.Unauthorized();
+
+            await _authContext.FillUserAsync(claimsPrincipal);
+            _authContext.GrantPermission();
+
+            await _servicoJogador.ExcluirAsync(steamId);
+
+            return httpRequest.Ok();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return httpRequest.Unauthorized();
+        }
+        catch (Exception exception)
+        {
+            return await httpRequest.BadRequestAsync(exception);
+        }
+    }
 
 #if !DEBUG
-        [Function(nameof(JogadoresFunction) + "_" + nameof(AtualizarJogadores))]
-        public async Task AtualizarJogadores([TimerTrigger("0 */5 * * * *")] TimerInfo timerInfo)
-        {
-            await _servicoJogador.AtualizarJogadoresAsync();
-        }
-#endif
+    [Function(nameof(JogadoresFunction) + "_" + nameof(AtualizarJogadoresAsync))]
+    public async Task AtualizarJogadoresAsync([TimerTrigger("0 */5 * * * *")] TimerInfo timerInfo)
+    {
+        await _servicoJogador.AtualizarJogadoresAsync();
     }
+#endif
 }

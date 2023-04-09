@@ -2,10 +2,9 @@
 using TorneioLeft4Dead2.Auth.Commands;
 using TorneioLeft4Dead2.Auth.Jwt.Models;
 
-namespace TorneioLeft4Dead2.Auth.Services
+namespace TorneioLeft4Dead2.Auth.Services;
+
+public interface IAuthService
 {
-    public interface IAuthService
-    {
-        Task<PrettyToken> AuthAsync(LoginCommand command);
-    }
+    Task<PrettyToken> AuthAsync(LoginCommand command);
 }

@@ -6,32 +6,31 @@ using TorneioLeft4Dead2.Confrontos.Enums;
 using TorneioLeft4Dead2.Confrontos.Repositorios;
 using TorneioLeft4Dead2.DataConfronto.Entidades;
 
-namespace TorneioLeft4Dead2.DataConfronto.Validators
+namespace TorneioLeft4Dead2.DataConfronto.Validators;
+
+public class PeriodoConfrontoEntityValidator : AbstractValidator<PeriodoConfrontoEntity>
 {
-    public class PeriodoConfrontoEntityValidator : AbstractValidator<PeriodoConfrontoEntity>
+    private readonly IRepositorioConfronto _repositorioConfronto;
+
+    public PeriodoConfrontoEntityValidator(IRepositorioConfronto repositorioConfronto)
     {
-        private readonly IRepositorioConfronto _repositorioConfronto;
+        _repositorioConfronto = repositorioConfronto;
 
-        public PeriodoConfrontoEntityValidator(IRepositorioConfronto repositorioConfronto)
-        {
-            _repositorioConfronto = repositorioConfronto;
+        RuleFor(r => r.ConfrontoId)
+            .NotEmpty()
+            .MustAsync(ConfrontoComStatusAguardandoAsync)
+            .WithMessage("Apenas confrontos com status de 'Aguardando' podem ter as datas alteradas");
 
-            RuleFor(r => r.ConfrontoId)
-                .NotEmpty()
-                .MustAsync(ConfrontoComStatusAguardandoAsync)
-                .WithMessage("Apenas confrontos com status de 'Aguardando' podem ter as datas alteradas");
+        RuleFor(r => r.Fim)
+            .GreaterThan(f => f.Inicio);
+    }
 
-            RuleFor(r => r.Fim)
-                .GreaterThan(f => f.Inicio);
-        }
+    private async Task<bool> ConfrontoComStatusAguardandoAsync(Guid confrontoId, CancellationToken cancellationToken)
+    {
+        var confronto = await _repositorioConfronto.ObterPorIdAsync(confrontoId);
+        if (confronto == null)
+            return false;
 
-        private async Task<bool> ConfrontoComStatusAguardandoAsync(Guid confrontoId, CancellationToken cancellationToken)
-        {
-            var confronto = await _repositorioConfronto.ObterPorIdAsync(confrontoId);
-            if (confronto == null)
-                return false;
-
-            return confronto.Status == (int) StatusConfronto.Aguardando;
-        }
+        return confronto.Status == (int)StatusConfronto.Aguardando;
     }
 }
