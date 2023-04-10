@@ -112,6 +112,58 @@ public class ConfrontosFunction
         }
     }
 
+    [Function(nameof(ConfrontosFunction) + "_" + nameof(LimparCampanhasAsync))]
+    public async Task<HttpResponseData> LimparCampanhasAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "confrontos/limpar-campanhas")] HttpRequestData httpRequest)
+    {
+        try
+        {
+            var claimsPrincipal = httpRequest.CurrentUser();
+            if (claimsPrincipal == null)
+                return httpRequest.Unauthorized();
+
+            await _authContext.FillUserAsync(claimsPrincipal);
+            _authContext.GrantPermission();
+
+            await _servicoConfronto.LimparCampanhasAsync();
+
+            return httpRequest.Ok();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return httpRequest.Unauthorized();
+        }
+        catch (Exception exception)
+        {
+            return await httpRequest.BadRequestAsync(exception);
+        }
+    }
+
+    [Function(nameof(ConfrontosFunction) + "_" + nameof(SortearCampanhasAsync))]
+    public async Task<HttpResponseData> SortearCampanhasAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "confrontos/sortear-campanhas")] HttpRequestData httpRequest)
+    {
+        try
+        {
+            var claimsPrincipal = httpRequest.CurrentUser();
+            if (claimsPrincipal == null)
+                return httpRequest.Unauthorized();
+
+            await _authContext.FillUserAsync(claimsPrincipal);
+            _authContext.GrantPermission();
+
+            var campanhas = await _servicoConfronto.SortearCampanhasAsync();
+
+            return await httpRequest.OkAsync(campanhas);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return httpRequest.Unauthorized();
+        }
+        catch (Exception exception)
+        {
+            return await httpRequest.BadRequestAsync(exception);
+        }
+    }
+
     [Function(nameof(ConfrontosFunction) + "_" + nameof(DeleteAsync))]
     public async Task<HttpResponseData> DeleteAsync([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "confrontos/{confrontoId:guid}")] HttpRequestData httpRequest,
         Guid confrontoId)

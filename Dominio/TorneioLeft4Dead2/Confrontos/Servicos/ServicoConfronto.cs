@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
+using TorneioLeft4Dead2.Campanhas.Entidades;
 using TorneioLeft4Dead2.Campanhas.Repositorios;
 using TorneioLeft4Dead2.Confrontos.Builders;
 using TorneioLeft4Dead2.Confrontos.Commands;
@@ -117,6 +118,40 @@ public class ServicoConfronto : IServicoConfronto
     public async Task ExcluirAsync(Guid confrontoId)
     {
         await _repositorioConfronto.ExcluirAsync(confrontoId);
+    }
+
+    public async Task LimparCampanhasAsync()
+    {
+        var confrontos = await _repositorioConfronto.ObterConfrontosAsync();
+
+        foreach (var confronto in confrontos)
+            confronto.CodigoCampanha = null;
+
+        foreach (var confronto in confrontos)
+        {
+            await _repositorioConfronto.ExcluirAsync(confronto.Id);
+            await _repositorioConfronto.SalvarAsync(confronto);
+        }
+    }
+
+    public async Task<List<CampanhaEntity>> SortearCampanhasAsync()
+    {
+        var confrontos = await _repositorioConfronto.ObterConfrontosAsync();
+        var rodadas = confrontos.GroupBy(g => g.Rodada).ToList();
+        var campanhas = await _repositorioCampanha.ObterCampanhasAsync();
+        var campanhasSorteadas = campanhas.OrderBy(_ => Guid.NewGuid()).Take(rodadas.Count).ToList();
+
+        for (var i = 0; i < rodadas.Count; i++)
+            foreach (var confronto in rodadas[i])
+                confronto.CodigoCampanha = campanhasSorteadas[i].Codigo;
+
+        foreach (var confronto in confrontos)
+        {
+            await _repositorioConfronto.ExcluirAsync(confronto.Id);
+            await _repositorioConfronto.SalvarAsync(confronto);
+        }
+
+        return campanhasSorteadas;
     }
 
     private async Task AtualizarPlacarAsync()
