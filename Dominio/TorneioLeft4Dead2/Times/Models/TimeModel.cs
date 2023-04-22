@@ -13,5 +13,6 @@ public class TimeModel : TimeEntity
     }
 
     public JogadorEntity Capitao => Jogadores?.FirstOrDefault();
+    public JogadorEntity Suporte => Jogadores?.Skip(1).FirstOrDefault();
     public List<JogadorEntity> Jogadores { get; set; }
 }

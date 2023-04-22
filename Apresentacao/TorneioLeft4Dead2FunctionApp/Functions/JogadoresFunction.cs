@@ -68,6 +68,15 @@ public class JogadoresFunction
         return await httpRequest.OkAsync(capitaes);
     }
 
+    [Function(nameof(JogadoresFunction) + "_" + nameof(SuportesAsync))]
+    public async Task<HttpResponseData> SuportesAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "jogadores/suportes")] HttpRequestData httpRequest)
+    {
+        var times = await _servicoTime.ObterTimesAsync();
+        var suportes = times.Select(t => t.Suporte).Where(suporte => suporte != null).ToList();
+
+        return await httpRequest.OkAsync(suportes);
+    }
+
     [Function(nameof(JogadoresFunction) + "_" + nameof(PostAsync))]
     public async Task<HttpResponseData> PostAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "jogadores")] HttpRequestData httpRequest)
     {
