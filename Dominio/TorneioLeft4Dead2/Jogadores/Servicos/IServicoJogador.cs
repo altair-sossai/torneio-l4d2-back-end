@@ -11,5 +11,7 @@ public interface IServicoJogador
     Task<List<JogadorEntity>> ObterPorTimeAsync(string codigo);
     Task AtualizarJogadoresAsync();
     Task<JogadorEntity> SalvarAsync(JogadorCommand command);
+    Task SortearCapitaesAsync();
+    Task SortearSuportesAsync();
     Task ExcluirAsync(string steamId);
 }

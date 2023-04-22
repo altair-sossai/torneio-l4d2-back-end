@@ -84,6 +84,38 @@ public class ServicoJogador : IServicoJogador
         return entity;
     }
 
+    public async Task SortearCapitaesAsync()
+    {
+        var timesJogadores = await _repositorioTimeJogador.ObterTodosAsync();
+        var timesJogadoresCapitaes = timesJogadores.Where(w => w.Ordem == 0).ToList();
+        var capitaes = timesJogadoresCapitaes.Select(s => s.Jogador).OrderBy(_ => Guid.NewGuid()).ToList();
+
+        for (var i = 0; i < timesJogadoresCapitaes.Count; i++)
+        {
+            var timeJogador = timesJogadoresCapitaes[i];
+            await _repositorioTimeJogador.DesvincularJogadorAsync(timeJogador.Time, timeJogador.Jogador);
+
+            timeJogador.Jogador = capitaes[i];
+            await _repositorioTimeJogador.SalvarAsync(timeJogador);
+        }
+    }
+
+    public async Task SortearSuportesAsync()
+    {
+        var timesJogadores = await _repositorioTimeJogador.ObterTodosAsync();
+        var timesJogadoresSuportes = timesJogadores.Where(w => w.Ordem == 1).ToList();
+        var suportes = timesJogadoresSuportes.Select(s => s.Jogador).OrderBy(_ => Guid.NewGuid()).ToList();
+
+        for (var i = 0; i < timesJogadoresSuportes.Count; i++)
+        {
+            var timeJogador = timesJogadoresSuportes[i];
+            await _repositorioTimeJogador.DesvincularJogadorAsync(timeJogador.Time, timeJogador.Jogador);
+
+            timeJogador.Jogador = suportes[i];
+            await _repositorioTimeJogador.SalvarAsync(timeJogador);
+        }
+    }
+
     public async Task ExcluirAsync(string steamId)
     {
         await _repositorioJogador.ExcluirAsync(steamId);

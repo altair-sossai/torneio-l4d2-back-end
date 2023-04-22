@@ -104,6 +104,58 @@ public class JogadoresFunction
         }
     }
 
+    [Function(nameof(JogadoresFunction) + "_" + nameof(SortearCapitaesAsync))]
+    public async Task<HttpResponseData> SortearCapitaesAsync([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "jogadores/sortear-capitaes")] HttpRequestData httpRequest)
+    {
+        try
+        {
+            var claimsPrincipal = httpRequest.CurrentUser();
+            if (claimsPrincipal == null)
+                return httpRequest.Unauthorized();
+
+            await _authContext.FillUserAsync(claimsPrincipal);
+            _authContext.GrantPermission();
+
+            await _servicoJogador.SortearCapitaesAsync();
+
+            return httpRequest.Ok();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return httpRequest.Unauthorized();
+        }
+        catch (Exception exception)
+        {
+            return await httpRequest.BadRequestAsync(exception);
+        }
+    }
+
+    [Function(nameof(JogadoresFunction) + "_" + nameof(SortearSuportesAsync))]
+    public async Task<HttpResponseData> SortearSuportesAsync([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "jogadores/sortear-suportes")] HttpRequestData httpRequest)
+    {
+        try
+        {
+            var claimsPrincipal = httpRequest.CurrentUser();
+            if (claimsPrincipal == null)
+                return httpRequest.Unauthorized();
+
+            await _authContext.FillUserAsync(claimsPrincipal);
+            _authContext.GrantPermission();
+
+            await _servicoJogador.SortearSuportesAsync();
+
+            return httpRequest.Ok();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return httpRequest.Unauthorized();
+        }
+        catch (Exception exception)
+        {
+            return await httpRequest.BadRequestAsync(exception);
+        }
+    }
+
     [Function(nameof(JogadoresFunction) + "_" + nameof(GerarSenhaAsync))]
     public async Task<HttpResponseData> GerarSenhaAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "jogadores/{steamId}/gerar-senha")] HttpRequestData httpRequest,
         string steamId)
