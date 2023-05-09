@@ -6,4 +6,5 @@ public class CampanhaEntity
     public string Nome { get; set; }
     public string NomeOriginal { get; set; }
     public int PontuacaoMaxima { get; set; }
+    public int QuantidadeMapas { get; set; }
 }

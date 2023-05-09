@@ -14,98 +14,112 @@ public class RepositorioCampanha : IRepositorioCampanha
             Codigo = 1,
             Nome = "Shopping da morte",
             NomeOriginal = "Dead center",
-            PontuacaoMaxima = 3000
+            PontuacaoMaxima = 3000,
+            QuantidadeMapas = 4
         },
         new CampanhaEntity
         {
             Codigo = 2,
             Nome = "A passagem",
             NomeOriginal = "The passing",
-            PontuacaoMaxima = 2100
+            PontuacaoMaxima = 2100,
+            QuantidadeMapas = 3
         },
         new CampanhaEntity
         {
             Codigo = 3,
             Nome = "Parque sombrio",
             NomeOriginal = "Dark carnival",
-            PontuacaoMaxima = 3500
+            PontuacaoMaxima = 3500,
+            QuantidadeMapas = 5
         },
         new CampanhaEntity
         {
             Codigo = 4,
             Nome = "Febre do pântano",
             NomeOriginal = "Swamp fever",
-            PontuacaoMaxima = 3000
+            PontuacaoMaxima = 3000,
+            QuantidadeMapas = 4
         },
         new CampanhaEntity
         {
             Codigo = 5,
             Nome = "Tempestade",
             NomeOriginal = "Hard rain",
-            PontuacaoMaxima = 3500
+            PontuacaoMaxima = 3500,
+            QuantidadeMapas = 5
         },
         new CampanhaEntity
         {
             Codigo = 6,
             Nome = "A paróquia",
             NomeOriginal = "The parish",
-            PontuacaoMaxima = 3500
+            PontuacaoMaxima = 3500,
+            QuantidadeMapas = 5
         },
         new CampanhaEntity
         {
             Codigo = 7,
             Nome = "Córregos gelados",
             NomeOriginal = "Cold stream",
-            PontuacaoMaxima = 3000
+            PontuacaoMaxima = 3000,
+            QuantidadeMapas = 4
         },
         new CampanhaEntity
         {
             Codigo = 8,
             Nome = "Sem misericórdia",
             NomeOriginal = "No mercy",
-            PontuacaoMaxima = 3500
+            PontuacaoMaxima = 3500,
+            QuantidadeMapas = 5
         },
         new CampanhaEntity
         {
             Codigo = 9,
             Nome = "Contagem de corpos",
             NomeOriginal = "Death tool",
-            PontuacaoMaxima = 3500
+            PontuacaoMaxima = 3500,
+            QuantidadeMapas = 5
         },
         new CampanhaEntity
         {
             Codigo = 10,
             Nome = "Aeromorto",
             NomeOriginal = "Dead air",
-            PontuacaoMaxima = 3500
+            PontuacaoMaxima = 3500,
+            QuantidadeMapas = 5
         },
         new CampanhaEntity
         {
             Codigo = 11,
             Nome = "Colheita de sangue",
             NomeOriginal = "Blood harvest",
-            PontuacaoMaxima = 3500
+            PontuacaoMaxima = 3500,
+            QuantidadeMapas = 5
         },
         new CampanhaEntity
         {
             Codigo = 12,
             Nome = "Rota de colisão",
             NomeOriginal = "Crash course",
-            PontuacaoMaxima = 1300
+            PontuacaoMaxima = 1300,
+            QuantidadeMapas = 2
         },
         new CampanhaEntity
         {
             Codigo = 13,
             Nome = "O sacrifício",
             NomeOriginal = "The sacrifice",
-            PontuacaoMaxima = 2100
+            PontuacaoMaxima = 2100,
+            QuantidadeMapas = 3
         },
         new CampanhaEntity
         {
             Codigo = 14,
             Nome = "O último confronto",
             NomeOriginal = "The last stand",
-            PontuacaoMaxima = 2000
+            PontuacaoMaxima = 2000,
+            QuantidadeMapas = 2
         }
     };
 

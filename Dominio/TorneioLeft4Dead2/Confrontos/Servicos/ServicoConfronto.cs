@@ -139,7 +139,11 @@ public class ServicoConfronto : IServicoConfronto
         var confrontos = await _repositorioConfronto.ObterConfrontosAsync();
         var rodadas = confrontos.GroupBy(g => g.Rodada).ToList();
         var campanhas = await _repositorioCampanha.ObterCampanhasAsync();
-        var campanhasSorteadas = campanhas.OrderBy(_ => Guid.NewGuid()).Take(rodadas.Count).ToList();
+        var campanhasSorteadas = campanhas
+            .Where(c => c.QuantidadeMapas >= 4)
+            .OrderBy(_ => Guid.NewGuid())
+            .Take(rodadas.Count)
+            .ToList();
 
         for (var i = 0; i < rodadas.Count; i++)
             foreach (var confronto in rodadas[i])
