@@ -42,6 +42,8 @@ public class ConfrontoEntity : ITableEntity
         }
     }
 
+    public string InicioEstatistica { get; set; }
+    public string FimEstatistica { get; set; }
     public int PontosConquistadosTimeA { get; set; }
     public int PontosConquistadosTimeB { get; set; }
     public int PenalidadeTimeA { get; set; }

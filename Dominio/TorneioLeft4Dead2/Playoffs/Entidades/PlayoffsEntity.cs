@@ -81,6 +81,8 @@ public class PlayoffsEntity : ITableEntity
     public int? Confronto01CodigoCampanha { get; set; }
     public DateTime? Confronto01Data { get; set; }
     public int? Confronto01Status { get; set; }
+    public string Confronto01InicioEstatistica { get; set; }
+    public string Confronto01FimEstatistica { get; set; }
     public int? Confronto01PontosConquistadosTimeA { get; set; }
     public int? Confronto01PontosConquistadosTimeB { get; set; }
     public int? Confronto01PenalidadeTimeA { get; set; }
@@ -92,6 +94,8 @@ public class PlayoffsEntity : ITableEntity
     public int? Confronto02CodigoCampanha { get; set; }
     public DateTime? Confronto02Data { get; set; }
     public int? Confronto02Status { get; set; }
+    public string Confronto02InicioEstatistica { get; set; }
+    public string Confronto02FimEstatistica { get; set; }
     public int? Confronto02PontosConquistadosTimeA { get; set; }
     public int? Confronto02PontosConquistadosTimeB { get; set; }
     public int? Confronto02PenalidadeTimeA { get; set; }
@@ -103,6 +107,8 @@ public class PlayoffsEntity : ITableEntity
     public int? Confronto03CodigoCampanha { get; set; }
     public DateTime? Confronto03Data { get; set; }
     public int? Confronto03Status { get; set; }
+    public string Confronto03InicioEstatistica { get; set; }
+    public string Confronto03FimEstatistica { get; set; }
     public int? Confronto03PontosConquistadosTimeA { get; set; }
     public int? Confronto03PontosConquistadosTimeB { get; set; }
     public int? Confronto03PenalidadeTimeA { get; set; }
@@ -127,6 +133,8 @@ public class PlayoffsEntity : ITableEntity
                 CodigoCampanha = Confronto01CodigoCampanha,
                 Data = Confronto01Data,
                 Status = Confronto01Status ?? 0,
+                InicioEstatistica = Confronto01InicioEstatistica,
+                FimEstatistica = Confronto01FimEstatistica,
                 PontosConquistadosTimeA = Confronto01PontosConquistadosTimeA ?? 0,
                 PontosConquistadosTimeB = Confronto01PontosConquistadosTimeB ?? 0,
                 PenalidadeTimeA = Confronto01PenalidadeTimeA ?? 0,
@@ -138,6 +146,8 @@ public class PlayoffsEntity : ITableEntity
                 CodigoCampanha = Confronto02CodigoCampanha,
                 Data = Confronto02Data,
                 Status = Confronto02Status ?? 0,
+                InicioEstatistica = Confronto02InicioEstatistica,
+                FimEstatistica = Confronto02FimEstatistica,
                 PontosConquistadosTimeA = Confronto02PontosConquistadosTimeA ?? 0,
                 PontosConquistadosTimeB = Confronto02PontosConquistadosTimeB ?? 0,
                 PenalidadeTimeA = Confronto02PenalidadeTimeA ?? 0,
@@ -149,6 +159,8 @@ public class PlayoffsEntity : ITableEntity
                 CodigoCampanha = Confronto03CodigoCampanha,
                 Data = Confronto03Data,
                 Status = Confronto03Status ?? 0,
+                InicioEstatistica = Confronto03InicioEstatistica,
+                FimEstatistica = Confronto03FimEstatistica,
                 PontosConquistadosTimeA = Confronto03PontosConquistadosTimeA ?? 0,
                 PontosConquistadosTimeB = Confronto03PontosConquistadosTimeB ?? 0,
                 PenalidadeTimeA = Confronto03PenalidadeTimeA ?? 0,
@@ -169,6 +181,8 @@ public class PlayoffsEntity : ITableEntity
         Confronto01CodigoCampanha = confronto01?.CodigoCampanha;
         Confronto01Data = confronto01?.Data;
         Confronto01Status = confronto01?.Status;
+        Confronto01InicioEstatistica = confronto01?.InicioEstatistica;
+        Confronto01FimEstatistica = confronto01?.FimEstatistica;
 
         if (Confronto01Status == (int?)StatusConfronto.Aguardando)
         {
@@ -193,6 +207,8 @@ public class PlayoffsEntity : ITableEntity
         Confronto02CodigoCampanha = confronto02?.CodigoCampanha;
         Confronto02Data = confronto02?.Data;
         Confronto02Status = confronto02?.Status;
+        Confronto02InicioEstatistica = confronto02?.InicioEstatistica;
+        Confronto02FimEstatistica = confronto02?.FimEstatistica;
 
         if (Confronto02Status == (int?)StatusConfronto.Aguardando)
         {
@@ -232,6 +248,8 @@ public class PlayoffsEntity : ITableEntity
         {
             Confronto03Data = confronto03?.Data;
             Confronto03Status = confronto03?.Status;
+            Confronto03InicioEstatistica = confronto03?.InicioEstatistica;
+            Confronto03FimEstatistica = confronto03?.FimEstatistica;
 
             if (Confronto03Status == (int?)StatusConfronto.Aguardando)
             {
@@ -259,6 +277,8 @@ public class PlayoffsEntity : ITableEntity
         public int? CodigoCampanha { get; set; }
         public DateTime? Data { get; set; }
         public int Status { get; set; }
+        public string InicioEstatistica { get; set; }
+        public string FimEstatistica { get; set; }
         public int PontosConquistadosTimeA { get; set; }
         public int PontosConquistadosTimeB { get; set; }
         public int PenalidadeTimeA { get; set; }

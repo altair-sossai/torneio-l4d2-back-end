@@ -25,6 +25,8 @@ public class PlayoffsCommand
         public int? CodigoCampanha { get; set; }
         public DateTime? Data { get; set; }
         public StatusConfronto Status { get; set; }
+        public string InicioEstatistica { get; set; }
+        public string FimEstatistica { get; set; }
         public int PontosConquistadosTimeA { get; set; }
         public int PontosConquistadosTimeB { get; set; }
         public int PenalidadeTimeA { get; set; }
