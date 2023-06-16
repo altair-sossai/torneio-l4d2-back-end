@@ -1,20 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.2" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Scrutor" Version="4.2.2" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.2" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+        <PackageReference Include="Scrutor" Version="4.2.2" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\TorneioLeft4Dead2.Steam\TorneioLeft4Dead2.Steam.csproj" />
-    <ProjectReference Include="..\TorneioLeft4Dead2.Storage\TorneioLeft4Dead2.Storage.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\TorneioLeft4Dead2.PlayStats\TorneioLeft4Dead2.PlayStats.csproj" />
+        <ProjectReference Include="..\TorneioLeft4Dead2.Steam\TorneioLeft4Dead2.Steam.csproj" />
+        <ProjectReference Include="..\TorneioLeft4Dead2.Storage\TorneioLeft4Dead2.Storage.csproj" />
+    </ItemGroup>
 
 </Project>

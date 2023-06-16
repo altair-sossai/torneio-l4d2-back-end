@@ -10,11 +10,12 @@
         <PackageReference Include="FluentValidation" Version="11.5.2" />
         <PackageReference Include="Azure.Storage.Blobs" Version="12.16.0" />
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.30.0" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.31.0" />
         <PackageReference Include="Flurl" Version="3.0.7" />
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\TorneioLeft4Dead2.PlayStats\TorneioLeft4Dead2.PlayStats.csproj" />
         <ProjectReference Include="..\TorneioLeft4Dead2.Steam\TorneioLeft4Dead2.Steam.csproj" />
     </ItemGroup>
 

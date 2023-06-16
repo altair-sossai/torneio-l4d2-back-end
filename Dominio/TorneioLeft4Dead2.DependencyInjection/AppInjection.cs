@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using TorneioLeft4Dead2.PlayStats.Context;
 using TorneioLeft4Dead2.Steam.Context;
 
 namespace TorneioLeft4Dead2.DependencyInjection;
@@ -23,5 +24,7 @@ public static class AppInjection
 
         services.AddScoped(_ => SteamContext.PlayerService);
         services.AddScoped(_ => SteamContext.SteamUserService);
+
+        services.AddScoped(_ => PlayStatsContext.MatchesService);
     }
 }

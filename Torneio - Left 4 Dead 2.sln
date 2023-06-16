@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31702.278
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33801.468
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apresentacao", "Apresentacao", "{A8EAB8A6-198B-4DE3-883F-748F771549C4}"
 EndProject
@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".dev-ops", ".dev-ops", "{1D
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorneioLeft4Dead2.Steam", "Dominio\TorneioLeft4Dead2.Steam\TorneioLeft4Dead2.Steam.csproj", "{C8453BDE-0B13-4D7E-ABDC-5BCB066118F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorneioLeft4Dead2.PlayStats", "Dominio\TorneioLeft4Dead2.PlayStats\TorneioLeft4Dead2.PlayStats.csproj", "{F3576C04-462A-4E3B-9374-A5F6E14F0C0A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +50,10 @@ Global
 		{C8453BDE-0B13-4D7E-ABDC-5BCB066118F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8453BDE-0B13-4D7E-ABDC-5BCB066118F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8453BDE-0B13-4D7E-ABDC-5BCB066118F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3576C04-462A-4E3B-9374-A5F6E14F0C0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3576C04-462A-4E3B-9374-A5F6E14F0C0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3576C04-462A-4E3B-9374-A5F6E14F0C0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3576C04-462A-4E3B-9374-A5F6E14F0C0A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -58,6 +64,7 @@ Global
 		{08F6F874-2188-4E79-BD6D-8ACAF58F9A97} = {34BB7304-EF73-4D26-8C9F-52B901DE739F}
 		{9FA4EE82-E088-4CEA-BABA-5FB23107715C} = {34BB7304-EF73-4D26-8C9F-52B901DE739F}
 		{C8453BDE-0B13-4D7E-ABDC-5BCB066118F8} = {34BB7304-EF73-4D26-8C9F-52B901DE739F}
+		{F3576C04-462A-4E3B-9374-A5F6E14F0C0A} = {34BB7304-EF73-4D26-8C9F-52B901DE739F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D595D028-281D-4A43-8F45-F1192716B06C}
