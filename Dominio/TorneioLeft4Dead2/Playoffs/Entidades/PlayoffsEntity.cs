@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Azure;
 using Azure.Data.Tables;
 using TorneioLeft4Dead2.Confrontos.Enums;
@@ -117,6 +118,7 @@ public class PlayoffsEntity : ITableEntity
     public bool? Confronto03TimeBVenceu { get; set; }
     public string Confronto03Observacoes { get; set; }
 
+    [IgnoreDataMember]
     public List<Confronto> Confrontos { get; set; }
 
     public string PartitionKey { get; set; }
