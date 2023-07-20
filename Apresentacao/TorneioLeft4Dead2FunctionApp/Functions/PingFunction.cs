@@ -9,6 +9,7 @@ namespace TorneioLeft4Dead2FunctionApp.Functions;
 public class PingFunction
 {
     private static readonly Guid InstanceId = Guid.NewGuid();
+    private static readonly DateTime StartedAt = DateTime.Now;
 
     [Function(nameof(PingFunction) + "_" + nameof(GetAsync))]
     public async Task<HttpResponseData> GetAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "ping")] HttpRequestData httpRequest)
@@ -16,7 +17,8 @@ public class PingFunction
         return await httpRequest.OkAsync(new
         {
             instanceId = InstanceId,
-            now = DateTime.Now
+            now = DateTime.Now,
+            awakeTime = DateTime.Now - StartedAt
         });
     }
 }
