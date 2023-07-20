@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using TorneioLeft4Dead2.DataConfronto.Entidades;
 using TorneioLeft4Dead2.DataConfronto.Repositorios;
 using TorneioLeft4Dead2.Storage.UnitOfWork;

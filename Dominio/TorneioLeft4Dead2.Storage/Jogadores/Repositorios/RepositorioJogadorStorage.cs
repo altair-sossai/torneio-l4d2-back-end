@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using TorneioLeft4Dead2.Jogadores.Entidades;
 using TorneioLeft4Dead2.Jogadores.Repositorios;
 using TorneioLeft4Dead2.Storage.UnitOfWork;

@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using TorneioLeft4Dead2.Jogadores.Commands;
 using TorneioLeft4Dead2.Jogadores.Entidades;
 using TorneioLeft4Dead2.Jogadores.Models;

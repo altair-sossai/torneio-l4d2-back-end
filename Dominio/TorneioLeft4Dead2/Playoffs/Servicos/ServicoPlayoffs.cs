@@ -94,7 +94,10 @@ public class ServicoPlayoffs : IServicoPlayoffs
         var campanhas = await _repositorioCampanha.ObterCampanhasAsync();
         campanhas.RemoverCampanhasJaEscolhidas(entity);
 
-        var campanha = campanhas.Sortear();
+        var campanha = campanhas
+            .ComQuatroMapasOuMais()
+            .Sortear();
+
         entity.Confronto03CodigoCampanha = campanha.Codigo;
     }
 }

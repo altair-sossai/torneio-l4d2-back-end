@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
 using TorneioLeft4Dead2.Campanhas.Entidades;
+using TorneioLeft4Dead2.Campanhas.Extensions;
 using TorneioLeft4Dead2.Campanhas.Repositorios;
 using TorneioLeft4Dead2.Confrontos.Builders;
 using TorneioLeft4Dead2.Confrontos.Commands;
@@ -140,7 +141,7 @@ public class ServicoConfronto : IServicoConfronto
         var rodadas = confrontos.GroupBy(g => g.Rodada).ToList();
         var campanhas = await _repositorioCampanha.ObterCampanhasAsync();
         var campanhasSorteadas = campanhas
-            .Where(c => c.QuantidadeMapas >= 4)
+            .ComQuatroMapasOuMais()
             .OrderBy(_ => Guid.NewGuid())
             .Take(rodadas.Count)
             .ToList();

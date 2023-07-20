@@ -33,6 +33,11 @@ public static class CampanhaEntityExtensions
         }
     }
 
+    public static IEnumerable<CampanhaEntity> ComQuatroMapasOuMais(this IEnumerable<CampanhaEntity> campanhas)
+    {
+        return campanhas.Where(c => c.QuantidadeMapas >= 4);
+    }
+
     public static CampanhaEntity Sortear(this IEnumerable<CampanhaEntity> campanhas)
     {
         return campanhas.MinBy(_ => Guid.NewGuid());
