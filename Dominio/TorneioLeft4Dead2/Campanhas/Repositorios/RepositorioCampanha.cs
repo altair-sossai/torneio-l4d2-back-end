@@ -77,7 +77,7 @@ public class RepositorioCampanha : IRepositorioCampanha
         {
             Codigo = 9,
             Nome = "Contagem de corpos",
-            NomeOriginal = "Death tool",
+            NomeOriginal = "Death toll",
             PontuacaoMaxima = 3500,
             QuantidadeMapas = 5
         },
