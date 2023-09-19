@@ -236,7 +236,7 @@ public class PlayoffsEntity : ITableEntity
 
         if (QuantidadeConfrontosRealizados == 2 && (VitoriaTimeA || VitoriaTimeB))
         {
-            Confronto03Data = DateTime.Now;
+            Confronto03Data = DateTime.UtcNow;
             Confronto03Status = (int?)StatusConfronto.Cancelado;
             Confronto03PontosConquistadosTimeA = 0;
             Confronto03PontosConquistadosTimeB = 0;
