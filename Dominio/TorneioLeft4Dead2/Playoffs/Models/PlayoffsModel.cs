@@ -45,5 +45,8 @@ public class PlayoffsModel
         public bool TimeAVenceu { get; set; }
         public bool TimeBVenceu { get; set; }
         public string Observacoes { get; set; }
+        public TimeModel TimeA { get; set; }
+        public TimeModel TimeB { get; set; }
+        public TimeModel TimeVencedor { get; set; }
     }
 }

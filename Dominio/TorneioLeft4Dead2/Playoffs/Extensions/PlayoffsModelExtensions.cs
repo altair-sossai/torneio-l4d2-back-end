@@ -73,6 +73,18 @@ public static class PlayoffsModelExtensions
 
             if (!string.IsNullOrEmpty(item.CodigoTimePerdedor))
                 item.TimePerdedor = dictionary[item.CodigoTimePerdedor];
+
+            foreach (var confronto in item.Confrontos ?? new List<PlayoffsModel.Confronto>())
+            {
+                confronto.TimeA = item.TimeA;
+                confronto.TimeB = item.TimeB;
+
+                if (confronto.TimeAVenceu)
+                    confronto.TimeVencedor = item.TimeA;
+
+                if (confronto.TimeBVenceu)
+                    confronto.TimeVencedor = item.TimeB;
+            }
         }
     }
 }
