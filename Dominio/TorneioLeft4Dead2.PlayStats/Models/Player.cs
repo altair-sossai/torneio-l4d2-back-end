@@ -23,4 +23,7 @@ public class Player
     public int MvpSiDamage { get; set; }
     public int MvpCommon { get; set; }
     public int LvpFfGiven { get; set; }
+    public int PointsMvpSiDamage { get; set; }
+    public int PointsMvpCommon { get; set; }
+    public int PointsLvpFfGiven { get; set; }
 }
