@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using TorneioLeft4Dead2.Estatisticas.Models;
+using TorneioLeft4Dead2.Estatisticas.PorJogador.Models;
 using TorneioLeft4Dead2.Jogadores.Entidades;
 
-namespace TorneioLeft4Dead2.Estatisticas.Profiles;
+namespace TorneioLeft4Dead2.Estatisticas.PorJogador.Profiles;
 
 public class EstatisticasProfile : Profile
 {

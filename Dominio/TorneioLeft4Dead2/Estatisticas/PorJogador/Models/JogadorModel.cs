@@ -1,4 +1,4 @@
-﻿namespace TorneioLeft4Dead2.Estatisticas.Models;
+﻿namespace TorneioLeft4Dead2.Estatisticas.PorJogador.Models;
 
 public class JogadorModel
 {
