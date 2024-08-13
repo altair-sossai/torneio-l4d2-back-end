@@ -7,23 +7,16 @@ using TorneioLeft4Dead2.Auth.Repositories;
 
 namespace TorneioLeft4Dead2.Auth.Services;
 
-public class AuthService : IAuthService
+public class AuthService(
+    IUserRepository userRepository,
+    IValidator<LoginCommand> loginValidator)
+    : IAuthService
 {
-    private readonly IValidator<LoginCommand> _loginValidator;
-    private readonly IUserRepository _userRepository;
-
-    public AuthService(IUserRepository userRepository,
-        IValidator<LoginCommand> loginValidator)
-    {
-        _userRepository = userRepository;
-        _loginValidator = loginValidator;
-    }
-
     public async Task<PrettyToken> AuthAsync(LoginCommand command)
     {
-        await _loginValidator.ValidateAndThrowAsync(command);
+        await loginValidator.ValidateAndThrowAsync(command);
 
-        var user = await _userRepository.FindUserAsync(command.Email);
+        var user = await userRepository.FindUserAsync(command.Email);
 
         return UsuarioJwtService.CreateNewToken(user);
     }

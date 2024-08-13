@@ -8,14 +8,10 @@ using TorneioLeft4Dead2.Storage.UnitOfWork.Repositories;
 
 namespace TorneioLeft4Dead2.Storage.DataConfronto.Repositorios;
 
-public class RepositorioPeriodoConfrontoStorage : BaseTableStorageRepository<PeriodoConfrontoEntity>, IRepositorioPeriodoConfronto
+public class RepositorioPeriodoConfrontoStorage(IAzureTableStorageContext tableContext, IMemoryCache memoryCache)
+    : BaseTableStorageRepository<PeriodoConfrontoEntity>(TableName, tableContext, memoryCache), IRepositorioPeriodoConfronto
 {
     private const string TableName = "PeriodosConfrontos";
-
-    public RepositorioPeriodoConfrontoStorage(IAzureTableStorageContext tableContext, IMemoryCache memoryCache)
-        : base(TableName, tableContext, memoryCache)
-    {
-    }
 
     public async Task<PeriodoConfrontoEntity> ObterPorConfrontoAsync(Guid confrontoId)
     {

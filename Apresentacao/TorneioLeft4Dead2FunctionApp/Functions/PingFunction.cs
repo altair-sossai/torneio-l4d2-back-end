@@ -11,7 +11,7 @@ public class PingFunction
     private static readonly Guid InstanceId = Guid.NewGuid();
     private static readonly DateTime StartedAt = DateTime.Now;
 
-    [Function(nameof(PingFunction) + "_" + nameof(GetAsync))]
+    [Function($"{nameof(PingFunction)}_{nameof(GetAsync)}")]
     public async Task<HttpResponseData> GetAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "ping")] HttpRequestData httpRequest)
     {
         return await httpRequest.OkAsync(new

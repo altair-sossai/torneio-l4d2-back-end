@@ -22,36 +22,19 @@ using TorneioLeft4Dead2.Times.Servicos;
 
 namespace TorneioLeft4Dead2.Confrontos.Servicos;
 
-public class ServicoConfronto : IServicoConfronto
+public class ServicoConfronto(
+    IMapper mapper,
+    IValidator<ConfrontoEntity> validator,
+    IRepositorioConfronto repositorioConfronto,
+    IRepositorioCampanha repositorioCampanha,
+    IServicoTime servicoTime,
+    IRepositorioTime repositorioTime,
+    IRepositorioSugestaoDataConfronto repositorioSugestaoDataConfronto)
+    : IServicoConfronto
 {
-    private readonly IMapper _mapper;
-    private readonly IRepositorioCampanha _repositorioCampanha;
-    private readonly IRepositorioConfronto _repositorioConfronto;
-    private readonly IRepositorioSugestaoDataConfronto _repositorioSugestaoDataConfronto;
-    private readonly IRepositorioTime _repositorioTime;
-    private readonly IServicoTime _servicoTime;
-    private readonly IValidator<ConfrontoEntity> _validator;
-
-    public ServicoConfronto(IMapper mapper,
-        IValidator<ConfrontoEntity> validator,
-        IRepositorioConfronto repositorioConfronto,
-        IRepositorioCampanha repositorioCampanha,
-        IServicoTime servicoTime,
-        IRepositorioTime repositorioTime,
-        IRepositorioSugestaoDataConfronto repositorioSugestaoDataConfronto)
-    {
-        _mapper = mapper;
-        _validator = validator;
-        _repositorioConfronto = repositorioConfronto;
-        _repositorioCampanha = repositorioCampanha;
-        _servicoTime = servicoTime;
-        _repositorioTime = repositorioTime;
-        _repositorioSugestaoDataConfronto = repositorioSugestaoDataConfronto;
-    }
-
     public async Task<ConfrontoEntity> ObterPorIdAsync(Guid confrontoId)
     {
-        return await _repositorioConfronto.ObterPorIdAsync(confrontoId);
+        return await repositorioConfronto.ObterPorIdAsync(confrontoId);
     }
 
     public async Task<List<RodadaModel>> ObterRodadasAsync()
@@ -63,13 +46,13 @@ public class ServicoConfronto : IServicoConfronto
 
     public async Task<List<ConfrontoModel>> ObterConfrontosAsync()
     {
-        var entities = await _repositorioConfronto.ObterConfrontosAsync();
-        var confrontos = _mapper.Map<List<ConfrontoModel>>(entities);
+        var entities = await repositorioConfronto.ObterConfrontosAsync();
+        var confrontos = mapper.Map<List<ConfrontoModel>>(entities);
 
-        var campanhas = await _repositorioCampanha.ObterCampanhasAsync();
+        var campanhas = await repositorioCampanha.ObterCampanhasAsync();
         confrontos.Vincular(campanhas);
 
-        var times = await _servicoTime.ObterTimesAsync();
+        var times = await servicoTime.ObterTimesAsync();
         confrontos.Vincular(times);
 
         return confrontos;
@@ -77,14 +60,14 @@ public class ServicoConfronto : IServicoConfronto
 
     public async Task<ConfrontoEntity> SalvarAsync(ConfrontoCommand command)
     {
-        var entity = _mapper.Map<ConfrontoEntity>(command);
+        var entity = mapper.Map<ConfrontoEntity>(command);
 
         if (entity.Status == (int)StatusConfronto.Aguardando)
             entity.ZerarPontuacao();
 
-        await _validator.ValidateAndThrowAsync(entity);
-        await _repositorioConfronto.ExcluirAsync(entity.Id);
-        await _repositorioConfronto.SalvarAsync(entity);
+        await validator.ValidateAndThrowAsync(entity);
+        await repositorioConfronto.ExcluirAsync(entity.Id);
+        await repositorioConfronto.SalvarAsync(entity);
 
         await AtualizarPlacarAsync();
 
@@ -93,53 +76,53 @@ public class ServicoConfronto : IServicoConfronto
 
     public async Task AgendarConfrontoAsync(Guid confrontoId)
     {
-        var sugestoes = await _repositorioSugestaoDataConfronto.ObterPorConfrontoAsync(confrontoId);
+        var sugestoes = await repositorioSugestaoDataConfronto.ObterPorConfrontoAsync(confrontoId);
         var sugestao = sugestoes
             .Where(w => w.RespostaTimeA == (int)RespostaTime.Aceitou && w.RespostaTimeB == (int)RespostaTime.Aceitou)
             .MinBy(o => o.Data);
 
-        var confronto = await _repositorioConfronto.ObterPorIdAsync(confrontoId);
+        var confronto = await repositorioConfronto.ObterPorIdAsync(confrontoId);
         confronto.Data = sugestao?.Data;
 
-        await _repositorioConfronto.ExcluirAsync(confrontoId);
-        await _repositorioConfronto.SalvarAsync(confronto);
+        await repositorioConfronto.ExcluirAsync(confrontoId);
+        await repositorioConfronto.SalvarAsync(confronto);
     }
 
     public async Task GerarConfrontosAsync()
     {
-        var times = await _repositorioTime.ObterTimesAsync();
+        var times = await repositorioTime.ObterTimesAsync();
         var builder = new ConfrontosBuilder(times);
 
-        await _repositorioConfronto.ExcluirTudoAsync();
+        await repositorioConfronto.ExcluirTudoAsync();
 
         foreach (var entity in builder.Build())
-            await _repositorioConfronto.SalvarAsync(entity);
+            await repositorioConfronto.SalvarAsync(entity);
     }
 
     public async Task ExcluirAsync(Guid confrontoId)
     {
-        await _repositorioConfronto.ExcluirAsync(confrontoId);
+        await repositorioConfronto.ExcluirAsync(confrontoId);
     }
 
     public async Task LimparCampanhasAsync()
     {
-        var confrontos = await _repositorioConfronto.ObterConfrontosAsync();
+        var confrontos = await repositorioConfronto.ObterConfrontosAsync();
 
         foreach (var confronto in confrontos)
             confronto.CodigoCampanha = null;
 
         foreach (var confronto in confrontos)
         {
-            await _repositorioConfronto.ExcluirAsync(confronto.Id);
-            await _repositorioConfronto.SalvarAsync(confronto);
+            await repositorioConfronto.ExcluirAsync(confronto.Id);
+            await repositorioConfronto.SalvarAsync(confronto);
         }
     }
 
     public async Task<List<CampanhaEntity>> SortearCampanhasAsync()
     {
-        var confrontos = await _repositorioConfronto.ObterConfrontosAsync();
+        var confrontos = await repositorioConfronto.ObterConfrontosAsync();
         var rodadas = confrontos.GroupBy(g => g.Rodada).ToList();
-        var campanhas = await _repositorioCampanha.ObterCampanhasAsync();
+        var campanhas = await repositorioCampanha.ObterCampanhasAsync();
         var campanhasSorteadas = campanhas
             .ComQuatroMapasOuMais()
             .OrderBy(_ => Guid.NewGuid())
@@ -152,8 +135,8 @@ public class ServicoConfronto : IServicoConfronto
 
         foreach (var confronto in confrontos)
         {
-            await _repositorioConfronto.ExcluirAsync(confronto.Id);
-            await _repositorioConfronto.SalvarAsync(confronto);
+            await repositorioConfronto.ExcluirAsync(confronto.Id);
+            await repositorioConfronto.SalvarAsync(confronto);
         }
 
         return campanhasSorteadas;
@@ -161,8 +144,8 @@ public class ServicoConfronto : IServicoConfronto
 
     private async Task AtualizarPlacarAsync()
     {
-        var times = (await _repositorioTime.ObterTimesAsync()).ToDictionary();
-        var confrontos = await _repositorioConfronto.ObterConfrontosAsync();
+        var times = (await repositorioTime.ObterTimesAsync()).ToDictionary();
+        var confrontos = await repositorioConfronto.ObterConfrontosAsync();
 
         foreach (var (_, time) in times)
             time.ZerarPontuacao();
@@ -205,6 +188,6 @@ public class ServicoConfronto : IServicoConfronto
         }
 
         foreach (var (_, time) in times)
-            await _servicoTime.SalvarAsync(time);
+            await servicoTime.SalvarAsync(time);
     }
 }

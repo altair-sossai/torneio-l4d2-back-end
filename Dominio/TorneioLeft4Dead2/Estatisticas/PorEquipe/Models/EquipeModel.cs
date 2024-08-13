@@ -5,14 +5,9 @@ using TorneioLeft4Dead2.Times.Models;
 
 namespace TorneioLeft4Dead2.Estatisticas.PorEquipe.Models;
 
-public class EquipeModel
+public class EquipeModel(TimeModel time)
 {
-    public EquipeModel(TimeModel time)
-    {
-        Time = time;
-    }
-
-    public TimeModel Time { get; }
+    public TimeModel Time { get; } = time;
     public List<ConfrontoModel> Confrontos { get; set; } = new();
 
     public void AddConfronto(Match match, TimeEntity adversario)

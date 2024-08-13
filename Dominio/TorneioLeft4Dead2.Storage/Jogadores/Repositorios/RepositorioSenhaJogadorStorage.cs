@@ -9,14 +9,10 @@ using TorneioLeft4Dead2.Storage.UnitOfWork.Repositories;
 
 namespace TorneioLeft4Dead2.Storage.Jogadores.Repositorios;
 
-public class RepositorioSenhaJogadorStorage : BaseTableStorageRepository<SenhaJogadorEntity>, IRepositorioSenhaJogador
+public class RepositorioSenhaJogadorStorage(IAzureTableStorageContext tableContext, IMemoryCache memoryCache)
+    : BaseTableStorageRepository<SenhaJogadorEntity>(TableName, tableContext, memoryCache), IRepositorioSenhaJogador
 {
     private const string TableName = "SenhasJogadores";
-
-    public RepositorioSenhaJogadorStorage(IAzureTableStorageContext tableContext, IMemoryCache memoryCache)
-        : base(TableName, tableContext, memoryCache)
-    {
-    }
 
     public async Task<SenhaJogadorModel> GerarSenhaAsync(string steamId)
     {

@@ -5,22 +5,16 @@ using TorneioLeft4Dead2.Jogadores.Repositorios;
 
 namespace TorneioLeft4Dead2.Jogadores.Servicos;
 
-public class ServicoSenhaJogador : IServicoSenhaJogador
+public class ServicoSenhaJogador(IRepositorioSenhaJogador repositorioSenhaJogador)
+    : IServicoSenhaJogador
 {
-    private readonly IRepositorioSenhaJogador _repositorioSenhaJogador;
-
-    public ServicoSenhaJogador(IRepositorioSenhaJogador repositorioSenhaJogador)
-    {
-        _repositorioSenhaJogador = repositorioSenhaJogador;
-    }
-
     public async Task<SenhaJogadorModel> GerarSenhaAsync(string steamId)
     {
-        return await _repositorioSenhaJogador.GerarSenhaAsync(steamId);
+        return await repositorioSenhaJogador.GerarSenhaAsync(steamId);
     }
 
     public async Task<bool> AutenticadoAsync(AutenticarJogadorCommand command)
     {
-        return await _repositorioSenhaJogador.AutenticadoAsync(command);
+        return await repositorioSenhaJogador.AutenticadoAsync(command);
     }
 }

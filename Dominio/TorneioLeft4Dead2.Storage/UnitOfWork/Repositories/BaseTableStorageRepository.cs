@@ -59,16 +59,11 @@ public abstract class BaseTableStorageRepository
     }
 }
 
-public abstract class BaseTableStorageRepository<TEntity> : BaseTableStorageRepository
+public abstract class BaseTableStorageRepository<TEntity>(string tableName, IAzureTableStorageContext tableContext, IMemoryCache memoryCache)
+    : BaseTableStorageRepository(tableName, tableContext, memoryCache)
     where TEntity : class, ITableEntity, new()
 {
-    private readonly IMemoryCache _memoryCache;
-
-    protected BaseTableStorageRepository(string tableName, IAzureTableStorageContext tableContext, IMemoryCache memoryCache)
-        : base(tableName, tableContext, memoryCache)
-    {
-        _memoryCache = memoryCache;
-    }
+    private readonly IMemoryCache _memoryCache = memoryCache;
 
     protected ValueTask<TEntity> FindAsync(Guid rowKey)
     {

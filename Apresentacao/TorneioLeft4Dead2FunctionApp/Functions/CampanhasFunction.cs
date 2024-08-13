@@ -6,20 +6,13 @@ using TorneioLeft4Dead2FunctionApp.Extensions;
 
 namespace TorneioLeft4Dead2FunctionApp.Functions;
 
-public class CampanhasFunction
+public class CampanhasFunction(IRepositorioCampanha repositorioCampanha)
 {
-    private readonly IRepositorioCampanha _repositorioCampanha;
-
-    public CampanhasFunction(IRepositorioCampanha repositorioCampanha)
-    {
-        _repositorioCampanha = repositorioCampanha;
-    }
-
-    [Function(nameof(CampanhasFunction) + "_" + nameof(GetAsync))]
+    [Function($"{nameof(CampanhasFunction)}_{nameof(GetAsync)}")]
     public async Task<HttpResponseData> GetAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "campanhas/{codigo}")] HttpRequestData httpRequest,
         int codigo)
     {
-        var entity = await _repositorioCampanha.ObterPorIdAsync(codigo);
+        var entity = await repositorioCampanha.ObterPorIdAsync(codigo);
 
         if (entity == null)
             return httpRequest.NotFound();
@@ -27,10 +20,10 @@ public class CampanhasFunction
         return await httpRequest.OkAsync(entity);
     }
 
-    [Function(nameof(CampanhasFunction) + "_" + nameof(GetAllAsync))]
+    [Function($"{nameof(CampanhasFunction)}_{nameof(GetAllAsync)}")]
     public async Task<HttpResponseData> GetAllAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "campanhas")] HttpRequestData httpRequest)
     {
-        var entities = await _repositorioCampanha.ObterCampanhasAsync();
+        var entities = await repositorioCampanha.ObterCampanhasAsync();
 
         return await httpRequest.OkAsync(entities);
     }

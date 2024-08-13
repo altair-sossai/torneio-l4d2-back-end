@@ -8,22 +8,15 @@ using TorneioLeft4Dead2FunctionApp.Extensions;
 
 namespace TorneioLeft4Dead2FunctionApp.Functions;
 
-public class AuthFunction
+public class AuthFunction(IAuthService authService)
 {
-    private readonly IAuthService _authService;
-
-    public AuthFunction(IAuthService authService)
-    {
-        _authService = authService;
-    }
-
-    [Function(nameof(AuthFunction) + "_" + nameof(AuthAsync))]
+    [Function($"{nameof(AuthFunction)}_{nameof(AuthAsync)}")]
     public async Task<HttpResponseData> AuthAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "auth")] HttpRequestData httpRequest)
     {
         try
         {
             var command = await httpRequest.DeserializeBodyAsync<LoginCommand>();
-            var entity = await _authService.AuthAsync(command);
+            var entity = await authService.AuthAsync(command);
 
             return await httpRequest.OkAsync(entity);
         }

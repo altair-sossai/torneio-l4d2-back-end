@@ -14,31 +14,18 @@ using TorneioLeft4Dead2.Times.Repositorios;
 
 namespace TorneioLeft4Dead2.Jogadores.Servicos;
 
-public class ServicoJogador : IServicoJogador
+public class ServicoJogador(
+    IValidator<JogadorEntity> validator,
+    IRepositorioJogador repositorioJogador,
+    IRepositorioTimeJogador repositorioTimeJogador,
+    ISteamUserService steamUserService,
+    IPlayerService playerService)
+    : IServicoJogador
 {
-    private readonly IPlayerService _playerService;
-    private readonly IRepositorioJogador _repositorioJogador;
-    private readonly IRepositorioTimeJogador _repositorioTimeJogador;
-    private readonly ISteamUserService _steamUserService;
-    private readonly IValidator<JogadorEntity> _validator;
-
-    public ServicoJogador(IValidator<JogadorEntity> validator,
-        IRepositorioJogador repositorioJogador,
-        IRepositorioTimeJogador repositorioTimeJogador,
-        ISteamUserService steamUserService,
-        IPlayerService playerService)
-    {
-        _validator = validator;
-        _repositorioJogador = repositorioJogador;
-        _repositorioTimeJogador = repositorioTimeJogador;
-        _steamUserService = steamUserService;
-        _playerService = playerService;
-    }
-
     public async Task<List<JogadorEntity>> JogadoresDisponiveisAsync()
     {
-        var jogadores = await _repositorioJogador.ObterJogadoresAsync();
-        var vinculos = await _repositorioTimeJogador.ObterTodosAsync();
+        var jogadores = await repositorioJogador.ObterJogadoresAsync();
+        var vinculos = await repositorioTimeJogador.ObterTodosAsync();
         var indisponiveis = vinculos.Select(v => v.Jogador).ToHashSet();
         var disponiveis = jogadores.Where(jogador => !indisponiveis.Contains(jogador.SteamId)).ToList();
 
@@ -47,15 +34,15 @@ public class ServicoJogador : IServicoJogador
 
     public async Task<List<JogadorEntity>> ObterPorTimeAsync(string codigo)
     {
-        var timesJogadores = await _repositorioTimeJogador.ObterPorTimeAsync(codigo);
-        var jogadores = (await _repositorioJogador.ObterJogadoresAsync()).ToDictionary();
+        var timesJogadores = await repositorioTimeJogador.ObterPorTimeAsync(codigo);
+        var jogadores = (await repositorioJogador.ObterJogadoresAsync()).ToDictionary();
 
         return timesJogadores.Select(s => jogadores[s.Jogador]).ToList();
     }
 
     public async Task AtualizarJogadoresAsync()
     {
-        var jogadores = await _repositorioJogador.ObterJogadoresAsync();
+        var jogadores = await repositorioJogador.ObterJogadoresAsync();
 
         foreach (var jogador in jogadores)
             try
@@ -78,48 +65,48 @@ public class ServicoJogador : IServicoJogador
         if (entity == null)
             throw new Exception("Usuário não localizado");
 
-        await _validator.ValidateAsync(entity);
-        await _repositorioJogador.SalvarAsync(entity);
+        await validator.ValidateAsync(entity);
+        await repositorioJogador.SalvarAsync(entity);
 
         return entity;
     }
 
     public async Task SortearCapitaesAsync()
     {
-        var timesJogadores = await _repositorioTimeJogador.ObterTodosAsync();
+        var timesJogadores = await repositorioTimeJogador.ObterTodosAsync();
         var timesJogadoresCapitaes = timesJogadores.Where(w => w.Ordem == 0).ToList();
         var capitaes = timesJogadoresCapitaes.Select(s => s.Jogador).OrderBy(_ => Guid.NewGuid()).ToList();
 
         for (var i = 0; i < timesJogadoresCapitaes.Count; i++)
         {
             var timeJogador = timesJogadoresCapitaes[i];
-            await _repositorioTimeJogador.DesvincularJogadorAsync(timeJogador.Time, timeJogador.Jogador);
+            await repositorioTimeJogador.DesvincularJogadorAsync(timeJogador.Time, timeJogador.Jogador);
 
             timeJogador.Jogador = capitaes[i];
-            await _repositorioTimeJogador.SalvarAsync(timeJogador);
+            await repositorioTimeJogador.SalvarAsync(timeJogador);
         }
     }
 
     public async Task SortearSuportesAsync()
     {
-        var timesJogadores = await _repositorioTimeJogador.ObterTodosAsync();
+        var timesJogadores = await repositorioTimeJogador.ObterTodosAsync();
         var timesJogadoresSuportes = timesJogadores.Where(w => w.Ordem == 1).ToList();
         var suportes = timesJogadoresSuportes.Select(s => s.Jogador).OrderBy(_ => Guid.NewGuid()).ToList();
 
         for (var i = 0; i < timesJogadoresSuportes.Count; i++)
         {
             var timeJogador = timesJogadoresSuportes[i];
-            await _repositorioTimeJogador.DesvincularJogadorAsync(timeJogador.Time, timeJogador.Jogador);
+            await repositorioTimeJogador.DesvincularJogadorAsync(timeJogador.Time, timeJogador.Jogador);
 
             timeJogador.Jogador = suportes[i];
-            await _repositorioTimeJogador.SalvarAsync(timeJogador);
+            await repositorioTimeJogador.SalvarAsync(timeJogador);
         }
     }
 
     public async Task ExcluirAsync(string steamId)
     {
-        await _repositorioJogador.ExcluirAsync(steamId);
-        await _repositorioTimeJogador.ExcluirPorJogadorAsync(steamId);
+        await repositorioJogador.ExcluirAsync(steamId);
+        await repositorioTimeJogador.ExcluirPorJogadorAsync(steamId);
     }
 
     private async Task<string> ResolveSteamIdAsync(string login)
@@ -127,7 +114,7 @@ public class ServicoJogador : IServicoJogador
         if (string.IsNullOrEmpty(login))
             return await Task.FromResult((string)null);
 
-        var response = await _steamUserService.ResolveVanityUrlAsync(SteamContext.ApiKey, login);
+        var response = await steamUserService.ResolveVanityUrlAsync(SteamContext.ApiKey, login);
 
         return response is { Response: { Success: 1 } } ? response.Response.SteamId : null;
     }
@@ -137,8 +124,8 @@ public class ServicoJogador : IServicoJogador
         if (string.IsNullOrEmpty(steamId))
             return await Task.FromResult((JogadorEntity)null);
 
-        var playerSummariesResponse = await _steamUserService.GetPlayerSummariesAsync(SteamContext.ApiKey, steamId);
-        var ownedGamesResponse = await _playerService.GetOwnedGamesAsync(SteamContext.ApiKey, steamId);
+        var playerSummariesResponse = await steamUserService.GetPlayerSummariesAsync(SteamContext.ApiKey, steamId);
+        var ownedGamesResponse = await playerService.GetOwnedGamesAsync(SteamContext.ApiKey, steamId);
 
         var entity = new JogadorEntity();
 

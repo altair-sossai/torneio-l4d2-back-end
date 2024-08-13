@@ -11,34 +11,24 @@ using TorneioLeft4Dead2FunctionApp.Extensions;
 
 namespace TorneioLeft4Dead2FunctionApp.Functions;
 
-public class PlayoffsFunction
+public class PlayoffsFunction(
+    IServicoPlayoffs servicoPlayoffs,
+    IAuthContext authContext,
+    IMemoryCache memoryCache)
 {
-    private readonly IAuthContext _authContext;
-    private readonly IMemoryCache _memoryCache;
-    private readonly IServicoPlayoffs _servicoPlayoffs;
-
-    public PlayoffsFunction(IServicoPlayoffs servicoPlayoffs,
-        IAuthContext authContext,
-        IMemoryCache memoryCache)
-    {
-        _servicoPlayoffs = servicoPlayoffs;
-        _authContext = authContext;
-        _memoryCache = memoryCache;
-    }
-
-    [Function(nameof(PlayoffsFunction) + "_" + nameof(GetAllAsync))]
+    [Function($"{nameof(PlayoffsFunction)}_{nameof(GetAllAsync)}")]
     public async Task<HttpResponseData> GetAllAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "playoffs")] HttpRequestData httpRequest)
     {
-        var models = await _servicoPlayoffs.ObterPlayoffsAsync();
+        var models = await servicoPlayoffs.ObterPlayoffsAsync();
 
         return await httpRequest.OkAsync(models);
     }
 
-    [Function(nameof(PlayoffsFunction) + "_" + nameof(GetAsync))]
+    [Function($"{nameof(PlayoffsFunction)}_{nameof(GetAsync)}")]
     public async Task<HttpResponseData> GetAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "playoffs/{playoffsId:guid}")] HttpRequestData httpRequest,
         Guid playoffsId)
     {
-        var model = await _servicoPlayoffs.ObterPorIdAsync(playoffsId);
+        var model = await servicoPlayoffs.ObterPorIdAsync(playoffsId);
 
         if (model == null)
             return httpRequest.NotFound();
@@ -46,20 +36,20 @@ public class PlayoffsFunction
         return await httpRequest.OkAsync(model);
     }
 
-    [Function(nameof(PlayoffsFunction) + "_" + nameof(RodadasAsync))]
+    [Function($"{nameof(PlayoffsFunction)}_{nameof(RodadasAsync)}")]
     public async Task<HttpResponseData> RodadasAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "playoffs/rodadas")] HttpRequestData httpRequest)
     {
-        var models = await _memoryCache.GetOrCreateAsync(MemoryCacheKeys.Playoffs, entry =>
+        var models = await memoryCache.GetOrCreateAsync(MemoryCacheKeys.Playoffs, entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1);
 
-            return _servicoPlayoffs.ObterRodadasAsync();
+            return servicoPlayoffs.ObterRodadasAsync();
         });
 
         return await httpRequest.OkAsync(models);
     }
 
-    [Function(nameof(PlayoffsFunction) + "_" + nameof(PostAsync))]
+    [Function($"{nameof(PlayoffsFunction)}_{nameof(PostAsync)}")]
     public async Task<HttpResponseData> PostAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "playoffs")] HttpRequestData httpRequest)
     {
         try
@@ -68,11 +58,11 @@ public class PlayoffsFunction
             if (claimsPrincipal == null)
                 return httpRequest.Unauthorized();
 
-            await _authContext.FillUserAsync(claimsPrincipal);
-            _authContext.GrantPermission();
+            await authContext.FillUserAsync(claimsPrincipal);
+            authContext.GrantPermission();
 
             var command = await httpRequest.DeserializeBodyAsync<PlayoffsCommand>();
-            var entity = await _servicoPlayoffs.SalvarAsync(command);
+            var entity = await servicoPlayoffs.SalvarAsync(command);
 
             return await httpRequest.OkAsync(entity);
         }
@@ -86,7 +76,7 @@ public class PlayoffsFunction
         }
     }
 
-    [Function(nameof(PlayoffsFunction) + "_" + nameof(DeleteAsync))]
+    [Function($"{nameof(PlayoffsFunction)}_{nameof(DeleteAsync)}")]
     public async Task<HttpResponseData> DeleteAsync([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "playoffs/{playoffsId:guid}")] HttpRequestData httpRequest,
         Guid playoffsId)
     {
@@ -96,10 +86,10 @@ public class PlayoffsFunction
             if (claimsPrincipal == null)
                 return httpRequest.Unauthorized();
 
-            await _authContext.FillUserAsync(claimsPrincipal);
-            _authContext.GrantPermission();
+            await authContext.FillUserAsync(claimsPrincipal);
+            authContext.GrantPermission();
 
-            await _servicoPlayoffs.ExcluirAsync(playoffsId);
+            await servicoPlayoffs.ExcluirAsync(playoffsId);
 
             return httpRequest.Ok();
         }

@@ -9,14 +9,10 @@ using TorneioLeft4Dead2.Times.Repositorios;
 
 namespace TorneioLeft4Dead2.Storage.Times.Repositorios;
 
-public class RepositorioTimeJogadorStorage : BaseTableStorageRepository<TimeJogadorEntity>, IRepositorioTimeJogador
+public class RepositorioTimeJogadorStorage(IAzureTableStorageContext tableContext, IMemoryCache memoryCache)
+    : BaseTableStorageRepository<TimeJogadorEntity>(TableName, tableContext, memoryCache), IRepositorioTimeJogador
 {
     private const string TableName = "TimesJogadores";
-
-    public RepositorioTimeJogadorStorage(IAzureTableStorageContext tableContext, IMemoryCache memoryCache)
-        : base(TableName, tableContext, memoryCache)
-    {
-    }
 
     public async Task<List<TimeJogadorEntity>> ObterTodosAsync()
     {

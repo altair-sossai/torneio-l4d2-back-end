@@ -14,30 +14,17 @@ using TorneioLeft4Dead2.Times.Servicos;
 
 namespace TorneioLeft4Dead2.Playoffs.Servicos;
 
-public class ServicoPlayoffs : IServicoPlayoffs
+public class ServicoPlayoffs(
+    IMapper mapper,
+    IValidator<PlayoffsEntity> validator,
+    IRepositorioPlayoffs repositorioPlayoffs,
+    IRepositorioCampanha repositorioCampanha,
+    IServicoTime servicoTime)
+    : IServicoPlayoffs
 {
-    private readonly IMapper _mapper;
-    private readonly IRepositorioCampanha _repositorioCampanha;
-    private readonly IRepositorioPlayoffs _repositorioPlayoffs;
-    private readonly IServicoTime _servicoTime;
-    private readonly IValidator<PlayoffsEntity> _validator;
-
-    public ServicoPlayoffs(IMapper mapper,
-        IValidator<PlayoffsEntity> validator,
-        IRepositorioPlayoffs repositorioPlayoffs,
-        IRepositorioCampanha repositorioCampanha,
-        IServicoTime servicoTime)
-    {
-        _mapper = mapper;
-        _validator = validator;
-        _repositorioPlayoffs = repositorioPlayoffs;
-        _repositorioCampanha = repositorioCampanha;
-        _servicoTime = servicoTime;
-    }
-
     public async Task<PlayoffsEntity> ObterPorIdAsync(Guid playoffsId)
     {
-        return await _repositorioPlayoffs.ObterPorIdAsync(playoffsId);
+        return await repositorioPlayoffs.ObterPorIdAsync(playoffsId);
     }
 
     public async Task<List<RodadaModel>> ObterRodadasAsync()
@@ -49,13 +36,13 @@ public class ServicoPlayoffs : IServicoPlayoffs
 
     public async Task<List<PlayoffsModel>> ObterPlayoffsAsync()
     {
-        var entities = await _repositorioPlayoffs.ObterPlayoffsAsync();
-        var playoffs = _mapper.Map<List<PlayoffsModel>>(entities);
+        var entities = await repositorioPlayoffs.ObterPlayoffsAsync();
+        var playoffs = mapper.Map<List<PlayoffsModel>>(entities);
 
-        var campanhas = await _repositorioCampanha.ObterCampanhasAsync();
+        var campanhas = await repositorioCampanha.ObterCampanhasAsync();
         playoffs.Vincular(campanhas);
 
-        var times = await _servicoTime.ObterTimesAsync();
+        var times = await servicoTime.ObterTimesAsync();
         playoffs.Vincular(times);
 
         return playoffs;
@@ -63,21 +50,21 @@ public class ServicoPlayoffs : IServicoPlayoffs
 
     public async Task<PlayoffsEntity> SalvarAsync(PlayoffsCommand command)
     {
-        var entity = _mapper.Map<PlayoffsEntity>(command);
+        var entity = mapper.Map<PlayoffsEntity>(command);
         entity.AtualizarDadosConfrontos();
 
         await SortearTerceiraCampanhaAsync(entity);
 
-        await _validator.ValidateAndThrowAsync(entity);
-        await _repositorioPlayoffs.ExcluirAsync(entity.Id);
-        await _repositorioPlayoffs.SalvarAsync(entity);
+        await validator.ValidateAndThrowAsync(entity);
+        await repositorioPlayoffs.ExcluirAsync(entity.Id);
+        await repositorioPlayoffs.SalvarAsync(entity);
 
         return entity;
     }
 
     public async Task ExcluirAsync(Guid playoffsId)
     {
-        await _repositorioPlayoffs.ExcluirAsync(playoffsId);
+        await repositorioPlayoffs.ExcluirAsync(playoffsId);
     }
 
     private async Task SortearTerceiraCampanhaAsync(PlayoffsEntity entity)
@@ -91,7 +78,7 @@ public class ServicoPlayoffs : IServicoPlayoffs
             || entity.Confronto03CodigoCampanha.HasValue)
             return;
 
-        var campanhas = await _repositorioCampanha.ObterCampanhasAsync();
+        var campanhas = await repositorioCampanha.ObterCampanhasAsync();
         campanhas.RemoverCampanhasJaEscolhidas(entity);
 
         var campanha = campanhas

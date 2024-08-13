@@ -7,15 +7,9 @@ using TorneioLeft4Dead2.Auth.Repositories;
 
 namespace TorneioLeft4Dead2.Auth.Context;
 
-public class AuthContext : IAuthContext
+public class AuthContext(IUserRepository userRepository)
+    : IAuthContext
 {
-    private readonly IUserRepository _userRepository;
-
-    public AuthContext(IUserRepository userRepository)
-    {
-        _userRepository = userRepository;
-    }
-
     private UserEntity CurrentUser { get; set; }
 
     public async Task FillUserAsync(ClaimsPrincipal claimsPrincipal)
@@ -24,7 +18,7 @@ public class AuthContext : IAuthContext
             return;
 
         var userId = claimsPrincipal.GetGuid("userId");
-        var currentUser = await _userRepository.FindUserAsync(userId);
+        var currentUser = await userRepository.FindUserAsync(userId);
 
         CurrentUser = currentUser;
     }

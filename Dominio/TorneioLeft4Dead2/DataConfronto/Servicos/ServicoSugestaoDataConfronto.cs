@@ -15,37 +15,20 @@ using TorneioLeft4Dead2.Times.Servicos;
 
 namespace TorneioLeft4Dead2.DataConfronto.Servicos;
 
-public class ServicoSugestaoDataConfronto : IServicoSugestaoDataConfronto
+public class ServicoSugestaoDataConfronto(
+    IMapper mapper,
+    IRepositorioSugestaoDataConfronto repositorioSugestaoDataConfronto,
+    IRepositorioConfronto repositorioConfronto,
+    IServicoTime servicoTime,
+    IValidator<SugestaoDataConfrontoEntity> validator,
+    IValidator<NovaSugestaoDataCommand> sugerirNovaDataValidator,
+    IValidator<ResponderSugestaoDataCommand> responderSugestaoDataValidator)
+    : IServicoSugestaoDataConfronto
 {
-    private readonly IMapper _mapper;
-    private readonly IRepositorioConfronto _repositorioConfronto;
-    private readonly IRepositorioSugestaoDataConfronto _repositorioSugestaoDataConfronto;
-    private readonly IValidator<ResponderSugestaoDataCommand> _responderSugestaoDataValidator;
-    private readonly IServicoTime _servicoTime;
-    private readonly IValidator<NovaSugestaoDataCommand> _sugerirNovaDataValidator;
-    private readonly IValidator<SugestaoDataConfrontoEntity> _validator;
-
-    public ServicoSugestaoDataConfronto(IMapper mapper,
-        IRepositorioSugestaoDataConfronto repositorioSugestaoDataConfronto,
-        IRepositorioConfronto repositorioConfronto,
-        IServicoTime servicoTime,
-        IValidator<SugestaoDataConfrontoEntity> validator,
-        IValidator<NovaSugestaoDataCommand> sugerirNovaDataValidator,
-        IValidator<ResponderSugestaoDataCommand> responderSugestaoDataValidator)
-    {
-        _mapper = mapper;
-        _repositorioSugestaoDataConfronto = repositorioSugestaoDataConfronto;
-        _repositorioConfronto = repositorioConfronto;
-        _servicoTime = servicoTime;
-        _validator = validator;
-        _sugerirNovaDataValidator = sugerirNovaDataValidator;
-        _responderSugestaoDataValidator = responderSugestaoDataValidator;
-    }
-
     public async Task<List<SugestaoDataConfrontoModel>> ObterPorConfrontoAsync(Guid confrontoId)
     {
-        var sugestoes = await _repositorioSugestaoDataConfronto.ObterPorConfrontoAsync(confrontoId);
-        var models = sugestoes.Select(_mapper.Map<SugestaoDataConfrontoModel>).ToList();
+        var sugestoes = await repositorioSugestaoDataConfronto.ObterPorConfrontoAsync(confrontoId);
+        var models = sugestoes.Select(mapper.Map<SugestaoDataConfrontoModel>).ToList();
 
         return models;
     }
@@ -66,10 +49,10 @@ public class ServicoSugestaoDataConfronto : IServicoSugestaoDataConfronto
 
     public async Task SugerirNovaDataAsync(NovaSugestaoDataCommand command)
     {
-        await _sugerirNovaDataValidator.ValidateAndThrowAsync(command);
+        await sugerirNovaDataValidator.ValidateAndThrowAsync(command);
 
-        var confronto = await _repositorioConfronto.ObterPorIdAsync(command.ConfrontoId);
-        var timeA = await _servicoTime.ObterPorCodigoAsync(confronto.CodigoTimeA);
+        var confronto = await repositorioConfronto.ObterPorIdAsync(command.ConfrontoId);
+        var timeA = await servicoTime.ObterPorCodigoAsync(confronto.CodigoTimeA);
         var cadastradoPor = command.SteamId == timeA.Capitao.SteamId ? CadastradoPor.TimeA : CadastradoPor.TimeB;
 
         var sugestaoCommand = new SugestaoDataConfrontoCommand
@@ -85,37 +68,37 @@ public class ServicoSugestaoDataConfronto : IServicoSugestaoDataConfronto
 
     public async Task ResponderSugestaoDataAsync(ResponderSugestaoDataCommand command)
     {
-        await _responderSugestaoDataValidator.ValidateAndThrowAsync(command);
+        await responderSugestaoDataValidator.ValidateAndThrowAsync(command);
 
-        var confronto = await _repositorioConfronto.ObterPorIdAsync(command.ConfrontoId);
-        var timeA = await _servicoTime.ObterPorCodigoAsync(confronto.CodigoTimeA);
-        var sugestao = await _repositorioSugestaoDataConfronto.ObterPorIdAsync(command.SugestaoId);
+        var confronto = await repositorioConfronto.ObterPorIdAsync(command.ConfrontoId);
+        var timeA = await servicoTime.ObterPorCodigoAsync(confronto.CodigoTimeA);
+        var sugestao = await repositorioSugestaoDataConfronto.ObterPorIdAsync(command.SugestaoId);
 
         if (command.SteamId == timeA.Capitao.SteamId)
             sugestao.RespostaTimeA = (int)command.Resposta;
         else
             sugestao.RespostaTimeB = (int)command.Resposta;
 
-        await _repositorioSugestaoDataConfronto.SalvarAsync(sugestao);
+        await repositorioSugestaoDataConfronto.SalvarAsync(sugestao);
     }
 
     public async Task ExcluirPorConfrontoAsync(Guid confrontoId)
     {
-        await _repositorioSugestaoDataConfronto.ExcluirPorConfrontoAsync(confrontoId);
+        await repositorioSugestaoDataConfronto.ExcluirPorConfrontoAsync(confrontoId);
     }
 
     public async Task ExcluirSugestaoDataAsync(Guid confrontoId, Guid sugestaoId, string steamId)
     {
-        var confronto = await _repositorioConfronto.ObterPorIdAsync(confrontoId);
+        var confronto = await repositorioConfronto.ObterPorIdAsync(confrontoId);
         if (confronto is not { Status: (int)StatusConfronto.Aguardando })
             return;
 
-        var timeA = await _servicoTime.ObterPorCodigoAsync(confronto.CodigoTimeA);
-        var timeB = await _servicoTime.ObterPorCodigoAsync(confronto.CodigoTimeB);
+        var timeA = await servicoTime.ObterPorCodigoAsync(confronto.CodigoTimeA);
+        var timeB = await servicoTime.ObterPorCodigoAsync(confronto.CodigoTimeB);
         if (timeA.Capitao.SteamId != steamId && timeB.Capitao.SteamId != steamId)
             return;
 
-        var sugestao = await _repositorioSugestaoDataConfronto.ObterPorIdAsync(sugestaoId);
+        var sugestao = await repositorioSugestaoDataConfronto.ObterPorIdAsync(sugestaoId);
 
         if (sugestao.ConfrontoId != confrontoId || sugestao.CadastradoPor == (int)CadastradoPor.Administrador)
             return;
@@ -126,17 +109,17 @@ public class ServicoSugestaoDataConfronto : IServicoSugestaoDataConfronto
         if (timeB.Capitao.SteamId == steamId && sugestao.CadastradoPor != (int)CadastradoPor.TimeB)
             return;
 
-        await _repositorioSugestaoDataConfronto.ExcluirPorIdAsync(sugestaoId);
+        await repositorioSugestaoDataConfronto.ExcluirPorIdAsync(sugestaoId);
     }
 
     private async Task<SugestaoDataConfrontoEntity> SalvarAsync(Guid confrontoId, SugestaoDataConfrontoCommand command)
     {
-        var entity = _mapper.Map<SugestaoDataConfrontoEntity>(command);
+        var entity = mapper.Map<SugestaoDataConfrontoEntity>(command);
 
         entity.ConfrontoId = confrontoId;
 
-        await _validator.ValidateAndThrowAsync(entity);
-        await _repositorioSugestaoDataConfronto.SalvarAsync(entity);
+        await validator.ValidateAndThrowAsync(entity);
+        await repositorioSugestaoDataConfronto.SalvarAsync(entity);
 
         return entity;
     }

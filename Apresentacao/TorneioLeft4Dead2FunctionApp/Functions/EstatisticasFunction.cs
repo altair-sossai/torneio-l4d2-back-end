@@ -7,30 +7,22 @@ using TorneioLeft4Dead2FunctionApp.Extensions;
 
 namespace TorneioLeft4Dead2FunctionApp.Functions;
 
-public class EstatisticasFunction
+public class EstatisticasFunction(
+    IServicoEstatisticasPorJogador servicoEstatisticasPorJogador,
+    IServicoEstatisticasPorEquipe servicoEstatisticasPorEquipe)
 {
-    private readonly IServicoEstatisticasPorEquipe _servicoEstatisticasPorEquipe;
-    private readonly IServicoEstatisticasPorJogador _servicoEstatisticasPorJogador;
-
-    public EstatisticasFunction(IServicoEstatisticasPorJogador servicoEstatisticasPorJogador,
-        IServicoEstatisticasPorEquipe servicoEstatisticasPorEquipe)
-    {
-        _servicoEstatisticasPorJogador = servicoEstatisticasPorJogador;
-        _servicoEstatisticasPorEquipe = servicoEstatisticasPorEquipe;
-    }
-
-    [Function(nameof(EstatisticasFunction) + "_" + nameof(PorJogadorAsync))]
+    [Function($"{nameof(EstatisticasFunction)}_{nameof(PorJogadorAsync)}")]
     public async Task<HttpResponseData> PorJogadorAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "estatisticas/por-jogador")] HttpRequestData httpRequest)
     {
-        var models = await _servicoEstatisticasPorJogador.ObterEstatisticasAsync();
+        var models = await servicoEstatisticasPorJogador.ObterEstatisticasAsync();
 
         return await httpRequest.OkAsync(models);
     }
 
-    [Function(nameof(EstatisticasFunction) + "_" + nameof(PorEquipeAsync))]
+    [Function($"{nameof(EstatisticasFunction)}_{nameof(PorEquipeAsync)}")]
     public async Task<HttpResponseData> PorEquipeAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "estatisticas/por-equipe")] HttpRequestData httpRequest)
     {
-        var models = await _servicoEstatisticasPorEquipe.ObterEstatisticasAsync();
+        var models = await servicoEstatisticasPorEquipe.ObterEstatisticasAsync();
 
         return await httpRequest.OkAsync(models);
     }

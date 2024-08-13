@@ -5,7 +5,7 @@ using System.Security.Claims;
 
 namespace TorneioLeft4Dead2.Auth.Jwt.Models;
 
-public class PrettyToken
+public class PrettyToken()
 {
     private long _expiresIn;
 
@@ -18,12 +18,7 @@ public class PrettyToken
         Claims = securityToken.Claims.ToArray();
     }
 
-    public PrettyToken()
-    {
-        TokenType = "bearer";
-    }
-
-    public string TokenType { get; }
+    public string TokenType { get; } = "bearer";
     public string AccessToken { get; }
 
     public long ExpiresIn

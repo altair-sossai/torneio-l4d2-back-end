@@ -11,34 +11,24 @@ using TorneioLeft4Dead2FunctionApp.Extensions;
 
 namespace TorneioLeft4Dead2FunctionApp.Functions;
 
-public class ConfrontosFunction
+public class ConfrontosFunction(
+    IServicoConfronto servicoConfronto,
+    IAuthContext authContext,
+    IMemoryCache memoryCache)
 {
-    private readonly IAuthContext _authContext;
-    private readonly IMemoryCache _memoryCache;
-    private readonly IServicoConfronto _servicoConfronto;
-
-    public ConfrontosFunction(IServicoConfronto servicoConfronto,
-        IAuthContext authContext,
-        IMemoryCache memoryCache)
-    {
-        _servicoConfronto = servicoConfronto;
-        _authContext = authContext;
-        _memoryCache = memoryCache;
-    }
-
-    [Function(nameof(ConfrontosFunction) + "_" + nameof(GetAllAsync))]
+    [Function($"{nameof(ConfrontosFunction)}_{nameof(GetAllAsync)}")]
     public async Task<HttpResponseData> GetAllAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "confrontos")] HttpRequestData httpRequest)
     {
-        var models = await _servicoConfronto.ObterConfrontosAsync();
+        var models = await servicoConfronto.ObterConfrontosAsync();
 
         return await httpRequest.OkAsync(models);
     }
 
-    [Function(nameof(ConfrontosFunction) + "_" + nameof(GetAsync))]
+    [Function($"{nameof(ConfrontosFunction)}_{nameof(GetAsync)}")]
     public async Task<HttpResponseData> GetAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "confrontos/{confrontoId:guid}")] HttpRequestData httpRequest,
         Guid confrontoId)
     {
-        var model = await _servicoConfronto.ObterPorIdAsync(confrontoId);
+        var model = await servicoConfronto.ObterPorIdAsync(confrontoId);
 
         if (model == null)
             return httpRequest.NotFound();
@@ -46,20 +36,20 @@ public class ConfrontosFunction
         return await httpRequest.OkAsync(model);
     }
 
-    [Function(nameof(ConfrontosFunction) + "_" + nameof(RodadasAsync))]
+    [Function($"{nameof(ConfrontosFunction)}_{nameof(RodadasAsync)}")]
     public async Task<HttpResponseData> RodadasAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "confrontos/rodadas")] HttpRequestData httpRequest)
     {
-        var models = await _memoryCache.GetOrCreateAsync(MemoryCacheKeys.Confrontos, entry =>
+        var models = await memoryCache.GetOrCreateAsync(MemoryCacheKeys.Confrontos, entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1);
 
-            return _servicoConfronto.ObterRodadasAsync();
+            return servicoConfronto.ObterRodadasAsync();
         });
 
         return await httpRequest.OkAsync(models);
     }
 
-    [Function(nameof(ConfrontosFunction) + "_" + nameof(PostAsync))]
+    [Function($"{nameof(ConfrontosFunction)}_{nameof(PostAsync)}")]
     public async Task<HttpResponseData> PostAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "confrontos")] HttpRequestData httpRequest)
     {
         try
@@ -68,11 +58,11 @@ public class ConfrontosFunction
             if (claimsPrincipal == null)
                 return httpRequest.Unauthorized();
 
-            await _authContext.FillUserAsync(claimsPrincipal);
-            _authContext.GrantPermission();
+            await authContext.FillUserAsync(claimsPrincipal);
+            authContext.GrantPermission();
 
             var command = await httpRequest.DeserializeBodyAsync<ConfrontoCommand>();
-            var entity = await _servicoConfronto.SalvarAsync(command);
+            var entity = await servicoConfronto.SalvarAsync(command);
 
             return await httpRequest.OkAsync(entity);
         }
@@ -86,7 +76,7 @@ public class ConfrontosFunction
         }
     }
 
-    [Function(nameof(ConfrontosFunction) + "_" + nameof(GerarAsync))]
+    [Function($"{nameof(ConfrontosFunction)}_{nameof(GerarAsync)}")]
     public async Task<HttpResponseData> GerarAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "confrontos/gerar")] HttpRequestData httpRequest)
     {
         try
@@ -95,10 +85,10 @@ public class ConfrontosFunction
             if (claimsPrincipal == null)
                 return httpRequest.Unauthorized();
 
-            await _authContext.FillUserAsync(claimsPrincipal);
-            _authContext.GrantPermission();
+            await authContext.FillUserAsync(claimsPrincipal);
+            authContext.GrantPermission();
 
-            await _servicoConfronto.GerarConfrontosAsync();
+            await servicoConfronto.GerarConfrontosAsync();
 
             return httpRequest.Ok();
         }
@@ -112,7 +102,7 @@ public class ConfrontosFunction
         }
     }
 
-    [Function(nameof(ConfrontosFunction) + "_" + nameof(LimparCampanhasAsync))]
+    [Function($"{nameof(ConfrontosFunction)}_{nameof(LimparCampanhasAsync)}")]
     public async Task<HttpResponseData> LimparCampanhasAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "confrontos/limpar-campanhas")] HttpRequestData httpRequest)
     {
         try
@@ -121,10 +111,10 @@ public class ConfrontosFunction
             if (claimsPrincipal == null)
                 return httpRequest.Unauthorized();
 
-            await _authContext.FillUserAsync(claimsPrincipal);
-            _authContext.GrantPermission();
+            await authContext.FillUserAsync(claimsPrincipal);
+            authContext.GrantPermission();
 
-            await _servicoConfronto.LimparCampanhasAsync();
+            await servicoConfronto.LimparCampanhasAsync();
 
             return httpRequest.Ok();
         }
@@ -138,7 +128,7 @@ public class ConfrontosFunction
         }
     }
 
-    [Function(nameof(ConfrontosFunction) + "_" + nameof(SortearCampanhasAsync))]
+    [Function($"{nameof(ConfrontosFunction)}_{nameof(SortearCampanhasAsync)}")]
     public async Task<HttpResponseData> SortearCampanhasAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "confrontos/sortear-campanhas")] HttpRequestData httpRequest)
     {
         try
@@ -147,10 +137,10 @@ public class ConfrontosFunction
             if (claimsPrincipal == null)
                 return httpRequest.Unauthorized();
 
-            await _authContext.FillUserAsync(claimsPrincipal);
-            _authContext.GrantPermission();
+            await authContext.FillUserAsync(claimsPrincipal);
+            authContext.GrantPermission();
 
-            var campanhas = await _servicoConfronto.SortearCampanhasAsync();
+            var campanhas = await servicoConfronto.SortearCampanhasAsync();
 
             return await httpRequest.OkAsync(campanhas);
         }
@@ -164,7 +154,7 @@ public class ConfrontosFunction
         }
     }
 
-    [Function(nameof(ConfrontosFunction) + "_" + nameof(DeleteAsync))]
+    [Function($"{nameof(ConfrontosFunction)}_{nameof(DeleteAsync)}")]
     public async Task<HttpResponseData> DeleteAsync([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "confrontos/{confrontoId:guid}")] HttpRequestData httpRequest,
         Guid confrontoId)
     {
@@ -174,10 +164,10 @@ public class ConfrontosFunction
             if (claimsPrincipal == null)
                 return httpRequest.Unauthorized();
 
-            await _authContext.FillUserAsync(claimsPrincipal);
-            _authContext.GrantPermission();
+            await authContext.FillUserAsync(claimsPrincipal);
+            authContext.GrantPermission();
 
-            await _servicoConfronto.ExcluirAsync(confrontoId);
+            await servicoConfronto.ExcluirAsync(confrontoId);
 
             return httpRequest.Ok();
         }

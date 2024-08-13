@@ -10,32 +10,21 @@ using TorneioLeft4Dead2.Times.Servicos;
 
 namespace TorneioLeft4Dead2.Estatisticas.PorEquipe.Servicos;
 
-public class ServicoEstatisticasPorEquipe : IServicoEstatisticasPorEquipe
+public class ServicoEstatisticasPorEquipe(
+    IServicoTime servicoTime,
+    IServicoConfronto servicoConfronto,
+    IServicoPlayoffs servicoPlayoffs,
+    IMatchesService matchesService)
+    : IServicoEstatisticasPorEquipe
 {
-    private readonly IMatchesService _matchesService;
-    private readonly IServicoConfronto _servicoConfronto;
-    private readonly IServicoPlayoffs _servicoPlayoffs;
-    private readonly IServicoTime _servicoTime;
-
-    public ServicoEstatisticasPorEquipe(IServicoTime servicoTime,
-        IServicoConfronto servicoConfronto,
-        IServicoPlayoffs servicoPlayoffs,
-        IMatchesService matchesService)
-    {
-        _servicoTime = servicoTime;
-        _servicoConfronto = servicoConfronto;
-        _servicoPlayoffs = servicoPlayoffs;
-        _matchesService = matchesService;
-    }
-
     public async Task<List<EquipeModel>> ObterEstatisticasAsync()
     {
         var equipes = new List<EquipeModel>();
 
-        foreach (var time in await _servicoTime.ObterTimesAsync())
+        foreach (var time in await servicoTime.ObterTimesAsync())
             equipes.Add(new EquipeModel(time));
 
-        foreach (var rodada in await _servicoConfronto.ObterRodadasAsync())
+        foreach (var rodada in await servicoConfronto.ObterRodadasAsync())
         foreach (var confronto in rodada.Confrontos)
         {
             if (confronto.Status != (int)StatusConfronto.Realizado || string.IsNullOrEmpty(confronto.InicioEstatistica) || string.IsNullOrEmpty(confronto.FimEstatistica))
@@ -44,7 +33,7 @@ public class ServicoEstatisticasPorEquipe : IServicoEstatisticasPorEquipe
             await VincularConfrontosAsync(equipes, confronto.CodigoTimeA, confronto.CodigoTimeB, confronto.InicioEstatistica, confronto.FimEstatistica);
         }
 
-        foreach (var rodada in await _servicoPlayoffs.ObterRodadasAsync())
+        foreach (var rodada in await servicoPlayoffs.ObterRodadasAsync())
         foreach (var playoff in rodada.Playoffs)
         foreach (var confronto in playoff.Confrontos)
         {
@@ -59,7 +48,7 @@ public class ServicoEstatisticasPorEquipe : IServicoEstatisticasPorEquipe
 
     private async Task VincularConfrontosAsync(IReadOnlyCollection<EquipeModel> equipes, string timeA, string timeB, string inicioEstatistica, string fimEstatistica)
     {
-        var matches = await _matchesService.BetweenAsync(inicioEstatistica, fimEstatistica);
+        var matches = await matchesService.BetweenAsync(inicioEstatistica, fimEstatistica);
 
         foreach (var match in matches)
         {

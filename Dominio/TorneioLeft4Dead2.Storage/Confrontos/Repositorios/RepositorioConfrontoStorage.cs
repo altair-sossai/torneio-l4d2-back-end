@@ -10,14 +10,10 @@ using TorneioLeft4Dead2.Storage.UnitOfWork.Repositories;
 
 namespace TorneioLeft4Dead2.Storage.Confrontos.Repositorios;
 
-public class RepositorioConfrontoStorage : BaseTableStorageRepository<ConfrontoEntity>, IRepositorioConfronto
+public class RepositorioConfrontoStorage(IAzureTableStorageContext tableContext, IMemoryCache memoryCache)
+    : BaseTableStorageRepository<ConfrontoEntity>(TableName, tableContext, memoryCache), IRepositorioConfronto
 {
     private const string TableName = "Confrontos";
-
-    public RepositorioConfrontoStorage(IAzureTableStorageContext tableContext, IMemoryCache memoryCache)
-        : base(TableName, tableContext, memoryCache)
-    {
-    }
 
     public async Task<ConfrontoEntity> ObterPorIdAsync(Guid confrontoId)
     {

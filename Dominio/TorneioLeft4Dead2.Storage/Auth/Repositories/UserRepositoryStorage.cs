@@ -9,14 +9,10 @@ using TorneioLeft4Dead2.Storage.UnitOfWork.Repositories;
 
 namespace TorneioLeft4Dead2.Storage.Auth.Repositories;
 
-public class UserRepositoryStorage : BaseTableStorageRepository<UserEntity>, IUserRepository
+public class UserRepositoryStorage(IAzureTableStorageContext tableContext, IMemoryCache memoryCache)
+    : BaseTableStorageRepository<UserEntity>(TableName, tableContext, memoryCache), IUserRepository
 {
     private const string TableName = "Users";
-
-    public UserRepositoryStorage(IAzureTableStorageContext tableContext, IMemoryCache memoryCache)
-        : base(TableName, tableContext, memoryCache)
-    {
-    }
 
     public async Task<UserEntity> FindUserAsync(Guid userId)
     {

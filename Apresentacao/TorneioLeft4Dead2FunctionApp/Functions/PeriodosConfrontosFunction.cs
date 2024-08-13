@@ -10,29 +10,21 @@ using TorneioLeft4Dead2FunctionApp.Extensions;
 
 namespace TorneioLeft4Dead2FunctionApp.Functions;
 
-public class PeriodosConfrontosFunction
+public class PeriodosConfrontosFunction(
+    IServicoPeriodoConfronto servicoPeriodoConfronto,
+    IAuthContext authContext)
 {
-    private readonly IAuthContext _authContext;
-    private readonly IServicoPeriodoConfronto _servicoPeriodoConfronto;
-
-    public PeriodosConfrontosFunction(IServicoPeriodoConfronto servicoPeriodoConfronto,
-        IAuthContext authContext)
-    {
-        _servicoPeriodoConfronto = servicoPeriodoConfronto;
-        _authContext = authContext;
-    }
-
-    [Function(nameof(PeriodosConfrontosFunction) + "_" + nameof(GetAsync))]
+    [Function($"{nameof(PeriodosConfrontosFunction)}_{nameof(GetAsync)}")]
     public async Task<HttpResponseData> GetAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "confrontos/{confrontoId:guid}/periodo")] HttpRequestData httpRequest,
         Guid confrontoId)
     {
-        var model = await _servicoPeriodoConfronto.ObterPorConfrontoAsync(confrontoId)
+        var model = await servicoPeriodoConfronto.ObterPorConfrontoAsync(confrontoId)
                     ?? PeriodoConfrontoModel.Empty(confrontoId);
 
         return await httpRequest.OkAsync(model);
     }
 
-    [Function(nameof(PeriodosConfrontosFunction) + "_" + nameof(PostAsync))]
+    [Function($"{nameof(PeriodosConfrontosFunction)}_{nameof(PostAsync)}")]
     public async Task<HttpResponseData> PostAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "confrontos/{confrontoId:guid}/periodo")] HttpRequestData httpRequest,
         Guid confrontoId)
     {
@@ -42,11 +34,11 @@ public class PeriodosConfrontosFunction
             if (claimsPrincipal == null)
                 return httpRequest.Unauthorized();
 
-            await _authContext.FillUserAsync(claimsPrincipal);
-            _authContext.GrantPermission();
+            await authContext.FillUserAsync(claimsPrincipal);
+            authContext.GrantPermission();
 
             var command = await httpRequest.DeserializeBodyAsync<PeriodoConfrontoCommand>();
-            var entity = await _servicoPeriodoConfronto.SalvarAsync(confrontoId, command);
+            var entity = await servicoPeriodoConfronto.SalvarAsync(confrontoId, command);
 
             return await httpRequest.OkAsync(entity);
         }

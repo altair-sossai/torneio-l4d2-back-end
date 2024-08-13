@@ -12,38 +12,23 @@ using TorneioLeft4Dead2.Times.Repositorios;
 
 namespace TorneioLeft4Dead2.Times.Servicos;
 
-public class ServicoTime : IServicoTime
+public class ServicoTime(
+    IMapper mapper,
+    IValidator<TimeEntity> validator,
+    IRepositorioTime repositorioTime,
+    IRepositorioTimeJogador repositorioTimeJogador,
+    IRepositorioJogador repositorioJogador,
+    IServicoJogador servicoJogador)
+    : IServicoTime
 {
-    private readonly IMapper _mapper;
-    private readonly IRepositorioJogador _repositorioJogador;
-    private readonly IRepositorioTime _repositorioTime;
-    private readonly IRepositorioTimeJogador _repositorioTimeJogador;
-    private readonly IServicoJogador _servicoJogador;
-    private readonly IValidator<TimeEntity> _validator;
-
-    public ServicoTime(IMapper mapper,
-        IValidator<TimeEntity> validator,
-        IRepositorioTime repositorioTime,
-        IRepositorioTimeJogador repositorioTimeJogador,
-        IRepositorioJogador repositorioJogador,
-        IServicoJogador servicoJogador)
-    {
-        _mapper = mapper;
-        _validator = validator;
-        _repositorioTime = repositorioTime;
-        _repositorioTimeJogador = repositorioTimeJogador;
-        _repositorioJogador = repositorioJogador;
-        _servicoJogador = servicoJogador;
-    }
-
     public async Task<TimeModel> ObterPorCodigoAsync(string codigo)
     {
-        var entity = await _repositorioTime.ObterPorCodigoAsync(codigo);
+        var entity = await repositorioTime.ObterPorCodigoAsync(codigo);
         if (entity == null)
             return null;
 
-        var jogadores = await _servicoJogador.ObterPorTimeAsync(codigo);
-        var model = _mapper.Map<TimeModel>(entity);
+        var jogadores = await servicoJogador.ObterPorTimeAsync(codigo);
+        var model = mapper.Map<TimeModel>(entity);
 
         model.Jogadores = jogadores;
 
@@ -52,13 +37,13 @@ public class ServicoTime : IServicoTime
 
     public async Task<List<TimeModel>> ObterTimesAsync()
     {
-        var entities = await _repositorioTime.ObterTimesAsync();
+        var entities = await repositorioTime.ObterTimesAsync();
         if (entities == null)
             return null;
 
-        var times = _mapper.Map<List<TimeModel>>(entities);
-        var jogadores = await _repositorioJogador.ObterJogadoresAsync();
-        var timesJogadores = await _repositorioTimeJogador.ObterTodosAsync();
+        var times = mapper.Map<List<TimeModel>>(entities);
+        var jogadores = await repositorioJogador.ObterJogadoresAsync();
+        var timesJogadores = await repositorioTimeJogador.ObterTodosAsync();
 
         times.Vincular(timesJogadores, jogadores);
 
@@ -67,13 +52,13 @@ public class ServicoTime : IServicoTime
 
     public async Task<List<TimeEntity>> ObterClassificacaoAsync()
     {
-        return await _repositorioTime.ObterClassificacaoAsync();
+        return await repositorioTime.ObterClassificacaoAsync();
     }
 
     public async Task<TimeEntity> SalvarAsync(TimeEntity entity)
     {
-        await _validator.ValidateAndThrowAsync(entity);
-        await _repositorioTime.SalvarAsync(entity);
+        await validator.ValidateAndThrowAsync(entity);
+        await repositorioTime.SalvarAsync(entity);
 
         return entity;
     }
@@ -82,14 +67,14 @@ public class ServicoTime : IServicoTime
     {
         var entity = await ObterPorCodigoAsync(command.Codigo) ?? new TimeEntity();
 
-        _mapper.Map(command, entity);
+        mapper.Map(command, entity);
 
         return await SalvarAsync(entity);
     }
 
     public async Task ExcluirAsync(string codigo)
     {
-        await _repositorioTime.ExcluirAsync(codigo);
-        await _repositorioTimeJogador.ExcluirPorTimeAsync(codigo);
+        await repositorioTime.ExcluirAsync(codigo);
+        await repositorioTimeJogador.ExcluirPorTimeAsync(codigo);
     }
 }

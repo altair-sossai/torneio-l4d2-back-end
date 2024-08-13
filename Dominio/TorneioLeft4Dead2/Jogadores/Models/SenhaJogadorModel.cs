@@ -2,15 +2,9 @@
 
 namespace TorneioLeft4Dead2.Jogadores.Models;
 
-public class SenhaJogadorModel
+public class SenhaJogadorModel(string steamId)
 {
-    public SenhaJogadorModel(string steamId)
-    {
-        SteamId = steamId;
-        SenhaDescriptografada = KeyGenerator.RandomString(12);
-    }
-
-    public string SteamId { get; }
-    public string SenhaDescriptografada { get; }
+    public string SteamId { get; } = steamId;
+    public string SenhaDescriptografada { get; } = KeyGenerator.RandomString(12);
     public string SenhaCriptografada => PasswordHelper.Encrypt(SenhaDescriptografada);
 }
