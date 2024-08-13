@@ -221,7 +221,7 @@ public class JogadoresFunction(
     [Function(nameof(JogadoresFunction) + "_" + nameof(AtualizarJogadoresAsync))]
     public async Task AtualizarJogadoresAsync([TimerTrigger("0 */5 * * * *")] TimerInfo timerInfo)
     {
-        await _servicoJogador.AtualizarJogadoresAsync();
+        await servicoJogador.AtualizarJogadoresAsync();
     }
 #endif
 }
